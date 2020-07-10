@@ -87,6 +87,12 @@ canvas {
     height: 60px;
     animation: spin 2s linear infinite;
 }
+
+#app {
+    background: teal;
+    width: 100%;
+    height: 100%;
+}
   
 @keyframes spin {
     0% { transform: rotate(0deg); }
@@ -128,6 +134,7 @@ canvas {
     border-radius: 5px;
     box-shadow: 6px 6px 9px 0 rgba(0,0,0, 0.3);
 }
+
 
 /* TODO: add @media for smaller screens.
 This should also update the HTML merge the

@@ -1,13 +1,28 @@
-export let elm = document.createElement("canvas");
-export let gl = elm.getContext("2d");
-
-if (!(gl instanceof CanvasRenderingContext2D)) alert("Canvas disabled");
-document.body.appendChild(elm);
-
 export class Layer {
     constructor (ID) {
         this.ID = ID;
-        this.sprites = [];
-        this.opacity = 1.0;
+        this.elm = document.createElement("canvas");
+        this.opacity = 1;
+        this.x_parallax = 0;
+        this.y_parallax = 0;
+        this.tokens = []; //sprites, particles, etc.
+    }
+    bringForward(token) {
+
+    }
+    sendBackward(token) {
+
+    }
+    addToken(token) {
+
+    }
+    removeToken(token) {
+
+    }
+    destroy() {
+
+    }
+    intersections(x, y) {
+
     }
 }
