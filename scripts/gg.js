@@ -13,7 +13,9 @@ import { Sprite } from "./sprite.js";
     window.addEventListener("resize", function() {canvas.render()});
 
     let sprite = new Sprite("test.png");
-    MutationEvent= 0;
+
+    var FPS = 0;
+    var ticks = 0;
     var lastFPS = 0;
     var fps_div = document.getElementById("fps");
 
