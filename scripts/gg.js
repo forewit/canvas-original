@@ -8,8 +8,8 @@ import { Canvas } from "./canvas.js";
     'use strict';
 
     // using for debug ****************************
-    let canvas = new Canvas(document.getElementById("app"));
-    window.addEventListener("resize", function() {canvas.resize()});
+    let canvas = new Canvas(document.getElementById("canvas"));
+    window.addEventListener("resize", function() {canvas.render()});
 
     var FPS = 0;
     var ticks = 0;

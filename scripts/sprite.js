@@ -1,0 +1,20 @@
+export class Sprite {
+    constructor(ID) {
+        this.ID = ID;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.scale_x = 0.5;
+        this.scale_y = 0.5;
+        this.rotation = 0; // in radians
+        this.opacity = 1;
+        this.frame_w = 512;
+        this.frame_h = 512;
+        this.frame_x = 0;
+        this.frame_y = 0;
+    }
+
+    render(options) {
+       
+    }
+}

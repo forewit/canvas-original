@@ -1,32 +1,54 @@
 import { Layer } from "./layer.js";
+import * as utils from "./utils.js";
 
 export class Canvas {
     constructor(elm) {
         this.elm = elm;
-        this.layers = [];
+        this._ctx = elm.getContext("2d");
+        this._layers = [];
+
+        if (!(this._ctx instanceof CanvasRenderingContext2D)) alert("Canvas API unavailable");
+        this.render();
     }
     bringForward(layer) {
-
-    }
-    sendBackward(layer) {
-
-    }
-    createLayer() {
-
-    }
-    destroyLayer() {
-        for (var i = 0, len = this.layers.length; i < len; i++) {
-            if (this.layers[i].ID == layer.ID) {
-                this.layers[i].destroy;
-                this.layers.splice(i, 1);
-                return;
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            if (this._layers[i].ID == layer.ID) {
+                this._layers.splice(i, 1);
+                this._layers.push(layer);
+                return true;
             }
         }
+        return false;
     }
-    resize() {
-        for (var i = 0, len = this.layers.length; i < len; i++) {
-            layers[i].elm.width = this.elm.clientWidth;
-            layers[i].elm.height = this.elm.clientHeight;
+    sendBackward(layer) {
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            if (this._layers[i].ID == layer.ID) {
+                this._layers.splice(i, 1);
+                this._layers.unshift(layer);
+                return true;
+            }
+        }
+        return false;
+    }
+    createLayer() {
+        let ID = utils.generate_ID();
+        let layer = new Layer(ID);
+        this._layers.push(layer);
+        return layer;
+    }
+    destroyLayer() {
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            if (this._layers[i].ID == layer.ID) {
+                this._layers[i].destroy;
+                this._layers.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+    render() {
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            this._layers[i].render(this._ctx);
         }
     }
 }

@@ -1,28 +1,52 @@
 export class Layer {
     constructor (ID) {
         this.ID = ID;
-        this.elm = document.createElement("canvas");
         this.opacity = 1;
         this.x_parallax = 0;
         this.y_parallax = 0;
-        this.tokens = []; //sprites, particles, etc.
+        this._tokens = []; //sprites, particles, etc.
     }
     bringForward(token) {
-
+        for (var i = 0, len = this._tokens.length; i < len; i++) {
+            if (this._tokens[i].ID == token.ID) {
+                this._tokens.splice(i, 1);
+                this._tokens.push(token);
+                return true;
+            }
+        }
+        return false;
     }
     sendBackward(token) {
-
+        for (var i = 0, len = this._tokens.length; i < len; i++) {
+            if (this._tokens[i].ID == token.ID) {
+                this._tokens.splice(i, 1);
+                this._tokens.unshift(token);
+                return true;
+            }
+        }
+        return false;
     }
     addToken(token) {
-
+        this._tokens.push(token);
     }
-    removeToken(token) {
-
+    destroyToken(token) {
+        for (var i = 0, len = this._tokens.length; i < len; i++) {
+            if (this._tokens[i].ID == token.ID) {
+                this._tokens[i].destroy();
+                this._tokens.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
     }
     destroy() {
-
+        // clear _tokens array
+        this._tokens.length = 0;
     }
     intersections(x, y) {
+
+    }
+    render() {
 
     }
 }
