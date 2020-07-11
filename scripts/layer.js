@@ -1,6 +1,8 @@
+import * as utils from "./utils.js";
+
 export class Layer {
-    constructor (ID) {
-        this.ID = ID;
+    constructor () {
+        this.ID = utils.generate_ID;
         this.opacity = 1;
         this.x_parallax = 0;
         this.y_parallax = 0;

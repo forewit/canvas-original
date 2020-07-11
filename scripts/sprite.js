@@ -1,6 +1,8 @@
+import * as utils from "./utils.js";
+
 export class Sprite {
-    constructor(ID) {
-        this.ID = ID;
+    constructor(URL) {
+        this.ID = utils.generate_ID;
         this.x = 0;
         this.y = 0;
         this.z = 0;

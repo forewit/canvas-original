@@ -1,4 +1,5 @@
 import { Canvas } from "./canvas.js";
+import { Sprite } from "./sprite.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :

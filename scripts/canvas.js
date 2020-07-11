@@ -31,8 +31,7 @@ export class Canvas {
         return false;
     }
     createLayer() {
-        let ID = utils.generate_ID();
-        let layer = new Layer(ID);
+        let layer = new Layer();
         this._layers.push(layer);
         return layer;
     }
