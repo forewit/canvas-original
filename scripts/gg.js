@@ -12,7 +12,7 @@ import { Sprite } from "./sprite.js";
     let canvas = new Canvas(document.getElementById("canvas"));
     window.addEventListener("resize", function() {canvas.render()});
 
-    let sprite = new Sprite("test.png");
+    let sprite = new Sprite("test3.png");
     
     var FPS = 0;
     var ticks = 0;
