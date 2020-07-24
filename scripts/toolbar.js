@@ -13,9 +13,7 @@ export class Toolbar {
 
         // create placeholder element
         this.placeholder = document.createElement('div');
-        this.placeholder.classList.add('placeholder');
-        this.placeholder.style.left = this._left + 'px';
-        this.placeholder.style.height = this.gap + 'px';
+        this.placeholder.classList.add('placeholder', 'toolbar-item');
 
         // Initialize el children as items in the list
         var me = this;
@@ -59,8 +57,6 @@ export class Toolbar {
 
     // called by drag.js
     onGrab(item) {
-        console.log(this);
-
         // remove item
         var itemIndex = this.items.indexOf(item);
         this.items.splice(itemIndex, 1);
@@ -82,7 +78,7 @@ export class Toolbar {
                 this.inDropZone(
                     x, y,
                     this._dropZones[0] - this.el.scrollTop,
-                    1000,
+                    -1000,
                     this.items[0].el.clientHeight)) {
                 this.placeholder.style.top = this._dropZones[0] + 'px';
                 this.placeholder.index = 0;

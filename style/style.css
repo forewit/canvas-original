@@ -62,12 +62,13 @@ pre {
     height: 100%;
 }
 
-#toolbar {
+#draggable {
     position: fixed;
     top: 100;
-    left: 80;
-    display: grid;
-    gap: 10px;
+    left: 200;
+    width: 100px;
+    height: 100px;
+    background: white;
 }
 
 #menu-a {
@@ -90,22 +91,24 @@ pre {
     max-width: calc(100vw - 56px);
 }
 
-.placeholder {
-    position: relative;
-    z-index: 1;
+#toolbar-wrapper {
+    position: fixed;
+    top: 100;
+    left: 80;
 }
-.placeholder:before {
-    border-top: 2px solid black;
-    content: "";
-    margin: 0 auto;
-    /* this centers the line to the full width specified */
+
+#toolbar {
+    display: grid;
+    gap: 10px;
+}
+
+.toolbar-item {
+    background: white;
     position: absolute;
-    /* positioning must be absolute here, and relative positioning must be applied to the parent */
-    top: calc(50% - 1px);
-    left: 0;
-    right: 0;
-    width: 95%;
-    z-index: -1;
+}
+
+.placeholder {
+    background: black;
 }
 
 .no-select {

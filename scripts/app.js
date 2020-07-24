@@ -1,6 +1,7 @@
 import { Canvas } from "./canvas.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
+import { Draggable } from "./draggable.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -11,7 +12,7 @@ import { Toolbar } from "./toolbar.js";
 
     // using for debug ****************************
     let myToolbar = new Toolbar(document.getElementById("toolbar"));
-
+    let myDraggable = new Draggable(document.getElementById("draggable"));
 
     let canvas = new Canvas(document.getElementById("canvas"));
     window.addEventListener("resize", function() {canvas.render()});

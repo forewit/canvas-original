@@ -7,61 +7,64 @@ export class Draggable {
     }
 
     constructor(element, options) {
+        var me = this;
         if (!options) options = {};
 
-        this.el = element;
-        this.pointer = {};
-        this.handle = (options.handle) ? options.handle : this.el;
-        this.handlers = {
-            onStart: (options.onStart) ? options.onStart : Draggable.noop,
-            onMove: (options.onMove) ? options.onMove : Draggable.noop,
-            onEnd: (options.onEnd) ? options.onEnd : Draggable.noop
+        let noop = function(){};
+        me.el = element;
+        me.pointer = {};
+        me.handle = (options.handle) ? options.handle : me.el;
+        me.handlers = {
+            onStart: (options.onStart) ? options.onStart : noop,
+            onMove: (options.onMove) ? options.onMove : noop,
+            onEnd: (options.onEnd) ? options.onEnd : noop
         };
 
-        this._dimensions = {};
-        this._parent = this.el.parentNode;
-        this._dragging = false;
+        me._dimensions = {};
+        me._parent = me.el.parentNode;
+        me._dragging = false;
+        me._startHandler = function(e) { me.startHandler(e) };
+        me._moveHandler = function(e) { me.moveHandler(e) };
+        me._endHandler = function(e) { me.endHandler(e) };
 
-        var me = this;
-        me.handle.addEventListener('touchstart', function (e) { me.startHandler(e) }, { passive: false });
-        me.handle.addEventListener('mousedown', function (e) { me.startHandler(e) });
+        me.handle.addEventListener('touchstart', me._startHandler, { passive: false });
+        me.handle.addEventListener('mousedown', me._startHandler);
     }
-
 
     startHandler(e) {
         var me = this;
         if (me._dragging) return;
         if (e.type === 'mousedown') {
-            window.addEventListener('mousemove', function (e) { me.moveHandler(e) }, { passive: false });
-            window.addEventListener('mouseup', function (e) { me.endHandler(e) });
+            window.addEventListener('mousemove', me._moveHandler, { passive: false });
+            window.addEventListener('mouseup', me._endHandler);
             me.pointer = { x: e.clientX, y: e.clientY };
         } else {
-            me.handle.addEventListener('touchmove', function (e) { me.moveHandler(e) }, { passive: false });
-            me.handle.addEventListener('touchend', function (e) { me.endHandler(e) });
-            me.handle.addEventListener('touchcancel', function (e) { me.endHandler(e) });
+            me.handle.addEventListener('touchmove', me._moveHandler, { passive: false });
+            me.handle.addEventListener('touchend', me._endHandler);
+            me.handle.addEventListener('touchcancel', me._endHandler);
             me.pointer = Draggable.copyTouch(e.targetTouches[0]);
             e.preventDefault();
             e.stopPropagation();
         }
 
-        var rect = this.el.getBoundingClientRect();
-        this._dimensions = {
-            x: rect.left - this.pointer.x,
-            y: rect.top - this.pointer.y,
-            width: this.el.style.width,
-            height: this.el.style.height,
-            zIndex: this.el.style.zIndex
+        var rect = me.el.getBoundingClientRect();
+        me._dimensions = {
+            x: rect.left - me.pointer.x,
+            y: rect.top - me.pointer.y,
+            width: me.el.style.width,
+            height: me.el.style.height,
+            zIndex: me.el.style.zIndex
         };
 
-        document.body.appendChild(this.el);
-        this.el.style.width = rect.width + 'px';
-        this.el.style.height = rect.height + 'px';
-        this.el.style.zIndex = 1000;
+        document.body.appendChild(me.el);
+        me.el.style.width = rect.width + 'px';
+        me.el.style.height = rect.height + 'px';
+        me.el.style.zIndex = 1000;
 
-        this.updatePosition();
-        this.handlers.onStart(me, me.pointer.x, me.pointer.y);
+        me.updatePosition();
+        me.handlers.onStart(me, me.pointer.x, me.pointer.y);
 
-        this._dragging = true;
+        me._dragging = true;
 
         // prevent iFrames from stealing pointer events
         var frames = document.getElementsByTagName('iframe');
@@ -72,38 +75,38 @@ export class Draggable {
 
     moveHandler(e) {
         var me = this;
-        this.pointer = (e.type == 'mousemove')
+        me.pointer = (e.type == 'mousemove')
             ? { x: e.clientX, y: e.clientY }
             : Draggable.copyTouch(e.targetTouches[0]);
 
         e.preventDefault();
         e.stopPropagation();
-        this.updatePosition();
-        this.handlers.onMove(me, me.pointer.x, me.pointer.y);
+        me.updatePosition();
+        me.handlers.onMove(me, me.pointer.x, me.pointer.y);
     }
 
     endHandler(e) {
         var me = this;
         if (e.type === 'mouseup') {
-            window.removeEventListener('mousemove', function (e) { me.moveHandler(e) });
-            window.removeEventListener('mouseup', function (e) { me.endHandler(e) });
+            window.removeEventListener('mousemove', me._moveHandler);
+            window.removeEventListener('mouseup', me._endHandler);
         } else if (e.targetTouches.length == 0 || e.targetTouches[0].identifier != me.pointer.identifier) {
-            me.handle.removeEventListener('touchmove', function (e) { me.moveHandler(e) });
-            me.handle.removeEventListener('touchend', function (e) { me.endHandler(e) });
-            me.handle.removeEventListener('touchcancel', function (e) { me.endHandler(e) });
+            me.handle.removeEventListener('touchmove', me._moveHandler);
+            me.handle.removeEventListener('touchend', me._endHandler);
+            me.handle.removeEventListener('touchcancel', me._endHandler);
         } else {
             return;
         }
 
-        this._parent.appendChild(this.el);
-        this.el.style.width = this._dimensions.width;
-        this.el.style.height = this._dimensions.height;
-        this.el.style.zIndex = this._dimensions.zIndex;
-        this.el.style.top = parseInt(this.el.style.top, 10) + this._parent.scrollTop + 'px';
+        me._parent.appendChild(me.el);
+        me.el.style.width = me._dimensions.width;
+        me.el.style.height = me._dimensions.height;
+        me.el.style.zIndex = me._dimensions.zIndex;
+        me.el.style.top = parseInt(me.el.style.top, 10) + me._parent.scrollTop + 'px';
         
         me.handlers.onEnd(me);
 
-        this._dragging = false;
+        me._dragging = false;
 
         // allow iframes to steal pointer events again
         var frames = document.getElementsByTagName('iframe');
