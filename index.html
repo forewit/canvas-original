@@ -10,22 +10,13 @@
 </head>
 
 <body class="no-select">
-	<!-- LOADING CIRCLE -->
-	<div id="loader"></div>
-	<div id="fps">fps</div>
-
 	<!-- CONTENT -->
-	<div class="menu-a">
-		<img src="./svg/d4.svg" height="40" width="40" />
-		<img src="./svg/d6.svg" height="40" width="40" />
-		<img src="./svg/d10.svg" height="40" width="40" />
-		<img src="./svg/d12.svg" height="40" width="40" />
-		<img src="./svg/d20.svg" height="40" width="40" />
-		<img src="./svg/d4.svg" height="40" width="40" />
-		<img src="./svg/d6.svg" height="40" width="40" />
-		<img src="./svg/d10.svg" height="40" width="40" />
-		<img src="./svg/d12.svg" height="40" width="40" />
-		<img src="./svg/d20.svg" height="40" width="40" />
+	<div id="toolbar" class="white-rounded">
+		<div class="toolbar-item"></div>
+		<div class="toolbar-item"></div>
+		<div class="toolbar-item"></div>
+	</div>
+	<div id="menu-a" class="white-rounded">
 		<img src="./svg/d4.svg" height="40" width="40" />
 		<img src="./svg/d6.svg" height="40" width="40" />
 		<img src="./svg/d10.svg" height="40" width="40" />
@@ -37,7 +28,7 @@
 		<img src="./svg/d12.svg" height="40" width="40" />
 		<img src="./svg/d20.svg" height="40" width="40" />
 	</div>
-	<div class="menu-b">
+	<div id="menu-b" class="white-rounded">
 		<img src="./svg/d4.svg" height="40" width="40" />
 		<img src="./svg/d6.svg" height="40" width="40" />
 		<img src="./svg/d10.svg" height="40" width="40" />
@@ -45,6 +36,8 @@
 		<img src="./svg/d20.svg" height="40" width="40" />
 	</div>
 
+	<div class="tab"></div>
+	<div id="fps" class="white-rounded">fps</div>
 	<canvas id="canvas"></canvas>
 	
 	<!-- PRELOAD -->
@@ -53,7 +46,7 @@
 	</div>
 
 	<!-- SCRIPTS -->
-	<script type="module" src="./scripts/gg.js"></script>
+	<script type="module" src="./scripts/app.js"></script>
 
 </body>
 

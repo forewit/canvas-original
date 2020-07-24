@@ -49,6 +49,53 @@ pre {
     line-height: 23px;
 }
 
+#fps {
+    position: fixed;
+    display: inline-block;
+    bottom: 0;
+    right: 0;
+}
+
+#canvas {
+    background: teal;
+    width: 100%;
+    height: 100%;
+}
+
+#toolbar {
+    position: fixed;
+    top: 100;
+    left: 80;
+    display: grid;
+    gap: 10px;
+}
+#toolbar>div {
+
+    width: 40px;
+    height: 40px;
+    background: teal;
+}
+
+#menu-a {
+    position: fixed;
+    top: 0;
+    left: 0;    
+    display: grid;/*grid*/
+    gap: 10px;
+    grid-template-rows: repeat(auto-fit, minmax(40px, 1fr));
+    max-width: calc(100vw - 56px);
+}
+
+#menu-b {
+    position: fixed;
+    bottom: 0;
+    left: 0;    
+    display: grid;/*grid*/
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    max-width: calc(100vw - 56px);
+}
+
 .no-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -58,79 +105,13 @@ pre {
     user-select: none;
 }
 
-#fps {
-    position: fixed;
-    display: inline-block;
-    bottom: 20px;
-    right: 20px;
-    padding: 5px;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 6px 6px 9px 0 rgba(0,0,0, 0.3);
-}
-
-#loader {
-    display: none; /* change to block when loading */
-    position: fixed;
-    margin-left: -30px;
-    margin-top: -30px;
-    left: 50%;
-    top: 50%;
-    /* border: 8px solid #f3f3f3; Light grey */
-    border-top: 8px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 2s linear infinite;
-}
-
-#canvas {
-    background: teal;
-    width: 100%;
-    height: 100%;
-}
-  
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.menu-a {
-    position: fixed;
-    top: 0;
-    left: 0;    
-    display: none;/*grid*/
-    gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-    max-width: calc(100vw - 56px);
+.white-rounded {
     margin: 20px;
     padding: 8px;
     background: white;
     border-radius: 5px;
     box-shadow: 6px 6px 9px 0 rgba(0,0,0, 0.3);
 }
-
-.menu-b {
-    position: fixed;
-    bottom: 0;
-    left: 0;    
-    display: none;/*grid*/
-    gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-    max-width: calc(100vw - 56px);
-    margin: 20px;
-    padding: 8px;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 6px 6px 9px 0 rgba(0,0,0, 0.3);
-}
-
-.chat-box {
-    background: white;
-    border-radius: 5px;
-    box-shadow: 6px 6px 9px 0 rgba(0,0,0, 0.3);
-}
-
 
 /* TODO: add @media for smaller screens.
 This should also update the HTML merge the

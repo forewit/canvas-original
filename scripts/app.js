@@ -1,5 +1,6 @@
 import { Canvas } from "./canvas.js";
 import { Sprite } from "./sprite.js";
+import { Toolbar } from "./toolbar.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -9,6 +10,9 @@ import { Sprite } from "./sprite.js";
     'use strict';
 
     // using for debug ****************************
+    let myToolbar = new Toolbar(document.getElementById("toolbar"));
+
+
     let canvas = new Canvas(document.getElementById("canvas"));
     window.addEventListener("resize", function() {canvas.render()});
 

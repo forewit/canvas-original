@@ -48,7 +48,7 @@ export class Layer {
     intersections(x, y) {
 
     }
-    render() {
+    render(ctx) {
 
     }
 }
