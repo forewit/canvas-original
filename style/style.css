@@ -69,12 +69,6 @@ pre {
     display: grid;
     gap: 10px;
 }
-#toolbar>div {
-
-    width: 40px;
-    height: 40px;
-    background: teal;
-}
 
 #menu-a {
     position: fixed;
@@ -94,6 +88,24 @@ pre {
     gap: 10px;
     grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
     max-width: calc(100vw - 56px);
+}
+
+.placeholder {
+    position: relative;
+    z-index: 1;
+}
+.placeholder:before {
+    border-top: 2px solid black;
+    content: "";
+    margin: 0 auto;
+    /* this centers the line to the full width specified */
+    position: absolute;
+    /* positioning must be absolute here, and relative positioning must be applied to the parent */
+    top: calc(50% - 1px);
+    left: 0;
+    right: 0;
+    width: 95%;
+    z-index: -1;
 }
 
 .no-select {

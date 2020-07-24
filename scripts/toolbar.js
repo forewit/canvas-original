@@ -59,6 +59,8 @@ export class Toolbar {
 
     // called by drag.js
     onGrab(item) {
+        console.log(this);
+
         // remove item
         var itemIndex = this.items.indexOf(item);
         this.items.splice(itemIndex, 1);
@@ -120,7 +122,6 @@ export class Toolbar {
 
     // called by drag.js
     onRelease(item) {
-        console.log(item);
         // add item to list
         this.items.splice(this.placeholder.index, 0, item);
 

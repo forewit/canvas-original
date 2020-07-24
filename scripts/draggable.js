@@ -101,7 +101,6 @@ export class Draggable {
         this.el.style.zIndex = this._dimensions.zIndex;
         this.el.style.top = parseInt(this.el.style.top, 10) + this._parent.scrollTop + 'px';
         
-        console.log(me);
         me.handlers.onEnd(me);
 
         this._dragging = false;
