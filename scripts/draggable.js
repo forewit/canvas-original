@@ -9,30 +9,37 @@ export class Draggable {
     constructor(element, options) {
         var me = this;
         if (!options) options = {};
-
         let noop = function(){};
-        me.el = element;
+
+        // set public attributes
+        me.elm = element;
         me.pointer = {};
-        me.handle = (options.handle) ? options.handle : me.el;
+        me.handle = (options.handle) ? options.handle : me.elm;
         me.handlers = {
             onStart: (options.onStart) ? options.onStart : noop,
             onMove: (options.onMove) ? options.onMove : noop,
             onEnd: (options.onEnd) ? options.onEnd : noop
         };
+        me.placeholder = document.createElement("div");
+        //me.placeholder.style.display = "none";
+        if (options.placeholderClass) me.placeholder.classList.add(options.placeholderClass);
 
-        me._dimensions = {};
-        me._parent = me.el.parentNode;
+        // set private attributes
+        me._state = {};
         me._dragging = false;
         me._startHandler = function(e) { me.startHandler(e) };
         me._moveHandler = function(e) { me.moveHandler(e) };
         me._endHandler = function(e) { me.endHandler(e) };
 
+        // add event listeners
         me.handle.addEventListener('touchstart', me._startHandler, { passive: false });
         me.handle.addEventListener('mousedown', me._startHandler);
     }
 
     startHandler(e) {
         var me = this;
+
+        // add event listeners
         if (me._dragging) return;
         if (e.type === 'mousedown') {
             window.addEventListener('mousemove', me._moveHandler, { passive: false });
@@ -47,25 +54,24 @@ export class Draggable {
             e.stopPropagation();
         }
 
-        var rect = me.el.getBoundingClientRect();
-        me._dimensions = {
-            x: rect.left - me.pointer.x,
-            y: rect.top - me.pointer.y,
-            width: me.el.style.width,
-            height: me.el.style.height,
-            zIndex: me.el.style.zIndex
+        // set initial state
+        let rect = me.elm.getBoundingClientRect();
+        me._state = {
+            x: rect.x - me.pointer.x,       // adjusted for starting mouse x
+            y: rect.y - me.pointer.y,       // adjusted for starting mouse y
         };
 
-        document.body.appendChild(me.el);
-        me.el.style.width = rect.width + 'px';
-        me.el.style.height = rect.height + 'px';
-        me.el.style.zIndex = 1000;
+        // start dragging
+        me.elm.after(me.placeholder);       // insert placeholder
+        document.body.appendChild(me.elm);  // move elm to body
+        me.elm.style.position = "absolute";
+        me.updatePosition();                // update so that position includes mouse offset
 
-        me.updatePosition();
+        // callback
         me.handlers.onStart(me, me.pointer.x, me.pointer.y);
 
+        // cleanup
         me._dragging = true;
-
         // prevent iFrames from stealing pointer events
         var frames = document.getElementsByTagName('iframe');
         for (var i = 0; i < frames.length; i++) {
@@ -75,18 +81,26 @@ export class Draggable {
 
     moveHandler(e) {
         var me = this;
+
+        // update pointer
         me.pointer = (e.type == 'mousemove')
             ? { x: e.clientX, y: e.clientY }
             : Draggable.copyTouch(e.targetTouches[0]);
 
         e.preventDefault();
         e.stopPropagation();
+
+        // update element position
         me.updatePosition();
+
+        // callback
         me.handlers.onMove(me, me.pointer.x, me.pointer.y);
     }
 
     endHandler(e) {
         var me = this;
+
+        // remove event listeners
         if (e.type === 'mouseup') {
             window.removeEventListener('mousemove', me._moveHandler);
             window.removeEventListener('mouseup', me._endHandler);
@@ -98,16 +112,16 @@ export class Draggable {
             return;
         }
 
-        me._parent.appendChild(me.el);
-        me.el.style.width = me._dimensions.width;
-        me.el.style.height = me._dimensions.height;
-        me.el.style.zIndex = me._dimensions.zIndex;
-        me.el.style.top = parseInt(me.el.style.top, 10) + me._parent.scrollTop + 'px';
+        // restore state
+        me.placeholder.after(me.elm);
+        me.placeholder.remove();
+        me.elm.style.position = "";
         
+        // callback
         me.handlers.onEnd(me);
 
+        // cleanup
         me._dragging = false;
-
         // allow iframes to steal pointer events again
         var frames = document.getElementsByTagName('iframe');
         for (var i = 0; i < frames.length; i++) {
@@ -116,7 +130,7 @@ export class Draggable {
     }
 
     updatePosition() {
-        this.el.style.left = this._dimensions.x + this.pointer.x + 'px';
-        this.el.style.top = this._dimensions.y + this.pointer.y + 'px';
+        this.elm.style.left = this._state.x + this.pointer.x + 'px';
+        this.elm.style.top = this._state.y + this.pointer.y + 'px';
     }
 }
