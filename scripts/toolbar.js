@@ -32,6 +32,7 @@ export class Toolbar {
         // remove from items array
         var itemIndex = this.items.indexOf(item);
         this.items.splice(itemIndex, 1);
+        item.elm.classList.add("dragging");
     }
 
     onDrag(item, x, y) {
@@ -41,7 +42,6 @@ export class Toolbar {
             let hoverElmRect = hoverElm.getBoundingClientRect();
 
             if (this.horizontal) {
-                console.log("hi");
                 // check horizontal drop zones
                 if (x < hoverElmRect.x + this.dropZone + hoverElmRect.width / 2 &&
                     x > hoverElmRect.x - this.dropZone + hoverElmRect.width / 2) {
@@ -82,5 +82,6 @@ export class Toolbar {
     onRelease(item) {
         // re-add to items array
         this.items.push(item);
+        item.elm.classList.remove("dragging");
     }
 }

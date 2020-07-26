@@ -11,8 +11,7 @@ import { Draggable } from "./draggable.js";
     'use strict';
 
     // using for debug ****************************
-    let myToolbar = new Toolbar(document.getElementById("toolbar"), true);
-    let myDraggable = new Draggable(document.getElementById("draggable"));
+    let toolbar = new Toolbar(document.getElementById("toolbar"), true);
 
     let canvas = new Canvas(document.getElementById("canvas"));
     window.addEventListener("resize", function() {canvas.render()});

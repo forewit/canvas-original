@@ -63,40 +63,10 @@ pre {
     height: 100%;
 }
 
-#draggable {
-    position: absolute;
-    top: 100;
-    left: 200;
-    width: 100px;
-    height: 100px;
-    background: white;
-    z-index: 29;
-}
-
-#menu-a {
-    position: fixed;
-    top: 0;
-    left: 0;    
-    display: grid;/*grid*/
-    gap: 10px;
-    grid-template-rows: repeat(auto-fit, minmax(40px, 1fr));
-    max-width: calc(100vw - 56px);
-}
-
-#menu-b {
-    position: fixed;
-    bottom: 0;
-    left: 0;    
-    display: grid;/*grid*/
-    gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-    max-width: calc(100vw - 56px);
-}
-
 #toolbar-wrapper {
     position: fixed;
-    top: 100;
-    left: 80;
+    bottom: 0;
+    left: 0;
 }
 
 #toolbar {
@@ -106,13 +76,12 @@ pre {
 }
 
 .toolbar-item {
-    background: white;
     width: 40px;
     height: 40px;
 }
 
-.placeholder {
-    background: black;
+.dragging {
+    opacity: 0.8;
 }
 
 .no-select {
