@@ -102,6 +102,7 @@ pre {
 #toolbar {
     display: grid;
     gap: 10px;
+    grid-auto-flow: column;
 }
 
 .toolbar-item {
