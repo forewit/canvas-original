@@ -51,7 +51,6 @@ export class Toolbar {
                         // move placeholder after the hoverElm
                         hoverElm.after(item.placeholder);
                         return;
-
                     } else {
                         // move placeholder before the hoverElm
                         this.elm.insertBefore(item.placeholder, hoverElm);
@@ -60,7 +59,7 @@ export class Toolbar {
                 }
             } else {
                 // check vertical drop zones
-                if (y < hoverElmRect.y + this.dropZone + hoverElmRect.height / 2 &&
+                    if (y < hoverElmRect.y + this.dropZone + hoverElmRect.height / 2 &&
                     y > hoverElmRect.y - this.dropZone + hoverElmRect.height / 2) {
 
                     let placeholderRect = item.placeholder.getBoundingClientRect();
@@ -68,7 +67,6 @@ export class Toolbar {
                         // insert placeholder after the hoverElm
                         hoverElm.after(item.placeholder);
                         return;
-
                     } else {
                         // insert placeholder before the hoverElm
                         this.elm.insertBefore(item.placeholder, hoverElm);
