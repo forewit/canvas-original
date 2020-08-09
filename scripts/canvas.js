@@ -8,7 +8,7 @@ export class Canvas {
         this._layers = [];
 
         if (!(this._ctx instanceof CanvasRenderingContext2D)) alert("Canvas API unavailable");
-        this.render();
+        this.resize();
     }
     bringForward(layer) {
         for (var i = 0, len = this._layers.length; i < len; i++) {
@@ -30,10 +30,8 @@ export class Canvas {
         }
         return false;
     }
-    createLayer() {
-        let layer = new Layer();
+    addLayer(layer) {
         this._layers.push(layer);
-        return layer;
     }
     destroyLayer() {
         for (var i = 0, len = this._layers.length; i < len; i++) {
@@ -44,6 +42,12 @@ export class Canvas {
             }
         }
         return false;
+    }
+    resize() {
+        // recalculate canvas size
+        let rect = this.elm.getBoundingClientRect();
+        this._ctx.canvas.width = rect.width;
+        this._ctx.canvas.height = rect.height;
     }
     render() {
         for (var i = 0, len = this._layers.length; i < len; i++) {

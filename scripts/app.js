@@ -1,4 +1,5 @@
 import { Canvas } from "./canvas.js";
+import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
 import { Draggable } from "./draggable.js";
@@ -10,13 +11,19 @@ import { Draggable } from "./draggable.js";
 }(this, (function (exports) {
     'use strict';
 
-    // using for debug ****************************
+    // create canvas
     let toolbar = new Toolbar(document.getElementById("toolbar"), true);
-
     let canvas = new Canvas(document.getElementById("canvas"));
-    window.addEventListener("resize", function() {canvas.render()});
+    let layer = new Layer();
+    let sprite = new Sprite("/img/fireball.png");
 
-    let sprite = new Sprite("test.png");
+    // configure canvas
+    window.addEventListener("resize", function () { canvas.resize() });
+    canvas.addLayer(layer);
+    layer.addToken(sprite);
+
+    canvas.render();
+
 
     var FPS = 0;
     var ticks = 0;
@@ -29,7 +36,7 @@ import { Draggable } from "./draggable.js";
 
 
         // DO STUFF
-
+        canvas.render();
 
         // FPS counter
         var now = Date.now();

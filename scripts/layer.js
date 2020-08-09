@@ -42,13 +42,17 @@ export class Layer {
         return false;
     }
     destroy() {
-        // clear _tokens array
+        for (var i = 0, len = this._tokens.length; i < len; i++) {
+            this._tokens[i].destroy();
+        }
         this._tokens.length = 0;
     }
     intersections(x, y) {
 
     }
     render(ctx) {
-
+        for (var i = 0, len = this._tokens.length; i < len; i++) {
+            this._tokens[i].render(ctx);
+        }
     }
 }
