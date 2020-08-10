@@ -51,7 +51,10 @@ export class Canvas {
         this._ctx.canvas.height = this.rect.height;
     }
     render() {
+        // clear canvas
         this._ctx.clearRect(0, 0, this.rect.width, this.rect.height);
+        
+        // render each layer
         for (var i = 0, len = this._layers.length; i < len; i++) {
             this._layers[i].render(this._ctx);
         }
