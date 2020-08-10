@@ -32,7 +32,7 @@ import { Toolbar } from "./toolbar.js";
 
         // DO STUFF
         canvas.render();
-        sprite.frame_x = Math.floor(6 * perSec % 6);
+        sprite.frame_x = Math.floor(10 * perSec % 6);
 
         // FPS counter
         var now = Date.now();
