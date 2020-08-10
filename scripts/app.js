@@ -2,7 +2,6 @@ import { Canvas } from "./canvas.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
-import { Draggable } from "./draggable.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -11,20 +10,17 @@ import { Draggable } from "./draggable.js";
 }(this, (function (exports) {
     'use strict';
 
-    // create canvas
+    // Create test canvas and toolbar
     let toolbar = new Toolbar(document.getElementById("toolbar"), true);
     let canvas = new Canvas(document.getElementById("canvas"));
     let layer = new Layer();
     let sprite = new Sprite("/img/fireball.png");
 
-    // configure canvas
     window.addEventListener("resize", function () { canvas.resize() });
     canvas.addLayer(layer);
     layer.addToken(sprite);
 
-    canvas.render();
-
-
+    // ************ app loop **************
     var FPS = 0;
     var ticks = 0;
     var lastFPS = 0;
@@ -34,9 +30,9 @@ import { Draggable } from "./draggable.js";
         requestAnimationFrame(loop);
         var perSec = delta / 1000;
 
-
         // DO STUFF
         canvas.render();
+        sprite.frame_x = Math.floor(6 * perSec % 6);
 
         // FPS counter
         var now = Date.now();
@@ -49,15 +45,10 @@ import { Draggable } from "./draggable.js";
         fps_div.innerHTML = FPS;
     }
     requestAnimationFrame(loop);
+    // ************************************
 
+    // Global exports
     exports.canvas = canvas;
-    // **********************************************
-
-    function load(URL) { };
-    function save() { };
-
-    exports.load = load;
-    exports.save = save;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 })));

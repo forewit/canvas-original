@@ -16,21 +16,27 @@ export class Sprite {
         this.frame_y = 0;
         this.loaded = false;
 
+        // can use for optimizing render function
+        this.updated = true;
+
         // initialize image
         var me = this;
         me.image.src = URL;
-        me.image.onload = function(e) {
-            console.log("img loaded");
-            me.loaded = true;
-        }
+        me.image.onload = function (e) { me.loaded = true; }
     }
-
     destroy() {
 
     }
     render(ctx) {
         if (!this.loaded) return;
 
-        ctx.drawImage(this.image, this.x, this.y);
+        let sx = this.frame_x * this.frame_w,
+            sy = this.frame_y * this.frame_h,
+            dWidth = this.frame_w * this.scale_x,
+            dHeight = this.frame_h * this.scale_y;
+
+        ctx.drawImage(this.image,
+            sx, sy, this.frame_w, this.frame_h, // frame position and scale
+            this.x, this.y, dWidth, dHeight);   // canvas position and scale
     }
 }

@@ -4,6 +4,7 @@ import * as utils from "./utils.js";
 export class Canvas {
     constructor(elm) {
         this.elm = elm;
+        this.rect = this.elm.getBoundingClientRect();
         this._ctx = elm.getContext("2d");
         this._layers = [];
 
@@ -45,11 +46,12 @@ export class Canvas {
     }
     resize() {
         // recalculate canvas size
-        let rect = this.elm.getBoundingClientRect();
-        this._ctx.canvas.width = rect.width;
-        this._ctx.canvas.height = rect.height;
+        this.rect = this.elm.getBoundingClientRect();
+        this._ctx.canvas.width = this.rect.width;
+        this._ctx.canvas.height = this.rect.height;
     }
     render() {
+        this._ctx.clearRect(0, 0, this.rect.width, this.rect.height);
         for (var i = 0, len = this._layers.length; i < len; i++) {
             this._layers[i].render(this._ctx);
         }
