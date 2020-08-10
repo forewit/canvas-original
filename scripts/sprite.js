@@ -30,6 +30,7 @@ export class Sprite {
     render(ctx) {
         if (!this.loaded) return;
 
+        // TODO: add checks for this.updated
         let sx = this.frame_x * this.frame_w,
             sy = this.frame_y * this.frame_h,
             dWidth = this.frame_w * this.scale_x,
