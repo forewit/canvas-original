@@ -1,4 +1,3 @@
-import { camera } from "./gl.js";
 /**
  * TODO: create a new repository in Github for a standalone
  * interaction model.
@@ -7,10 +6,11 @@ var me = {
     selected: [],
     pointer: {},
     downKeys: {},
-    start: function (layer) {
+    start: function (canvas) {
+        me.canvas = canvas;
         me.selected = [];
-        window.addEventListener('touchstart', startHandler, { passive: false });
-        window.addEventListener('mousedown', startHandler, { passive: false });
+        canvas.elm.addEventListener('touchstart', startHandler, { passive: false });
+        canvas.elm.addEventListener('mousedown', startHandler, { passive: false });
         window.addEventListener('keydown', keydownHandler, { passive: false });
         window.addEventListener('keyup', keyupHandler);
         window.addEventListener('wheel', wheelHandler);
@@ -18,8 +18,8 @@ var me = {
     },
     stop: function () {
         me.selected = [];
-        window.removeEventListener('touchstart', startHandler);
-        window.removeEventListener('mousedown', startHandler);
+        canvas.elm.removeEventListener('touchstart', startHandler);
+        canvas.elm.removeEventListener('mousedown', startHandler);
         window.removeEventListener('keydown', keydownHandler);
         window.removeEventListener('keyup', keyupHandler);
         window.removeEventListener('wheel', wheelHandler);
@@ -65,6 +65,10 @@ function wheelHandler(e) {
 }
 
 function keydownHandler(e) {
+    // include to prevent key events while composing text
+    if (e.isComposing || e.keyCode === 229) { return; }
+
+    // add key code to downKeys[]
     me.downKeys[e.keyCode] = true;
 
     // Ctrl + A
@@ -89,16 +93,24 @@ function keydownHandler(e) {
     else if (e.keyCode == _keys.Space) { }
 
     // Right
-    else if (e.keyCode == _keys.Right) { camera.x += 10; }
+    else if (e.keyCode == _keys.Right) {
+        me.canvas._ctx.translate(-10,0);
+    }
 
     // Left
-    else if (e.keyCode == _keys.Left) { camera.x -= 10; }
+    else if (e.keyCode == _keys.Left) {
+        me.canvas._ctx.translate(10,0);
+    }
 
     // Up
-    else if (e.keyCode == _keys.Up) { camera.y -= 10; }
+    else if (e.keyCode == _keys.Up) {
+        me.canvas._ctx.translate(0,10);
+    }
 
     // Down
-    else if (e.keyCode == _keys.Down) { camera.y += 10; }
+    else if (e.keyCode == _keys.Down) {
+        me.canvas._ctx.translate(0,-10);
+    }
 
     // PageUp                         
     else if (e.keyCode == _keys.PageUp) { }

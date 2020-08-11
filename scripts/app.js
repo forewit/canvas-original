@@ -2,6 +2,7 @@ import { Canvas } from "./canvas.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
+import { interact } from "./interact.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -19,6 +20,7 @@ import { Toolbar } from "./toolbar.js";
     window.addEventListener("resize", function () { canvas.resize() });
     canvas.addLayer(layer);
     layer.addToken(sprite);
+    interact.start(canvas);
 
     // ************ app loop **************
     var FPS = 0;

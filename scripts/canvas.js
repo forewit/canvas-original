@@ -51,9 +51,16 @@ export class Canvas {
         this._ctx.canvas.height = this.rect.height;
     }
     render() {
-        // clear canvas
+        // Store the current transformation matrix
+        this._ctx.save();
+
+        // Use the identity matrix while clearing the canvas
+        this._ctx.setTransform(1, 0, 0, 1, 0, 0);
         this._ctx.clearRect(0, 0, this.rect.width, this.rect.height);
-        
+
+        // Restore the transform
+        this._ctx.restore();
+
         // render each layer
         for (var i = 0, len = this._layers.length; i < len; i++) {
             this._layers[i].render(this._ctx);
