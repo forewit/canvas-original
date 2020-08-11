@@ -33,7 +33,7 @@ import { interact } from "./interact.js";
         var perSec = delta / 1000;
 
         // DO STUFF
-        canvas.render();
+        if (perSec < 2) canvas.render();
         sprite.frame_x = Math.floor(10 * perSec % 6);
 
         // FPS counter
