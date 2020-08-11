@@ -59,8 +59,10 @@ function blurHandler(e) {
 function wheelHandler(e) {
     if (e.deltaY < 0) {
         // scroll down
+        me.canvas._ctx.scale(1.1, 1.1);
     } else {
         // scroll up
+        me.canvas._ctx.scale(0.9, 0.9);
     }
 }
 
