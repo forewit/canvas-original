@@ -5,40 +5,40 @@ export class Canvas {
     constructor(elm) {
         this.elm = elm;
         this.rect = this.elm.getBoundingClientRect();
-        this._ctx = elm.getContext("2d");
-        this._layers = [];
+        this.ctx = elm.getContext("2d");
+        this.layers = [];
 
-        if (!(this._ctx instanceof CanvasRenderingContext2D)) alert("Canvas API unavailable");
+        if (!(this.ctx instanceof CanvasRenderingContext2D)) alert("Canvas API unavailable");
         this.resize();
     }
     bringForward(layer) {
-        for (var i = 0, len = this._layers.length; i < len; i++) {
-            if (this._layers[i].ID == layer.ID) {
-                this._layers.splice(i, 1);
-                this._layers.push(layer);
+        for (var i = 0, len = this.layers.length; i < len; i++) {
+            if (this.layers[i].ID == layer.ID) {
+                this.layers.splice(i, 1);
+                this.layers.push(layer);
                 return true;
             }
         }
         return false;
     }
     sendBackward(layer) {
-        for (var i = 0, len = this._layers.length; i < len; i++) {
-            if (this._layers[i].ID == layer.ID) {
-                this._layers.splice(i, 1);
-                this._layers.unshift(layer);
+        for (var i = 0, len = this.layers.length; i < len; i++) {
+            if (this.layers[i].ID == layer.ID) {
+                this.layers.splice(i, 1);
+                this.layers.unshift(layer);
                 return true;
             }
         }
         return false;
     }
     addLayer(layer) {
-        this._layers.push(layer);
+        this.layers.push(layer);
     }
     destroyLayer() {
-        for (var i = 0, len = this._layers.length; i < len; i++) {
-            if (this._layers[i].ID == layer.ID) {
-                this._layers[i].destroy;
-                this._layers.splice(i, 1);
+        for (var i = 0, len = this.layers.length; i < len; i++) {
+            if (this.layers[i].ID == layer.ID) {
+                this.layers[i].destroy;
+                this.layers.splice(i, 1);
                 return true;
             }
         }
@@ -47,23 +47,26 @@ export class Canvas {
     resize() {
         // recalculate canvas size
         this.rect = this.elm.getBoundingClientRect();
-        this._ctx.canvas.width = this.rect.width;
-        this._ctx.canvas.height = this.rect.height;
+        this.ctx.canvas.width = this.rect.width;
+        this.ctx.canvas.height = this.rect.height;
     }
     render() {
         // Store the current transformation matrix
-        this._ctx.save();
+        this.ctx.save();
 
         // Use the identity matrix while clearing the canvas
-        this._ctx.setTransform(1, 0, 0, 1, 0, 0);
-        this._ctx.clearRect(0, 0, this.rect.width, this.rect.height);
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.ctx.clearRect(0, 0, this.rect.width, this.rect.height);
 
         // Restore the transform
-        this._ctx.restore();
+        this.ctx.restore();
 
-        // render each layer
-        for (var i = 0, len = this._layers.length; i < len; i++) {
-            this._layers[i].render(this._ctx);
+        // TODO:
+        // - draw active layer
+        // - render all layers
+
+        for (var i = 0, len = this.layers.length; i < len; i++) {
+            this.layers[i].render(this.ctx); 
         }
     }
 }

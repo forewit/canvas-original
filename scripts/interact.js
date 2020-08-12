@@ -59,10 +59,10 @@ function blurHandler(e) {
 function wheelHandler(e) {
     if (e.deltaY < 0) {
         // scroll down
-        me.canvas._ctx.scale(1.1, 1.1);
+        me.canvas.ctx.scale(1.1, 1.1);
     } else {
         // scroll up
-        me.canvas._ctx.scale(0.9, 0.9);
+        me.canvas.ctx.scale(0.9, 0.9);
     }
 }
 
@@ -96,22 +96,22 @@ function keydownHandler(e) {
 
     // Right
     else if (e.keyCode == _keys.Right) {
-        me.canvas._ctx.translate(-10,0);
+        me.canvas.ctx.translate(-10,0);
     }
 
     // Left
     else if (e.keyCode == _keys.Left) {
-        me.canvas._ctx.translate(10,0);
+        me.canvas.ctx.translate(10,0);
     }
 
     // Up
     else if (e.keyCode == _keys.Up) {
-        me.canvas._ctx.translate(0,10);
+        me.canvas.ctx.translate(0,10);
     }
 
     // Down
     else if (e.keyCode == _keys.Down) {
-        me.canvas._ctx.translate(0,-10);
+        me.canvas.ctx.translate(0,-10);
     }
 
     // PageUp                         
@@ -157,7 +157,13 @@ function moveHandler(e) {
         } else if (_selectbox || (!_moving && (me.downKeys[_keys.Shift] || me.downKeys[_keys.Control]))) {
             _selectbox = true;
             // ***** shift(ctrl) + drag start *****
-            // draw selectbox
+            // TODO: draw selectbox
+            // - save canvas
+            // - reset transforms
+            // - draw select box
+            // - restore canvas
+
+
             console.log("drawing selectbox");
         } else {
             // ***** drag start *****
@@ -216,6 +222,25 @@ function copyTouch(touch) {
         identifier: touch.identifier,
         x: touch.clientX,
         y: touch.clientY
+    };
+}
+
+// TODO:
+// - draw select box on a UI layer
+let starting_x = 0,
+    starting_y = 0;
+function drawSelectBox(x,y) {
+
+};
+
+/**
+ * Returns the position of x and y relative to the canvas
+ */
+function getCanvasPos(x,y) {
+    var rect = me.canvas.elm.getBoundingClientRect();
+    return {
+      x: x - rect.left,
+      y: y - rect.top
     };
 }
 
