@@ -19,7 +19,7 @@ import { interact } from "./interact.js";
 
     window.addEventListener("resize", function () { canvas.resize() });
     canvas.addLayer(layer);
-    layer.addToken(sprite);
+    layer.addEntity(sprite);
     interact.start(canvas);
 
     // ************ app loop **************

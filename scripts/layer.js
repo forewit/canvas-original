@@ -6,53 +6,53 @@ export class Layer {
         this.opacity = 1;
         this.x_parallax = 0;
         this.y_parallax = 0;
-        this._tokens = []; //sprites, particles, etc.
+        this.entities = []; //sprites, particles, etc.
     }
-    bringForward(token) {
-        for (var i = 0, len = this._tokens.length; i < len; i++) {
-            if (this._tokens[i].ID == token.ID) {
-                this._tokens.splice(i, 1);
-                this._tokens.push(token);
+    bringForward(entity) {
+        for (var i = 0, len = this.entities.length; i < len; i++) {
+            if (this.entities[i].ID == entity.ID) {
+                this.entities.splice(i, 1);
+                this.entities.push(entity);
                 return true;
             }
         }
         return false;
     }
-    sendBackward(token) {
-        for (var i = 0, len = this._tokens.length; i < len; i++) {
-            if (this._tokens[i].ID == token.ID) {
-                this._tokens.splice(i, 1);
-                this._tokens.unshift(token);
+    sendBackward(entity) {
+        for (var i = 0, len = this.entities.length; i < len; i++) {
+            if (this.entities[i].ID == entity.ID) {
+                this.entities.splice(i, 1);
+                this.entities.unshift(entity);
                 return true;
             }
         }
         return false;
     }
-    addToken(token) {
-        this._tokens.push(token);
+    addEntity(entity) {
+        this.entities.push(entity);
     }
-    destroyToken(token) {
-        for (var i = 0, len = this._tokens.length; i < len; i++) {
-            if (this._tokens[i].ID == token.ID) {
-                this._tokens[i].destroy();
-                this._tokens.splice(i, 1);
+    destroyEntity(entity) {
+        for (var i = 0, len = this.entities.length; i < len; i++) {
+            if (this.entities[i].ID == entity.ID) {
+                this.entities[i].destroy();
+                this.entities.splice(i, 1);
                 return true;
             }
         }
         return false;
     }
     destroy() {
-        for (var i = 0, len = this._tokens.length; i < len; i++) {
-            this._tokens[i].destroy();
+        for (var i = 0, len = this.entities.length; i < len; i++) {
+            this.entities[i].destroy();
         }
-        this._tokens.length = 0;
+        this.entities.length = 0;
     }
     intersections(x, y) {
 
     }
     render(ctx) {
-        for (var i = 0, len = this._tokens.length; i < len; i++) {
-            this._tokens[i].render(ctx);
+        for (var i = 0, len = this.entities.length; i < len; i++) {
+            this.entities[i].render(ctx);
         }
     }
 }
