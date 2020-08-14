@@ -7,6 +7,10 @@ export class Canvas {
         this.rect = this.elm.getBoundingClientRect();
         this.ctx = elm.getContext("2d");
         this.layers = [];
+        this.originx = 0;
+        this.originy = 0;
+        this.zoomIntensity = 0.1;
+        this.scale = 1;
 
         if (!(this.ctx instanceof CanvasRenderingContext2D)) alert("Canvas API unavailable");
         this.resize();
@@ -61,10 +65,14 @@ export class Canvas {
         // Restore the transform
         this.ctx.restore();
 
+        // draw origin point
+        this.ctx.beginPath();
+        this.ctx.ellipse(0,0,10,10,0,0,6.28);
+        this.ctx.stroke();
+
         // TODO:
         // - draw active layer
         // - render all layers
-
         for (var i = 0, len = this.layers.length; i < len; i++) {
             this.layers[i].render(this.ctx); 
         }

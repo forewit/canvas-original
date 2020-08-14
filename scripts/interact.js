@@ -57,7 +57,7 @@ function blurHandler(e) {
 }
 
 
-let zoomIntensity = 0.2;
+let zoomIntensity = 0.1;
 let originx = 0;
 let originy = 0;
 let scale = 1;
@@ -76,7 +76,7 @@ function wheelHandler(event) {
     // Translate so the visible origin is at the context's origin.
     me.canvas.ctx.translate(originx, originy);
   
-    // Compute the new visible origin. Originally the mouse is at a
+    // Compute the new visible origin. Original ly the mouse is at a
     // distance mouse/scale from the corner, we want the point under
     // the mouse to remain in the same place after the zoom, but this
     // is at mouse/new_scale away from the corner. Therefore we need to

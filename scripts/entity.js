@@ -3,11 +3,11 @@ import * as utils from "./utils.js";
 export class Entity {
     constructor() {
         this.ID = utils.generate_ID();
-        this.x = 0;
-        this.y = 0;
+        this.x = 200;
+        this.y = 100;
         this.w = 128;
         this.h = 128;
-        this.rotation = 0; // degrees
+        this.rotation = 1; // degrees
         this.opacity = 1;
         this.update = false;
     }
