@@ -28,4 +28,6 @@ export class Entity {
     }
     destroy() {console.log("Please override entity.destroy()!")}
     render() {console.log("Please override entity.render()!")}
+
+    // TODO: add resize and rotate functions
 }
