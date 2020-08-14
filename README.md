@@ -9,3 +9,5 @@
     - draw inactive layers offscreen
     - scale using css transforms instead of canvas scaling
       - if used, stick to integer canvas transforms
+
+TODO: draw select box and allow resizing
