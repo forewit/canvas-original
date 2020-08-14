@@ -24,15 +24,25 @@ export class Sprite extends Entity {
 
         // TODO: add checks for this.updated
         let sx = this.frame_x * this.frame_w,
-            sy = this.frame_y * this.frame_h;
+            sy = this.frame_y * this.frame_h,
+            halfw = this.w/2,
+            halfh = this.h/2
         
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
         ctx.drawImage(this.image, 
             sx, sy, 
             this.frame_w, this.frame_h, 
-            -this.w/2, -this.h/2, 
+            -halfw, -halfh, 
             this.w, this.h);
+
+        // draw outline
+        if (this.outline) {
+            ctx.beginPath();
+            ctx.rect(-halfw,-halfh,this.w,this.h);
+            ctx.stroke()
+        }
+
         ctx.rotate(-this.rotation);
         ctx.translate(-this.x, -this.y);
     }

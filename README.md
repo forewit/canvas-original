@@ -11,3 +11,5 @@
       - if used, stick to integer canvas transforms
 
 TODO: draw select box and allow resizing
+
+Add a rotate

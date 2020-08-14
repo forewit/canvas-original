@@ -9,3 +9,15 @@ export function generate_ID() {
     // after the decimal.
     return '_' + Math.random().toString(36).substr(2, 9);
 }
+
+/**
+ * Rotates a point (x, y) around a center point (cx, cy)
+ * a number of radians (rad)
+ */
+export function rotatePoint(cx, cy, x, y, rad) {
+    cos = Math.cos(rad),
+    sin = Math.sin(rad),
+    nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+    ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+return [nx, ny];
+}

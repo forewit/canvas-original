@@ -9,6 +9,7 @@ export class Entity {
         this.h = 128;
         this.rotation = 1; // degrees
         this.opacity = 1;
+        this.outline = true;
         this.update = false;
     }
     // credit: https://yal.cc/rot-rect-vs-circle-intersection/
