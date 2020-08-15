@@ -199,7 +199,12 @@ function moveHandler(e) {
         } else {
             // ***** drag start *****
             // pan
-            console.log("panning");
+            //console.log("panning");
+            for (var i = 0, len = me.canvas.layers.length; i < len; i++) {
+                for (var j = 0, len = me.canvas.layers[i].entities.length; j < len; j++) {
+                    me.canvas.layers[i].entities[j].onHandle(me.pointer.x, me.pointer.y)
+                }
+            }
         }
     } else {
         me.pointer = copyTouch(e.targetTouches[0]);
