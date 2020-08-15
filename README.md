@@ -1,15 +1,25 @@
 # app.canvas.gg
 
-- I am NOT designing this to have multiple instances of "canvas".
-  - but don't search for global elements when possible (i.e. element by id)
+Optimizations: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+- draw inactive layers offscreen
+- scale using css transforms instead of canvas scaling
+- stick to integer canvas transforms
 
-- Camera...
-  - Just use ctx.scale() and ctx.translate()
-  - Optimizations: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-    - draw inactive layers offscreen
-    - scale using css transforms instead of canvas scaling
-      - if used, stick to integer canvas transforms
 
-TODO: draw select box and allow resizing
+TODO: 
+- Setup canvas elements for each layer
+- add active layer to canvas so that interact.js can see into the active layer
+- transition interact.js to a class (pass a canvas to it's constructor) MAYBE: add changeCanvas() function
+- layers and entities CAN be edited separately (but do not hold onto entity objects)
 
-Add a rotate
+
+Structure:
+- WINDOW
+  - interact.js (given a canvas)
+  - Assets (images)
+  - 1 or more Canvases
+    - visible canvas
+    - player and game data
+    - 1 or more Layers
+      - renders to offscreen canvas
+      - 0 or more Entities (accesses Assets)

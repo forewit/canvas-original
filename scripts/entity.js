@@ -10,10 +10,11 @@ export class Entity {
         this.w = 128;
         this.h = 128;
         this.rotation = 1.2; // degrees
-        this.handleSize = 10;
+        this.handleSize = 5;
     }
-    intersects(pointX, pointY) {
-
+    intersects(x, y) {
+        let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);
+        return utils.pointInRectangle(localPoint[0], localPoint[1], this.x, this.y, this.w, this.h,);
     }
     onHandle(x, y) {
         /* returns [x, y] where x or y can be -1, 0, or 1. Examples:
@@ -33,7 +34,7 @@ export class Entity {
         let outerH = this.h + this.handleSize * 2;
 
         // return if point is outside the outer rect
-        if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return;
+        if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return handles;
 
 
         let innerX = this.x + this.handleSize;
@@ -42,27 +43,26 @@ export class Entity {
         let innerH = this.h - this.handleSize * 2;
 
         // return if point is inside the inner rect
-        if (utils.pointInRectangle(localX, localY, innerX, innerY, innerW, innerH)) return;
+        if (utils.pointInRectangle(localX, localY, innerX, innerY, innerW, innerH)) return handles;
 
-        // check which handle it is in
+        // check left and right handles
         if (localX <= innerX) handles[0] = -1;
         else if (localX >= innerX + innerW) handles[0] = 1;
-
+        
+        // check top and bottom handles
         if (localY <= innerY) handles[1] = -1;
         else if (localY >= innerY + innerH) handles[1] = 1;
-        console.log("Inside handle area", handles);
-
-
-
+        return handles;
     }
+
     destroy() { console.log("Please override entity.destroy()!") }
     render(ctx) {
+
+        // show handle areas
         ctx.beginPath();
         ctx.rect(0, 0, this.w, this.h);
         ctx.rect(-this.handleSize, -this.handleSize, this.w + this.handleSize * 2, this.h + this.handleSize * 2);
         ctx.rect(this.handleSize, this.handleSize, this.w - this.handleSize * 2, this.h - this.handleSize * 2);
         ctx.stroke()
     }
-
-    // TODO: add resize and rotate functions
 }

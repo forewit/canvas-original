@@ -202,7 +202,11 @@ function moveHandler(e) {
             //console.log("panning");
             for (var i = 0, len = me.canvas.layers.length; i < len; i++) {
                 for (var j = 0, len = me.canvas.layers[i].entities.length; j < len; j++) {
-                    me.canvas.layers[i].entities[j].onHandle(me.pointer.x, me.pointer.y)
+                    let entity = me.canvas.layers[i].entities[j];
+                    let handles = entity.onHandle(me.pointer.x, me.pointer.y);
+                    let intersects = entity.intersects(me.pointer.x, me.pointer.y);
+                    if (handles[0] != 0 || handles[1] != 0) console.log(handles);
+                    if (intersects) console.log("intersection");
                 }
             }
         }

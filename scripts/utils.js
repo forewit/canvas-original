@@ -22,6 +22,12 @@ export function rotatePoint(cx, cy, x, y, rad) {
     return [nx, ny];
 }
 
+export function pointInRectangle(x, y, rx, ry, rw, rh) {
+    return x >= rx && x <= rx + rw &&
+        y >= ry && y <= ry + rh;
+
+}
+
 export function distanceToPoint(x1, y1, x2, y2) {
     return Math.hypot(x1 - x2, y1 - y2);
 }
@@ -39,10 +45,4 @@ export function pointInRotatedRectangle(pointX, pointY,
     var localY = angleSin * relX + angleCos * relY;
     return localX >= -rectOffsetX && localX <= rectWidth - rectOffsetX &&
         localY >= -rectOffsetY && localY <= rectHeight - rectOffsetY;
-}
-
-export function pointInRectangle(x, y, rx, ry, rw, rh) {
-    return x >= rx && x <= rx + rw &&
-        y >= ry && y <= ry + rh;
-
 }
