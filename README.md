@@ -11,6 +11,7 @@ TODO:
 - add active layer to canvas so that interact.js can see into the active layer
 - transition interact.js to a class (pass a canvas to it's constructor) MAYBE: add changeCanvas() function
 - layers and entities CAN be edited separately (but do not hold onto entity objects)
+- create handle entity that renders handles and includes a list of entities that it modifies
 
 
 Structure:

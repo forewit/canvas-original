@@ -12,17 +12,14 @@ export class Entity {
         this.rotation = 1.2; // degrees
         this.handleSize = 5;
     }
-    intersects(x, y) {
-        let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);
-        return utils.pointInRectangle(localPoint[0], localPoint[1], this.x, this.y, this.w, this.h,);
-    }
     onHandle(x, y) {
         /* returns [x, y] where x or y can be -1, 0, or 1. Examples:
         * [-1, 0] is the Left edge
         * [1, 1] is the bottom right corner
-        * [0, 0] not on handle
+        * [0, 0] intersects but not on handle
+        * undefined -- no intersection
         */
-        let handles = [0,0];
+        let handles = [];
 
         let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);
         let localX = localPoint[0];
@@ -34,7 +31,7 @@ export class Entity {
         let outerH = this.h + this.handleSize * 2;
 
         // return if point is outside the outer rect
-        if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return handles;
+        if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return undefined;
 
 
         let innerX = this.x + this.handleSize;
@@ -46,6 +43,7 @@ export class Entity {
         if (utils.pointInRectangle(localX, localY, innerX, innerY, innerW, innerH)) return handles;
 
         // check left and right handles
+        handles = [0,0]
         if (localX <= innerX) handles[0] = -1;
         else if (localX >= innerX + innerW) handles[0] = 1;
         

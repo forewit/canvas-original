@@ -204,9 +204,16 @@ function moveHandler(e) {
                 for (var j = 0, len = me.canvas.layers[i].entities.length; j < len; j++) {
                     let entity = me.canvas.layers[i].entities[j];
                     let handles = entity.onHandle(me.pointer.x, me.pointer.y);
-                    let intersects = entity.intersects(me.pointer.x, me.pointer.y);
-                    if (handles[0] != 0 || handles[1] != 0) console.log(handles);
-                    if (intersects) console.log("intersection");
+                    
+                    if (!handles) {
+                        // no intersection
+                    } else if (handles.length == 0) {
+                        // intersection but not on handle
+                        console.log("intersection");
+                    } else {
+                        // intersection on handle
+                        console.log(handles);
+                    }
                 }
             }
         }
