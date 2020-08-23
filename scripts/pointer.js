@@ -1,104 +1,150 @@
-export class Pointer {
-    static copyTouch(touch) {
-        return {
-            identifier: touch.identifier,
-            x: touch.clientX,
-            y: touch.clientY
-        }
+/*
+AVAILABLE CALLBACKS
+- tap
+- longPress
+- doubleTap
+- rightClick
+- dragStart
+- dragging
+- dragEnd
+- pinch
+- rotate
+- wheel
+- blur
+*/
+// preferences
+let longPressDelay = 100;
+
+// tracking state
+let _elm;
+let _moving = false;
+let _start = 0;
+let _pointer = {};
+
+export let pointer = {
+    callbacks: {},
+    start: start,
+    stop: stop,
+};
+
+function start(elm) {
+    stop();
+    _elm = elm;
+    _elm.addEventListener('touchstart', startHandler, { passive: false });
+    _elm.addEventListener('mousedown', startHandler, { passive: false });
+    window.addEventListener('blur', blurHandler);
+    window.addEventListener('wheel', wheelHandler);
+}
+
+function stop() {
+    _elm.removeEventListener('touchstart', startHandler);
+    _elm.removeEventListener('mousedown', startHandler);
+    window.removeEventListener('blur', blurHandler);
+    window.removeEventListener('wheel', wheelHandler);
+}
+
+function copyTouch(touch) {
+    return {
+        identifier: touch.identifier,
+        x: touch.clientX,
+        y: touch.clientY
     }
+}
 
-    constructor(elm) {
-        let noop = function () { };
-        this.elm = elm;
+function blurHandler(e) {
 
-        // Callback functions
-        this.tap = noop;
-        this.longPress = noop;
-        this.dragStart = noop;
-        this.dragging = noop;
-        this.dragStop = noop;
-        this.doubleTap = noop;
-        this.pinch = noop;
-        this.rotate = noop;
-        this.rightClick = noop;
+}
 
-        // preferences
-        this.longPressDelay = 100; // delay (ms) before long press
+let zoomIntensity = 0.1;
+let originx = 0;
+let originy = 0;
+let scale = 1;
+function wheelHandler(event) {
 
-        // private variables
-        this._start = 0;
-        this._moving = false;
+    //event.preventDefault();
+    // Get mouse offset.
+    let mousex = event.clientX - me.canvas.elm.offsetLeft;
+    let mousey = event.clientY - me.canvas.elm.offsetTop;
+    // Normalize wheel to +1 or -1.
+    let wheel = event.deltaY < 0 ? 1 : -1;
+
+    // Compute zoom factor.
+    let zoom = Math.exp(wheel*zoomIntensity);
+    
+    // Translate so the visible origin is at the context's origin.
+    me.canvas.ctx.translate(originx, originy);
+  
+    // Compute the new visible origin. Original ly the mouse is at a
+    // distance mouse/scale from the corner, we want the point under
+    // the mouse to remain in the same place after the zoom, but this
+    // is at mouse/new_scale away from the corner. Therefore we need to
+    // shift the origin (coordinates of the corner) to account for this.
+    originx -= mousex/(scale*zoom) - mousex/scale;
+    originy -= mousey/(scale*zoom) - mousey/scale;
+    
+    // Scale it (centered around the origin due to the trasnslate above).
+    me.canvas.ctx.scale(zoom, zoom);
+    // Offset the visible origin to it's proper position.
+    me.canvas.ctx.translate(-originx, -originy);
+
+    // Update scale and others.
+    scale *= zoom;
+    //visibleWidth = width / scale;
+    //visibleHeight = height / scale;
+}
+
+
+function startHandler(e) {
+    // TODO: check for rght-clicks
+    if (e.which === 3) { return; }
+
+    _start = Date.now();
+    _moving = false;
+
+    if (e.type === 'mousedown') {
+        window.addEventListener('mousemove', moveHandler, { passive: false });
+        window.addEventListener('mouseup', endHandler);
+        _pointer = { x: e.clientX, y: e.clientY };
+    } else {
+        window.addEventListener('touchmove', moveHandler, { passive: false });
+        window.addEventListener('touchend', endHandler);
+        window.addEventListener('touchcancel', endHandler);
+        _pointer = copyTouch(e.targetTouches[0]);
     }
+    e.preventDefault();
+    e.stopPropagation();
+}
 
-    start() {
-        let me = this;
-        me.elm.addEventListener('touchstart', me.startHandler, { passive: false });
-        me.elm.addEventListener('mousedown', me.startHandler, { passive: false });
-    }
-    stop() {
-        let me = this;
-        me.elm.removeEventListener('touchstart', me.startHandler);
-        me.elm.removeEventListener('mousedown', me.startHandler);
-    }
-
-    startHandler(e) {
-        let me = this;
-
-        // TODO: check for rght-clicks
-        if (e.which === 3) { return; }
-
-        me._start = Date.now();
-        me._moving = false;
-
-        if (e.type === 'mousedown') {
-            window.addEventListener('mousemove', me.moveHandler, { passive: false });
-            window.addEventListener('mouseup', me.endHandler);
-            me.pointer = { x: e.clientX, y: e.clientY };
-        } else {
-            window.addEventListener('touchmove', me.moveHandler, { passive: false });
-            window.addEventListener('touchend', me.endHandler);
-            window.addEventListener('touchcancel', me.endHandler);
-            me.pointer = copyTouch(e.targetTouches[0]);
-        }
+function moveHandler(e) {
+    if (e.type == 'mousemove') {
+        _pointer = { x: e.clientX, y: e.clientY };
+        /////////////////////////
+        // TODO: handle mouse drag
+        /////////////////////////
+    } else {
+        _pointer = copyTouch(e.targetTouches[0]);
         e.preventDefault();
         e.stopPropagation();
+        /////////////////////////
+        // TODO: handle touch drag
+        /////////////////////////
     }
+    _moving = true;
+}
 
-    moveHandler(e) {
-        let me = this;
-
-        if (e.type == 'mousemove') {
-            me.pointer = { x: e.clientX, y: e.clientY };
-            /////////////////////////
-            // TODO: handle mouse drag
-            /////////////////////////
-        } else {
-            me.pointer = copyTouch(e.targetTouches[0]);
-            e.preventDefault();
-            e.stopPropagation();
-            /////////////////////////
-            // TODO: handle touch drag
-            /////////////////////////
-        }
-        me._moving = true;
-    }
-
-    endHandler(e) {
-        let me = this;
-        if (e.type === 'mouseup') {
-            window.removeEventListener('mousemove', me.moveHandler);
-            window.removeEventListener('mouseup', me.endHandler);
-            /////////////////////////
-            // TODO: handle mouse up
-            /////////////////////////
-        } else if (e.targetTouches.length == 0 || e.targetTouches[0].identifier != me.pointer.identifier) {
-            window.removeEventListener('touchmove', me.moveHandler);
-            window.removeEventListener('touchend', me.endHandler);
-            window.removeEventListener('touchcancel', me.endHandler);
-            /////////////////////////
-            // TODO: handle touch end
-            /////////////////////////
-        }
-
+function endHandler(e) {
+    if (e.type === 'mouseup') {
+        window.removeEventListener('mousemove', moveHandler);
+        window.removeEventListener('mouseup', endHandler);
+        /////////////////////////
+        // TODO: handle mouse up
+        /////////////////////////
+    } else if (e.targetTouches.length == 0 || e.targetTouches[0].identifier != _pointer.identifier) {
+        window.removeEventListener('touchmove', moveHandler);
+        window.removeEventListener('touchend', endHandler);
+        window.removeEventListener('touchcancel', endHandler);
+        /////////////////////////
+        // TODO: handle touch end
+        /////////////////////////
     }
 }

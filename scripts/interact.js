@@ -43,5 +43,3 @@ handle.on = function(x,y) {
        else if (localY >= innerY + innerH) activeHandles[1] = 1;
        return activeHandles;
 }
-
-
