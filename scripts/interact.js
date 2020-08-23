@@ -43,3 +43,43 @@ handle.on = function(x,y) {
        else if (localY >= innerY + innerH) activeHandles[1] = 1;
        return activeHandles;
 }
+
+
+
+let zoomIntensity = 0.1;
+let originx = 0;
+let originy = 0;
+let scale = 1;
+function wheelHandler(event) {
+
+    //event.preventDefault();
+    // Get mouse offset.
+    let mousex = event.clientX - me.canvas.elm.offsetLeft;
+    let mousey = event.clientY - me.canvas.elm.offsetTop;
+    // Normalize wheel to +1 or -1.
+    let wheel = event.deltaY < 0 ? 1 : -1;
+
+    // Compute zoom factor.
+    let zoom = Math.exp(wheel*zoomIntensity);
+    
+    // Translate so the visible origin is at the context's origin.
+    me.canvas.ctx.translate(originx, originy);
+  
+    // Compute the new visible origin. Original ly the mouse is at a
+    // distance mouse/scale from the corner, we want the point under
+    // the mouse to remain in the same place after the zoom, but this
+    // is at mouse/new_scale away from the corner. Therefore we need to
+    // shift the origin (coordinates of the corner) to account for this.
+    originx -= mousex/(scale*zoom) - mousex/scale;
+    originy -= mousey/(scale*zoom) - mousey/scale;
+    
+    // Scale it (centered around the origin due to the trasnslate above).
+    me.canvas.ctx.scale(zoom, zoom);
+    // Offset the visible origin to it's proper position.
+    me.canvas.ctx.translate(-originx, -originy);
+
+    // Update scale and others.
+    scale *= zoom;
+    //visibleWidth = width / scale;
+    //visibleHeight = height / scale;
+}

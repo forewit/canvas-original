@@ -1,7 +1,5 @@
-// preferences
-
 // tracking state
-let _listening = {};
+let listening = {};
 
 export let keys = {
     down: {},
@@ -23,8 +21,8 @@ function stop() {
     window.removeEventListener('blur', blurHandler);
 }
 
-function on(keycodes, callback) { _listening[keycodes] = callback; }
-function off(keycodes) { delete _listening[keycodes]; }
+function on(keycodes, callback) { listening[keycodes] = callback; }
+function off(keycodes) { delete listening[keycodes]; }
 
 function keydownHandler(e) {
     // include to prevent key events while composing text
@@ -34,18 +32,17 @@ function keydownHandler(e) {
     keys.down[e.keyCode] = true;
 
     // check all keys we are listening to
-    for (const [shortcut, callback] of Object.entries(_listening)) {
-        let keycodes = shortcut.split(' ');
+    for (const [shortcut, callback] of Object.entries(listening)) {
+        let keyCodes = shortcut.split(' ');
 
-        let doCallback = true;
-        keycodes.forEach(function(keycode){
-            if (!keys.down[keycode]) doCallback = false;
-        });
+        // make sure the last key pressed is the last one in the shortcut
+        if (keyCodes.pop() != e.keyCode) break;
 
-        if (doCallback) {
-            callback(e);
-            return;
-        }
+        // make sure all the shortcut keys are down
+        if (!keyCodes.every(keyCode => keys.down[keyCode])) break;
+            
+        callback(e);
+        return;
     }
 }
 

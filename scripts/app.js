@@ -3,6 +3,7 @@ import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
 import { keys } from "./keys.js";
+import { pointer } from "./pointer.js";
 
 
 (function (global, factory) {
@@ -23,8 +24,18 @@ import { keys } from "./keys.js";
     layer.addEntity(sprite);
 
     console.log(keys);
-    keys.on('17 65', function(e){alert("control + a")});
+    keys.on('17 82', function(e){
+        e.preventDefault();
+        console.log('Prevented reload!');
+    });
     keys.start();
+
+
+    pointer.on('tap', function(point) {
+        console.log('tap', point);
+    })
+    pointer.start(canvas.elm);
+
 
     // ************ app loop **************
     var FPS = 0;
