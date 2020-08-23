@@ -25,7 +25,6 @@ import { pointer } from "./pointer.js";
     layer.addEntity(sprite);
 
     // keyboard detection
-    console.log(keys);
     keys.on('17 82', function(e){
         e.preventDefault();
         console.log('Prevented reload!');
