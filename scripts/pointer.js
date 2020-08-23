@@ -1,6 +1,7 @@
 /*
 AVAILABLE CALLBACKS
 - tap
+- longpress
 - rightClick
 - dragStart
 - dragging
@@ -10,9 +11,13 @@ AVAILABLE CALLBACKS
 - wheel
 - blur
 */
+// preferences
+let longPressDelay = 400;
+
 // tracking state
 let elm;
 let moving = false;
+let tapped = false;
 let point = {};
 let callbacks = {};
 
@@ -48,16 +53,17 @@ function copyTouch(touch) {
         y: touch.clientY
     }
 }
- 
-function blurHandler(e) {}
 
-function wheelHandler(event) {}
+function blurHandler(e) { }
+
+function wheelHandler(event) { }
 
 function startHandler(e) {
     // TODO: check for rght-clicks
-    if (e.which === 3) { return; }
+    if (e.which === 3) return;
 
     moving = false;
+    tapped = false
 
     if (e.type === 'mousedown') {
         window.addEventListener('mousemove', moveHandler, { passive: false });
@@ -68,6 +74,16 @@ function startHandler(e) {
         window.addEventListener('touchend', endHandler);
         window.addEventListener('touchcancel', endHandler);
         point = copyTouch(e.targetTouches[0]);
+
+        // LONGPRESS DETECTION
+        window.setTimeout(function () {
+            if (!moving && !tapped && callbacks.longPress) {
+                callbacks.longPress(point);
+                window.removeEventListener('touchmove', moveHandler);
+                window.removeEventListener('touchend', endHandler);
+                window.removeEventListener('touchcancel', endHandler);
+            }
+        }, longPressDelay)
     }
     e.preventDefault();
     e.stopPropagation();
@@ -91,8 +107,9 @@ function moveHandler(e) {
 }
 
 function endHandler(e) {
-    // tap detection
+    // TAP DETECTION
     if (!moving && callbacks.tap) {
+        tapped = true;
         callbacks.tap(point);
     }
 

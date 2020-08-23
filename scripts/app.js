@@ -19,10 +19,12 @@ import { pointer } from "./pointer.js";
     let layer = new Layer();
     let sprite = new Sprite("/img/fireball.png");
 
+    // resizing canvas
     window.addEventListener("resize", function () { canvas.resize() });
     canvas.addLayer(layer);
     layer.addEntity(sprite);
 
+    // keyboard detection
     console.log(keys);
     keys.on('17 82', function(e){
         e.preventDefault();
@@ -30,10 +32,13 @@ import { pointer } from "./pointer.js";
     });
     keys.start();
 
-
+    // pointer detection
     pointer.on('tap', function(point) {
         console.log('tap', point);
-    })
+    });
+    pointer.on('longPress', function(point) {
+        console.log('longPress', point);
+    });
     pointer.start(canvas.elm);
 
 
