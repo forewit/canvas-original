@@ -51,6 +51,7 @@ function on(name, callback) { callbacks[name] = callback; }
 function off(name) { callbacks[name] = noop; }
 
 function start(element) {
+    if (elm) stop();
     elm = element;
     elm.addEventListener('touchstart', touchstartHandler, { passive: false });
     elm.addEventListener('mousedown', mousedownHandler, { passive: false });
@@ -108,6 +109,9 @@ function mousedownHandler(e) {
 }
 
 function mousemoveHandler(e) {
+    // CLICK DRAG START DETECTION
+    if (!mouseMoving) callbacks.clickDragStart(mouse);
+
     mouseMoving = true;
 
     mouse = { x: e.clientX, y: e.clientY };
@@ -164,6 +168,9 @@ function touchstartHandler(e) {
 }
 
 function touchmoveHandler(e) {
+    // TOUCH DRAG START DETECTION
+    if (!touchMoving) callbacks.touchDragStart(touch);
+
     touchMoving = true;
 
     touch = copyTouch(e.targetTouches[0]);
