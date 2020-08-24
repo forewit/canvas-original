@@ -18,6 +18,8 @@ let longPressDelay = 400;
 let elm;
 let moving = false;
 let tapped = false;
+let startTime = 0;
+let endTime = 0;
 let point = {};
 let callbacks = {};
 
@@ -63,7 +65,10 @@ function startHandler(e) {
     if (e.which === 3) return;
 
     moving = false;
-    tapped = false
+    startTime = new Date();
+
+    // DOUBLE TAP DETECTION
+    tapped = (startTime - endTime < longPressDelay);
 
     if (e.type === 'mousedown') {
         window.addEventListener('mousemove', moveHandler, { passive: false });
@@ -107,6 +112,8 @@ function moveHandler(e) {
 }
 
 function endHandler(e) {
+    endTime = new Date();
+
     // TAP DETECTION
     if (!moving && callbacks.tap) {
         tapped = true;
