@@ -38,6 +38,15 @@ import { pointer } from "./pointer.js";
     pointer.on('longPress', function(point) {
         console.log('longPress', point);
     });
+    pointer.on('longClick', function(point) {
+        console.log('longClick', point);
+    });
+    pointer.on('doubleTap', function(point) {
+        console.log('doubleTap', point);
+    });
+    pointer.on('rightClick', function(point) {
+        console.log('rightClick', point);
+    });
     pointer.start(canvas.elm);
 
 
