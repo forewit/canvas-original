@@ -25,30 +25,25 @@ import { pointer } from "./pointer.js";
     layer.addEntity(sprite);
 
     // keyboard detection
-    keys.on('17 82', function(e){
+    keys.on('17 82', function (e) {
         e.preventDefault();
         console.log('Prevented reload!');
     });
     keys.start();
 
-    // pointer detection
-    pointer.on('tap', function(point) {
-        console.log('tap', point);
-    });
-    pointer.on('longPress', function(point) {
-        console.log('longPress', point);
-    });
-    pointer.on('longClick', function(point) {
-        console.log('longClick', point);
-    });
-    pointer.on('doubleTap', function(point) {
-        console.log('doubleTap', point);
-    });
-    pointer.on('rightClick', function(point) {
-        console.log('rightClick', point);
-    });
-    pointer.start(canvas.elm);
+    // touch detection
+    pointer.on('tap', point => console.log('tap', point));
+    pointer.on('doubleTap', point => console.log('doubleTap', point));
+    pointer.on('longPress', point => console.log('longPress', point));
 
+    // mouse detection
+    pointer.on('click', point => console.log('click', point));
+    pointer.on('doubleClick', point => console.log('doubleClick', point));
+    pointer.on('rightClick', point => console.log('rightClick', point));
+    pointer.on('longClick', point => console.log('longClick', point));
+    pointer.on('wheel', point => console.log('wheel', point));
+
+    pointer.start(canvas.elm);
 
     // ************ app loop **************
     var FPS = 0;
