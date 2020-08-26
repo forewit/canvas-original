@@ -12,6 +12,7 @@ let touchMoving = false;
 let taps = 0;
 let touchendTime = 0;
 let touch = {};
+let hypo = undefined;
 
 let mouseMoving = false;
 let clicks = 0;
@@ -26,9 +27,9 @@ let callbacks = {
     longClick: noop,
     rightClick: noop,
     wheel: noop,
-    clickDragStart: noop,
-    clickDragging: noop,
-    clickDragEnd: noop,
+    mouseDragStart: noop,
+    mouseDragging: noop,
+    mouseDragEnd: noop,
     // touch callbacks
     tap: noop,
     longPress: noop,
@@ -109,15 +110,15 @@ function mousedownHandler(e) {
 }
 
 function mousemoveHandler(e) {
-    // CLICK DRAG START DETECTION
-    if (!mouseMoving) callbacks.clickDragStart(mouse);
+    // MOUSE DRAG START DETECTION
+    if (!mouseMoving) callbacks.mouseDragStart(mouse);
 
     mouseMoving = true;
 
     mouse = { x: e.clientX, y: e.clientY };
-    /////////////////////////
-    // TODO: handle mouse drag
-    /////////////////////////
+
+    // MOUUSE DRAGGING DETECTION
+    callbacks.mouseDragging(mouse);
 }
 
 function mouseupHandler(e) {
@@ -141,6 +142,9 @@ function mouseupHandler(e) {
                 clicks = 0;
             }, doubleClickDelay);
         }
+    } else {
+        // MOUSE DRAG END DETECTION
+        callbacks.mouseDragEnd(mouse);
     }
 }
 
@@ -168,20 +172,31 @@ function touchstartHandler(e) {
 }
 
 function touchmoveHandler(e) {
+    touchMoving = true;
+    touch = copyTouch(e.targetTouches[0]);
+
+    if (e.targetTouches.length === 2) {
+        let touch2 = copyTouch(e.targetTouches[1]);
+        let hypo1 = Math.hypot((touch.x - touch2.x), (touch.y - touch2.y));
+        
+        if (hypo === undefined) hypo = hypo1;
+        
+        callbacks.pinch(hypo1 / hypo);
+    }
     // TOUCH DRAG START DETECTION
     if (!touchMoving) callbacks.touchDragStart(touch);
 
-    touchMoving = true;
 
-    touch = copyTouch(e.targetTouches[0]);
     e.preventDefault();
     e.stopPropagation();
-    /////////////////////////
-    // TODO: handle touch drag
-    /////////////////////////
+
+    // TOUCH DRAGGING DETECTION
+    callbacks.touchDragging(touch);
 }
 
 function touchendHandler(e) {
+    hypo = undefined;
+    
     if (e.targetTouches.length == 0 || e.targetTouches[0].identifier != touch.identifier) {
         window.removeEventListener('touchmove', touchmoveHandler);
         window.removeEventListener('touchend', touchendHandler);
@@ -200,6 +215,9 @@ function touchendHandler(e) {
                 taps = 0;
             }, doubleTapDelay);
 
+        } else {
+            // TOUCH DRAG END DETECTION
+            callbacks.touchDragEnd(touch);
         }
     }
 }

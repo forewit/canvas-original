@@ -36,6 +36,8 @@ import { pointer } from "./pointer.js";
     pointer.on('doubleTap', point => console.log('doubleTap', point));
     pointer.on('longPress', point => console.log('longPress', point));
     pointer.on('touchDragStart', point => console.log('touchDragStart', point));
+    pointer.on('touchDragging', point => console.log('touchDragging'));
+    pointer.on('touchDragEnd', point => console.log('touchDragEnd', point));
 
     // mouse detection
     pointer.on('click', point => console.log('click', point));
@@ -43,7 +45,9 @@ import { pointer } from "./pointer.js";
     pointer.on('rightClick', point => console.log('rightClick', point));
     pointer.on('longClick', point => console.log('longClick', point));
     pointer.on('wheel', point => console.log('wheel', point));
-    pointer.on('clickDragStart', point => console.log('clickDragStart', point));
+    pointer.on('mouseDragStart', point => console.log('mouseDragStart', point));
+    pointer.on('mouseDragging', point => console.log('mouseDragging'));
+    pointer.on('mouseDragEnd', point => console.log('mouseDragEnd', point));
 
     pointer.start(canvas.elm);
 
