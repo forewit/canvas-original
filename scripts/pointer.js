@@ -37,7 +37,8 @@ let callbacks = {
     touchDragStart: noop,
     touchDragging: noop,
     touchDragEnd: noop,
-    pinch: noop,
+    pinching: noop,
+    pinchEnd: noop,
     rotate: noop,
 };
 
@@ -159,7 +160,7 @@ function touchstartHandler(e) {
     // LONGPRESS DETECTION
     window.setTimeout(function () {
         let now = new Date();
-        if (now - touchendTime >= longPressDelay && !touchMoving) {
+        if (!touchMoving && now - touchendTime >= longPressDelay) {
             window.removeEventListener('touchmove', touchmoveHandler);
             window.removeEventListener('touchend', touchendHandler);
             window.removeEventListener('touchcancel', touchendHandler);
@@ -172,30 +173,33 @@ function touchstartHandler(e) {
 }
 
 function touchmoveHandler(e) {
-    touchMoving = true;
-    touch = copyTouch(e.targetTouches[0]);
-    
-    e.preventDefault();
-    e.stopPropagation();
-
     // PINCH DETECTION
-    if (e.targetTouches.length === 2) {
+    if ((!touchMoving && e.targetTouches.length >= 2) || hypo) {        
         let touch2 = copyTouch(e.targetTouches[1]);
         let hypo1 = Math.hypot((touch.x - touch2.x), (touch.y - touch2.y));
-        
+
         if (hypo === undefined) hypo = hypo1;
-        
-        callbacks.pinch(touch, hypo1 / hypo);
+    
+        // PINCHING
+        callbacks.pinching(touch, hypo1 / hypo);
     }
 
     // TOUCH DRAG START DETECTION
     if (!touchMoving) callbacks.touchDragStart(touch);
 
-    // TOUCH DRAGGING DETECTION
+    touchMoving = true;
+    touch = copyTouch(e.targetTouches[0]);
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    // TOUCH DRAGGING
     callbacks.touchDragging(touch);
 }
 
 function touchendHandler(e) {
+    // PINCH END DETECTION
+    if (hypo) callbacks.pinchEnd(touch);
     hypo = undefined;
 
     if (e.targetTouches.length == 0 || e.targetTouches[0].identifier != touch.identifier) {

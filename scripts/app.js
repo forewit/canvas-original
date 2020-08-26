@@ -33,6 +33,7 @@ import { pointer } from "./pointer.js";
 
 
     let log = document.getElementById('log');
+    let log2 = document.getElementById('log2');
     // touch detection
     pointer.on('tap', point => log.innerHTML= 'tap');
     pointer.on('doubleTap', point => log.innerHTML= 'doubleTap');
@@ -40,7 +41,8 @@ import { pointer } from "./pointer.js";
     pointer.on('touchDragStart', point => log.innerHTML= 'touchDragStart');
     pointer.on('touchDragging', point => log.innerHTML= 'touchDragging');
     pointer.on('touchDragEnd', point => log.innerHTML= 'touchDragEnd');
-    pointer.on('pinch', (point, delta) => log.innerHTML= 'pinch');
+    pointer.on('pinching', (point, delta) => log2.innerHTML = delta);
+    pointer.on('pinchEnd', point => log2.innerHTML = 'pinchEnd');
 
     // mouse detection
     pointer.on('click', point => log.innerHTML= 'click');
