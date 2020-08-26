@@ -77,10 +77,10 @@ function copyTouch(touch) {
 
 function wheelHandler(e) {
     // avoid using mouse so that wheel events don't override mouse move events
-    let point = { x: e.clientX, y: e.clientY, deltaY: e.deltaY };
+    let point = { x: e.clientX, y: e.clientY };
 
     // WHEEL DETECTION
-    callbacks.wheel(point);
+    callbacks.wheel(point, e.deltaY);
 
     e.preventDefault();
     e.stopPropagation();
@@ -174,21 +174,22 @@ function touchstartHandler(e) {
 function touchmoveHandler(e) {
     touchMoving = true;
     touch = copyTouch(e.targetTouches[0]);
+    
+    e.preventDefault();
+    e.stopPropagation();
 
+    // PINCH DETECTION
     if (e.targetTouches.length === 2) {
         let touch2 = copyTouch(e.targetTouches[1]);
         let hypo1 = Math.hypot((touch.x - touch2.x), (touch.y - touch2.y));
         
         if (hypo === undefined) hypo = hypo1;
         
-        callbacks.pinch(hypo1 / hypo);
+        callbacks.pinch(touch, hypo1 / hypo);
     }
+
     // TOUCH DRAG START DETECTION
     if (!touchMoving) callbacks.touchDragStart(touch);
-
-
-    e.preventDefault();
-    e.stopPropagation();
 
     // TOUCH DRAGGING DETECTION
     callbacks.touchDragging(touch);
@@ -196,7 +197,7 @@ function touchmoveHandler(e) {
 
 function touchendHandler(e) {
     hypo = undefined;
-    
+
     if (e.targetTouches.length == 0 || e.targetTouches[0].identifier != touch.identifier) {
         window.removeEventListener('touchmove', touchmoveHandler);
         window.removeEventListener('touchend', touchendHandler);

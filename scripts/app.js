@@ -31,24 +31,26 @@ import { pointer } from "./pointer.js";
     });
     keys.start();
 
+
+    let log = document.getElementById('log');
     // touch detection
-    pointer.on('tap', point => console.log('tap', point));
-    pointer.on('doubleTap', point => console.log('doubleTap', point));
-    pointer.on('longPress', point => console.log('longPress', point));
-    pointer.on('touchDragStart', point => console.log('touchDragStart', point));
-    pointer.on('touchDragging', point => console.log('touchDragging'));
-    pointer.on('touchDragEnd', point => console.log('touchDragEnd', point));
-    pointer.on('pinch', point => console.log('pinch', point));
+    pointer.on('tap', point => log.innerHTML= 'tap');
+    pointer.on('doubleTap', point => log.innerHTML= 'doubleTap');
+    pointer.on('longPress', point => log.innerHTML= 'longPress');
+    pointer.on('touchDragStart', point => log.innerHTML= 'touchDragStart');
+    pointer.on('touchDragging', point => log.innerHTML= 'touchDragging');
+    pointer.on('touchDragEnd', point => log.innerHTML= 'touchDragEnd');
+    pointer.on('pinch', (point, delta) => log.innerHTML= 'pinch');
 
     // mouse detection
-    pointer.on('click', point => console.log('click', point));
-    pointer.on('doubleClick', point => console.log('doubleClick', point));
-    pointer.on('rightClick', point => console.log('rightClick', point));
-    pointer.on('longClick', point => console.log('longClick', point));
-    pointer.on('wheel', point => console.log('wheel', point));
-    pointer.on('mouseDragStart', point => console.log('mouseDragStart', point));
-    pointer.on('mouseDragging', point => console.log('mouseDragging'));
-    pointer.on('mouseDragEnd', point => console.log('mouseDragEnd', point));
+    pointer.on('click', point => log.innerHTML= 'click');
+    pointer.on('doubleClick', point => log.innerHTML= 'doubleClick');
+    pointer.on('rightClick', point => log.innerHTML= 'rightClick');
+    pointer.on('longClick', point => log.innerHTML= 'longClick');
+    pointer.on('wheel', (point, delta) => log.innerHTML= 'wheel');
+    pointer.on('mouseDragStart', point => log.innerHTML= 'mouseDragStart');
+    pointer.on('mouseDragging', point => log.innerHTML= 'mouseDragging');
+    pointer.on('mouseDragEnd', point => log.innerHTML= 'mouseDragEnd');
 
     pointer.start(canvas.elm);
 

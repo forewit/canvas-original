@@ -57,8 +57,14 @@ pre {
     right: 0;
 }
 
+#log {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
 #canvas {
-    background: lightgoldenrodyellow;
+    background: lightblue;
     width: 100%;
     height: 100%;
 }
