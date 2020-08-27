@@ -3,7 +3,7 @@ import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
 import { keys } from "./keys.js";
-import { pointer } from "./pointer.js";
+import { gestures } from "./gestures.js";
 
 
 (function (global, factory) {
@@ -35,25 +35,25 @@ import { pointer } from "./pointer.js";
     let log = document.getElementById('log');
     let log2 = document.getElementById('log2');
     // touch detection
-    pointer.on('tap', point => log.innerHTML= 'tap');
-    pointer.on('doubleTap', point => log.innerHTML= 'doubleTap');
-    pointer.on('longPress', point => log.innerHTML= 'longPress');
-    pointer.on('touchDragStart', point => log.innerHTML= 'touchDragStart');
-    pointer.on('touchDragging', point => log.innerHTML= 'touchDragging');
-    pointer.on('touchDragEnd', point => log.innerHTML= 'touchDragEnd');
-    pointer.on('pinching', (point, delta) => log2.innerHTML = delta);
+    gestures.on('tap', point => log.innerHTML= 'tap');
+    gestures.on('doubleTap', point => log.innerHTML= 'doubleTap');
+    gestures.on('longPress', point => log.innerHTML= 'longPress');
+    gestures.on('touchDragStart', point => log.innerHTML= 'touchDragStart');
+    gestures.on('touchDragging', point => log.innerHTML= 'touchDragging');
+    gestures.on('touchDragEnd', point => log.innerHTML= 'touchDragEnd');
+    gestures.on('pinching', (point, delta) => log2.innerHTML = delta);
 
     // mouse detection
-    pointer.on('click', point => log.innerHTML= 'click');
-    pointer.on('doubleClick', point => log.innerHTML= 'doubleClick');
-    pointer.on('rightClick', point => log.innerHTML= 'rightClick');
-    pointer.on('longClick', point => log.innerHTML= 'longClick');
-    pointer.on('wheel', (point, delta) => log.innerHTML= 'wheel');
-    pointer.on('mouseDragStart', point => log.innerHTML= 'mouseDragStart');
-    pointer.on('mouseDragging', point => log.innerHTML= 'mouseDragging');
-    pointer.on('mouseDragEnd', point => log.innerHTML= 'mouseDragEnd');
+    gestures.on('click', point => log.innerHTML= 'click');
+    gestures.on('doubleClick', point => log.innerHTML= 'doubleClick');
+    gestures.on('rightClick', point => log.innerHTML= 'rightClick');
+    gestures.on('longClick', point => log.innerHTML= 'longClick');
+    gestures.on('wheel', (point, delta) => log.innerHTML= 'wheel');
+    gestures.on('mouseDragStart', point => log.innerHTML= 'mouseDragStart');
+    gestures.on('mouseDragging', point => log.innerHTML= 'mouseDragging');
+    gestures.on('mouseDragEnd', point => log.innerHTML= 'mouseDragEnd');
 
-    pointer.start(canvas.elm);
+    gestures.start(canvas.elm);
 
     // ************ app loop **************
     var FPS = 0;

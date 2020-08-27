@@ -41,7 +41,7 @@ let callbacks = {
     pinching: noop,
 };
 
-export let pointer = {
+export let gestures = {
     on: on,
     off: off,
     start: start,
@@ -152,8 +152,7 @@ function touchstartHandler(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    //if (e.targetTouches.length > 1 && e.targetTouches[0].identifier == touch.identifier) return;
-
+    // check if two touches were started simultaneously
     if (e.targetTouches.length > 1) {
         if (e.targetTouches[0] == touch.identifier) return;
         else pinching = true;
