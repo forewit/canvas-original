@@ -42,7 +42,6 @@ import { pointer } from "./pointer.js";
     pointer.on('touchDragging', point => log.innerHTML= 'touchDragging');
     pointer.on('touchDragEnd', point => log.innerHTML= 'touchDragEnd');
     pointer.on('pinching', (point, delta) => log2.innerHTML = delta);
-    pointer.on('pinchEnd', point => log2.innerHTML = 'pinchEnd');
 
     // mouse detection
     pointer.on('click', point => log.innerHTML= 'click');

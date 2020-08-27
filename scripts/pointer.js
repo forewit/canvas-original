@@ -8,11 +8,12 @@ let doubleClickDelay = 300;
 // tracking state
 let elm;
 
-let touchMoving = false;
-let taps = 0;
-let touchendTime = 0;
-let touch = {};
+let dragging = false;
+let pinching = false;
 let hypo = undefined;
+let taps = 0;
+let lastTouchEndTime = 0;
+let touch = { identifier: undefined };
 
 let mouseMoving = false;
 let clicks = 0;
@@ -38,8 +39,6 @@ let callbacks = {
     touchDragging: noop,
     touchDragEnd: noop,
     pinching: noop,
-    pinchEnd: noop,
-    rotate: noop,
 };
 
 export let pointer = {
@@ -150,79 +149,101 @@ function mouseupHandler(e) {
 }
 
 function touchstartHandler(e) {
-    touchMoving = false;
+    e.preventDefault();
+    e.stopPropagation();
+
+    //if (e.targetTouches.length > 1 && e.targetTouches[0].identifier == touch.identifier) return;
+
+    if (e.targetTouches.length > 1) {
+        if (e.targetTouches[0] == touch.identifier) return;
+        else pinching = true;
+    }
 
     window.addEventListener('touchmove', touchmoveHandler, { passive: false });
     window.addEventListener('touchend', touchendHandler);
     window.addEventListener('touchcancel', touchendHandler);
+
+    // update primary touch location
     touch = copyTouch(e.targetTouches[0]);
 
     // LONGPRESS DETECTION
     window.setTimeout(function () {
+        // cancel long press if in the middle of a gesture
+        if (dragging || pinching) return;
+
+        // verify the touch hasn't been released
         let now = new Date();
-        if (!touchMoving && now - touchendTime >= longPressDelay) {
+        if (now - lastTouchEndTime >= longPressDelay) {
             window.removeEventListener('touchmove', touchmoveHandler);
             window.removeEventListener('touchend', touchendHandler);
             window.removeEventListener('touchcancel', touchendHandler);
+            dragging = false;
+            pinching = false;
+            hypo = undefined;
+
             callbacks.longPress(touch);
         }
     }, longPressDelay);
-
-    e.preventDefault();
-    e.stopPropagation();
 }
 
 function touchmoveHandler(e) {
-    // PINCH DETECTION
-    if ((!touchMoving && e.targetTouches.length >= 2) || hypo) {        
-        let touch2 = copyTouch(e.targetTouches[1]);
-        let hypo1 = Math.hypot((touch.x - touch2.x), (touch.y - touch2.y));
-
-        if (hypo === undefined) hypo = hypo1;
-    
-        // PINCHING
-        callbacks.pinching(touch, hypo1 / hypo);
-    }
-
-    // TOUCH DRAG START DETECTION
-    if (!touchMoving) callbacks.touchDragStart(touch);
-
-    touchMoving = true;
-    touch = copyTouch(e.targetTouches[0]);
-
     e.preventDefault();
     e.stopPropagation();
 
-    // TOUCH DRAGGING
-    callbacks.touchDragging(touch);
+    if (dragging) {
+        touch = copyTouch(e.targetTouches[0]);
+        callbacks.touchDragging(touch);
+        return;
+
+    } else if (pinching || e.targetTouches.length > 1) {
+        touch = copyTouch(e.targetTouches[0]);
+        let touch2 = copyTouch(e.targetTouches[1]);
+        let center = {
+            x: (touch.x + touch2.x) / 2,
+            y: (touch.y + touch2.y) / 2
+        }
+
+        let hypo1 = Math.hypot((touch.x - touch2.x), (touch.y - touch2.y));
+        if (hypo === undefined) hypo = hypo1;
+
+        pinching = true;
+        callbacks.pinching(center, hypo1 / hypo);
+        return;
+    } else {
+        dragging = true;
+        callbacks.touchDragStart(touch);
+        touch = copyTouch(e.targetTouches[0]);
+        callbacks.touchDragging(touch);
+    }
 }
 
 function touchendHandler(e) {
-    // PINCH END DETECTION
-    if (hypo) callbacks.pinchEnd(touch);
-    hypo = undefined;
+    if (dragging &&
+        e.targetTouches.length > 0 &&
+        e.targetTouches[0].identifier == touch.identifier) {
+        return;
+    }
 
-    if (e.targetTouches.length == 0 || e.targetTouches[0].identifier != touch.identifier) {
-        window.removeEventListener('touchmove', touchmoveHandler);
-        window.removeEventListener('touchend', touchendHandler);
-        window.removeEventListener('touchcancel', touchendHandler);
+    lastTouchEndTime = new Date();
+    window.removeEventListener('touchmove', touchmoveHandler);
+    window.removeEventListener('touchend', touchendHandler);
+    window.removeEventListener('touchcancel', touchendHandler);
 
-        touchendTime = new Date();
+    if (dragging) {
+        dragging = false;
+        callbacks.touchDragEnd(touch);
+    } else if (pinching) {
+        pinching = false;
+        hypo = undefined;
+    } else {
+        // TAP DETECTION
+        if (taps == 0) callbacks.tap(touch);
 
-        if (!touchMoving) {
-            // TAP DETECTION
-            if (taps == 0) callbacks.tap(touch);
-
-            // DOUBLE TAP DETECTION
-            taps++;
-            window.setTimeout(function () {
-                if (taps > 1) callbacks.doubleTap(touch);
-                taps = 0;
-            }, doubleTapDelay);
-
-        } else {
-            // TOUCH DRAG END DETECTION
-            callbacks.touchDragEnd(touch);
-        }
+        // DOUBLE TAP DETECTION
+        taps++;
+        window.setTimeout(function () {
+            if (taps > 1) callbacks.doubleTap(touch);
+            taps = 0;
+        }, doubleTapDelay);
     }
 }
