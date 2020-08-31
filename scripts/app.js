@@ -2,8 +2,7 @@ import { Canvas } from "./canvas.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
-import { keys } from "./keys.js";
-import { gestures } from "./gestures.js";
+import { interact } from "./interact.js";
 
 
 (function (global, factory) {
@@ -24,36 +23,7 @@ import { gestures } from "./gestures.js";
     canvas.addLayer(layer);
     layer.addEntity(sprite);
 
-    // keyboard detection
-    keys.on('17 82', function (e) {
-        e.preventDefault();
-        console.log('Prevented reload!');
-    });
-    keys.start();
-
-
-    let log = document.getElementById('log');
-    let log2 = document.getElementById('log2');
-    // touch detection
-    gestures.on('tap', point => log.innerHTML= 'tap');
-    gestures.on('doubleTap', point => log.innerHTML= 'doubleTap');
-    gestures.on('longPress', point => log.innerHTML= 'longPress');
-    gestures.on('touchDragStart', point => log.innerHTML= 'touchDragStart');
-    gestures.on('touchDragging', point => log.innerHTML= 'touchDragging');
-    gestures.on('touchDragEnd', point => log.innerHTML= 'touchDragEnd');
-    gestures.on('pinching', (point, delta) => log2.innerHTML = delta);
-
-    // mouse detection
-    gestures.on('click', point => log.innerHTML= 'click');
-    gestures.on('doubleClick', point => log.innerHTML= 'doubleClick');
-    gestures.on('rightClick', point => log.innerHTML= 'rightClick');
-    gestures.on('longClick', point => log.innerHTML= 'longClick');
-    gestures.on('wheel', (point, delta) => log.innerHTML= 'wheel');
-    gestures.on('mouseDragStart', point => log.innerHTML= 'mouseDragStart');
-    gestures.on('mouseDragging', point => log.innerHTML= 'mouseDragging');
-    gestures.on('mouseDragEnd', point => log.innerHTML= 'mouseDragEnd');
-
-    gestures.start(canvas.elm);
+    interact.start(canvas);
 
     // ************ app loop **************
     var FPS = 0;

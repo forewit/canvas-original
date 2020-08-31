@@ -9,7 +9,6 @@ export class Canvas {
         this.layers = [];
         this.originx = 0;
         this.originy = 0;
-        this.zoomIntensity = 0.1;
         this.scale = 1;
 
         if (!(this.ctx instanceof CanvasRenderingContext2D)) alert("Canvas API unavailable");
@@ -55,15 +54,10 @@ export class Canvas {
         this.ctx.canvas.height = this.rect.height;
     }
     render() {
-        // Store the current transformation matrix
-        this.ctx.save();
-
         // Use the identity matrix while clearing the canvas
-        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-        this.ctx.clearRect(0, 0, this.rect.width, this.rect.height);
-
-        // Restore the transform
-        this.ctx.restore();
+        this.ctx.clearRect(
+            -this.originx + 10, -this.originy + 10, 
+            this.rect.width - 20, this.rect.height - 20);
 
         // draw origin point
         this.ctx.beginPath();

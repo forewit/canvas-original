@@ -28,10 +28,6 @@ export function pointInRectangle(x, y, rx, ry, rw, rh) {
 
 }
 
-export function distanceToPoint(x1, y1, x2, y2) {
-    return Math.hypot(x1 - x2, y1 - y2);
-}
-
 // credit: https://yal.cc/rot-rect-vs-circle-intersection/
 export function pointInRotatedRectangle(pointX, pointY,
     rectX, rectY, rectOffsetX, rectOffsetY, rectWidth, rectHeight, rectAngle

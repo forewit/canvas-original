@@ -6,7 +6,7 @@ export let keys = {
     on: on,
     off: off,
     start: start,
-    stop: stop
+    stop: stop,
 }
 
 function start() {

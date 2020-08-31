@@ -1,15 +1,129 @@
-import { Pointer } from "./pointer.js";
-import { Keys } from "./keys.js";
+import { gestures } from "./gestures.js";
+import { keys } from "./keys.js";
 import { Entity } from "./entity.js";
 
+
+// preferences
+let zoomIntensity = 0.1;
+
+// tracking state
+let canvas = undefined;
+let lastPoint = undefined;
+
+let log = document.getElementById('log');
+let log2 = document.getElementById('log2');
+
+// touch gestures
+gestures.on('tap', point => log.innerHTML = 'tap');
+gestures.on('doubleTap', point => log.innerHTML = 'doubleTap');
+gestures.on('longPress', point => log.innerHTML = 'longPress');
+gestures.on('touchDragStart', point => log.innerHTML = 'touchDragStart');
+gestures.on('touchDragging', point => log.innerHTML = 'touchDragging');
+gestures.on('touchDragEnd', point => log.innerHTML = 'touchDragEnd');
+gestures.on('pinching', (point, delta) => log2.innerHTML = delta);
+
+// mouse gestures
+gestures.on('click', point => log.innerHTML = 'click');
+gestures.on('doubleClick', point => log.innerHTML = 'doubleClick');
+gestures.on('rightClick', point => log.innerHTML = 'rightClick');
+gestures.on('longClick', point => log.innerHTML = 'longClick');
+gestures.on('wheel', (point, delta) => {
+    log.innerHTML = 'wheel';
+    zoom(point, delta);
+});
+gestures.on('mouseDragStart', point => {
+    log.innerHTML = 'mouseDragStart';
+    panStart(point);
+});
+gestures.on('mouseDragging', point => {
+    log.innerHTML = 'mouseDragging'
+    panning(point);
+});
+gestures.on('mouseDragEnd', point => log.innerHTML = 'mouseDragEnd');
+
+// shortcut keys
+keys.on('17 82', function (e) {
+    e.preventDefault();
+    console.log('Prevented reload!');
+});
+
+export let interact = {
+    start: start,
+    stop: stop,
+};
+
+function start(cnvs) {
+    canvas = cnvs;
+    gestures.start(canvas.elm);
+    keys.start()
+}
+
+function stop() {
+    canvas = undefined;
+    gestures.stop();
+    keys.stop();
+}
+
+function windowToCanvas(point) {
+    return {
+        x:(point.x * canvas.scale) - canvas.originx - canvas.rect.left, 
+        y: (point.y * canvas.scale) - canvas.originy - canvas.rect.top
+    }; 
+}
+
+function panStart(point) { lastPoint = point; }
+function panning(point) {
+    let dx = (point.x - lastPoint.x) / canvas.scale;
+    let dy = (point.y - lastPoint.y) /  canvas.scale;
+
+    canvas.originx += dx;
+    canvas.originy += dy;
+    canvas.ctx.translate(dx,dy);
+    
+    lastPoint = point;
+}
+function panStop(point) {} // TODO inertia??
+
+
+function zoom(point, delta) {
+
+
+    // Normalize wheel to +1 or -1.
+    let wheel = delta < 0 ? 1 : -1;
+
+    // Compute zoom factor.
+    let zoom = Math.exp(wheel*zoomIntensity);
+
+    // Translate so the visible origin is at the context's origin.
+    canvas.ctx.translate(canvas.originx, canvas.originy);
+
+    // Compute the new visible origin. Original ly the mouse is at a
+    // distance mouse/scale from the corner, we want the point under
+    // the mouse to remain in the same place after the zoom, but this
+    // is at mouse/new_scale away from the corner. Therefore we need to
+    // shift the origin (coordinates of the corner) to account for this.
+    canvas.originx -= point.x/(canvas.scale*zoom) - point.x/canvas.scale;
+    canvas.originy -= point.y/(canvas.scale*zoom) - point.y/canvas.scale;
+
+    // Scale it (centered around the origin due to the trasnslate above).
+    canvas.ctx.scale(zoom, zoom);
+    // Offset the visible origin to it's proper position.
+    canvas.ctx.translate(-canvas.originx, -canvas.originy);
+
+    // Update scale and others.
+    canvas.scale *= zoom;
+    //visibleWidth = width / scale;
+    //visibleHeight = height / scale;
+}
+/*
 let handle = new Entity()
 handle.on = function(x,y) {
-    /* returns [x, y] where x or y can be -1, 0, or 1. Examples:
-        * [-1, 0] is the Left edge
-        * [1, 1] is the bottom right corner
-        * [] intersects but not on handle
-        * undefined -0
-        */
+        //returns [x, y] where x or y can be -1, 0, or 1. Examples:
+        //* [-1, 0] is the Left edge
+        //* [1, 1] is the bottom right corner
+        //* [] intersects but not on handle
+        //* undefined -0
+
        let activeHandles = [];
 
        let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);
@@ -37,49 +151,10 @@ handle.on = function(x,y) {
        // check left and right handles
        if (localX <= innerX) activeHandles[0] = -1;
        else if (localX >= innerX + innerW) activeHandles[0] = 1;
-       
+
        // check top and bottom handles
        if (localY <= innerY) activeHandles[1] = -1;
        else if (localY >= innerY + innerH) activeHandles[1] = 1;
        return activeHandles;
 }
-
-
-
-let zoomIntensity = 0.1;
-let originx = 0;
-let originy = 0;
-let scale = 1;
-function wheelHandler(event) {
-
-    //event.preventDefault();
-    // Get mouse offset.
-    let mousex = event.clientX - me.canvas.elm.offsetLeft;
-    let mousey = event.clientY - me.canvas.elm.offsetTop;
-    // Normalize wheel to +1 or -1.
-    let wheel = event.deltaY < 0 ? 1 : -1;
-
-    // Compute zoom factor.
-    let zoom = Math.exp(wheel*zoomIntensity);
-    
-    // Translate so the visible origin is at the context's origin.
-    me.canvas.ctx.translate(originx, originy);
-  
-    // Compute the new visible origin. Original ly the mouse is at a
-    // distance mouse/scale from the corner, we want the point under
-    // the mouse to remain in the same place after the zoom, but this
-    // is at mouse/new_scale away from the corner. Therefore we need to
-    // shift the origin (coordinates of the corner) to account for this.
-    originx -= mousex/(scale*zoom) - mousex/scale;
-    originy -= mousey/(scale*zoom) - mousey/scale;
-    
-    // Scale it (centered around the origin due to the trasnslate above).
-    me.canvas.ctx.scale(zoom, zoom);
-    // Offset the visible origin to it's proper position.
-    me.canvas.ctx.translate(-originx, -originy);
-
-    // Update scale and others.
-    scale *= zoom;
-    //visibleWidth = width / scale;
-    //visibleHeight = height / scale;
-}
+*/
