@@ -26,7 +26,10 @@ gestures.on('touchDragging', point => {
     panning(point)
 });
 gestures.on('touchDragEnd', point => log.innerHTML = 'touchDragEnd');
-gestures.on('pinching', (point, delta) => log2.innerHTML = delta);
+gestures.on('pinching', (point, zoom) => {
+    log2.innerHTML = delta;
+    pinch(point, zoom);
+});
 
 // mouse gestures
 gestures.on('click', point => log.innerHTML = 'click');
@@ -77,19 +80,13 @@ function panning(point) {
 
     canvas.originx -= dx;
     canvas.originy -= dy;
-    canvas.ctx.translate(dx,dy);
-    
+    canvas.ctx.translate(dx, dy);
+
     lastPoint = point;
 }
-function panStop(point) {} // TODO inertia??
+function panStop(point) { } // TODO inertia??
 
-
-function zoom(point, delta) {
-    // Normalize wheel to +1 or -1.
-    let wheel = delta < 0 ? 1 : -1;
-
-    // Compute zoom factor.
-    let zoom = Math.exp(wheel*zoomIntensity);
+function pinch(point, zoom) {
 
     // Translate so the visible origin is at the context's origin.
     canvas.ctx.translate(canvas.originx, canvas.originy);
@@ -99,8 +96,8 @@ function zoom(point, delta) {
     // the mouse to remain in the same place after the zoom, but this
     // is at mouse/new_scale away from the corner. Therefore we need to
     // shift the origin (coordinates of the corner) to account for this.
-    canvas.originx -= point.x/(canvas.scale*zoom) - point.x/canvas.scale;
-    canvas.originy -= point.y/(canvas.scale*zoom) - point.y/canvas.scale;
+    canvas.originx -= point.x / (canvas.scale * zoom) - point.x / canvas.scale;
+    canvas.originy -= point.y / (canvas.scale * zoom) - point.y / canvas.scale;
 
     // Scale it (centered around the origin due to the trasnslate above).
     canvas.ctx.scale(zoom, zoom);
@@ -109,8 +106,44 @@ function zoom(point, delta) {
 
     // Update scale and others.
     canvas.scale *= zoom;
-    //visibleWidth = width / scale;
-    //visibleHeight = height / scale;
+}
+
+function wheel(point, delta) {
+    // Normalize wheel to +1 or -1.
+    let wheel = delta < 0 ? 1 : -1;
+
+    // Compute zoom factor.
+    let zoom = Math.exp(wheel * zoomIntensity);
+
+    // zoom
+    zoom(point, zoom);
+}
+
+function zoom(point, delta) {
+    // Normalize wheel to +1 or -1.
+    let wheel = delta < 0 ? 1 : -1;
+
+    // Compute zoom factor.
+    let zoom = Math.exp(wheel * zoomIntensity);
+
+    // Translate so the visible origin is at the context's origin.
+    canvas.ctx.translate(canvas.originx, canvas.originy);
+
+    // Compute the new visible origin. Original ly the mouse is at a
+    // distance mouse/scale from the corner, we want the point under
+    // the mouse to remain in the same place after the zoom, but this
+    // is at mouse/new_scale away from the corner. Therefore we need to
+    // shift the origin (coordinates of the corner) to account for this.
+    canvas.originx -= point.x / (canvas.scale * zoom) - point.x / canvas.scale;
+    canvas.originy -= point.y / (canvas.scale * zoom) - point.y / canvas.scale;
+
+    // Scale it (centered around the origin due to the trasnslate above).
+    canvas.ctx.scale(zoom, zoom);
+    // Offset the visible origin to it's proper position.
+    canvas.ctx.translate(-canvas.originx, -canvas.originy);
+
+    // Update scale and others.
+    canvas.scale *= zoom;
 }
 /*
 let handle = new Entity()
