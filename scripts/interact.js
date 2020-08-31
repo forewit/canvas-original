@@ -17,8 +17,14 @@ let log2 = document.getElementById('log2');
 gestures.on('tap', point => log.innerHTML = 'tap');
 gestures.on('doubleTap', point => log.innerHTML = 'doubleTap');
 gestures.on('longPress', point => log.innerHTML = 'longPress');
-gestures.on('touchDragStart', point => log.innerHTML = 'touchDragStart');
-gestures.on('touchDragging', point => log.innerHTML = 'touchDragging');
+gestures.on('touchDragStart', point => {
+    log.innerHTML = 'touchDragStart';
+    panStart(point);
+});
+gestures.on('touchDragging', point => {
+    log.innerHTML = 'touchDragging';
+    panning(point)
+});
 gestures.on('touchDragEnd', point => log.innerHTML = 'touchDragEnd');
 gestures.on('pinching', (point, delta) => log2.innerHTML = delta);
 
