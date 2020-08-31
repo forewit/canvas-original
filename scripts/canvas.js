@@ -43,25 +43,31 @@ export class Canvas {
                 this.layers[i].destroy;
                 this.layers.splice(i, 1);
                 return true;
-            }
+            }isadmin
         }
         return false;
     }
     resize() {
         // recalculate canvas size
         this.rect = this.elm.getBoundingClientRect();
+
+        this.ctx.resetTransform()
         this.ctx.canvas.width = this.rect.width;
         this.ctx.canvas.height = this.rect.height;
+
+        this.ctx.scale(this.scale,this.scale);
+        this.ctx.translate(-this.originx, -this.originy);
     }
     render() {
         // Use the identity matrix while clearing the canvas
         this.ctx.clearRect(
-            -this.originx + 10, -this.originy + 10, 
-            this.rect.width - 20, this.rect.height - 20);
+            this.originx, this.originy, 
+            this.rect.width/this.scale, this.rect.height/this.scale);
 
         // draw origin point
         this.ctx.beginPath();
         this.ctx.ellipse(0,0,10,10,0,0,6.28);
+        this.ctx.rect(this.originx, this.originy, 10, 10);
         this.ctx.stroke();
 
         // TODO:

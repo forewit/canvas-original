@@ -64,20 +64,13 @@ function stop() {
     keys.stop();
 }
 
-function windowToCanvas(point) {
-    return {
-        x:(point.x * canvas.scale) - canvas.originx - canvas.rect.left, 
-        y: (point.y * canvas.scale) - canvas.originy - canvas.rect.top
-    }; 
-}
-
 function panStart(point) { lastPoint = point; }
 function panning(point) {
     let dx = (point.x - lastPoint.x) / canvas.scale;
-    let dy = (point.y - lastPoint.y) /  canvas.scale;
+    let dy = (point.y - lastPoint.y) / canvas.scale;
 
-    canvas.originx += dx;
-    canvas.originy += dy;
+    canvas.originx -= dx;
+    canvas.originy -= dy;
     canvas.ctx.translate(dx,dy);
     
     lastPoint = point;
@@ -86,8 +79,6 @@ function panStop(point) {} // TODO inertia??
 
 
 function zoom(point, delta) {
-
-
     // Normalize wheel to +1 or -1.
     let wheel = delta < 0 ? 1 : -1;
 
