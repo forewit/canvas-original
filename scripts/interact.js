@@ -27,7 +27,7 @@ gestures.on('touchDragging', point => {
 });
 gestures.on('touchDragEnd', point => log.innerHTML = 'touchDragEnd');
 gestures.on('pinching', (point, zoom) => {
-    log2.innerHTML = delta;
+    log2.innerHTML = zoom;
     pinch(point, zoom);
 });
 
