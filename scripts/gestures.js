@@ -38,6 +38,7 @@ let callbacks = {
     touchDragStart: noop,
     touchDragging: noop,
     touchDragEnd: noop,
+    pinchStart: noop,
     pinching: noop,
 };
 
@@ -203,10 +204,14 @@ function touchmoveHandler(e) {
         }
 
         let hypo1 = Math.hypot((touch.x - touch2.x), (touch.y - touch2.y));
-        if (hypo === undefined) hypo = hypo1;
+        if (hypo === undefined) {
+            hypo = hypo1;
+            callbacks.pinchStart(center);
+        }
 
         pinching = true;
         callbacks.pinching(center, hypo1 / hypo);
+        hypo = hypo1;
         return;
     } else {
         dragging = true;

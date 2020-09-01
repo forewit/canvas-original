@@ -4,7 +4,7 @@ import { Entity } from "./entity.js";
 
 
 // preferences
-let zoomIntensity = 0.1;
+let zoomIntensity = 0.2;
 
 // tracking state
 let canvas = undefined;
@@ -26,9 +26,14 @@ gestures.on('touchDragging', point => {
     panning(point)
 });
 gestures.on('touchDragEnd', point => log.innerHTML = 'touchDragEnd');
+gestures.on('pinchStart', (point) => {
+    //log2.innerHTML = "pinchStart";
+    panStart(point);
+});
 gestures.on('pinching', (point, zoom) => {
-    log2.innerHTML = zoom;
-    pinch(point, zoom);
+    //log2.innerHTML = zoom;
+    pinching(point, zoom);
+    panning(point);
 });
 
 // mouse gestures
@@ -86,7 +91,7 @@ function panning(point) {
 }
 function panStop(point) { } // TODO inertia??
 
-function pinch(point, zoom) {
+function pinching(point, zoom) {
 
     // Translate so the visible origin is at the context's origin.
     canvas.ctx.translate(canvas.originx, canvas.originy);
