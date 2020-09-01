@@ -38,7 +38,7 @@ gestures.on('pinchStart', (point) => {
     panStart(point);
 });
 gestures.on('pinching', (point, zoom) => {
-    log.innerHTML = "pincing";
+    log.innerHTML = "pinching";
     pinching(point, zoom);
     panning(point);
 });
