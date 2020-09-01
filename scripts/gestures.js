@@ -21,37 +21,42 @@ let mouseupTime = 0;
 let mouse = {};
 
 let noop = function () { };
-let callbacks = {
-    // mouse callbacks
-    click: noop,
-    doubleClick: noop,
-    longClick: noop,
-    rightClick: noop,
-    wheel: noop,
-    mouseDragStart: noop,
-    mouseDragging: noop,
-    mouseDragEnd: noop,
-    // touch callbacks
-    tap: noop,
-    longPress: noop,
-    doubleTap: noop,
-    touchDragStart: noop,
-    touchDragging: noop,
-    touchDragEnd: noop,
-    pinchStart: noop,
-    pinching: noop,
-    pinchEnd: noop,
-};
+let callbacks;
+clear();
 
 export let gestures = {
     on: on,
     off: off,
     start: start,
     stop: stop,
+    clear: clear,
 };
 
 function on(name, callback) { callbacks[name] = callback; }
 function off(name) { callbacks[name] = noop; }
+function clear() {
+    callbacks = {
+        // mouse callbacks
+        click: noop,
+        doubleClick: noop,
+        longClick: noop,
+        rightClick: noop,
+        wheel: noop,
+        mouseDragStart: noop,
+        mouseDragging: noop,
+        mouseDragEnd: noop,
+        // touch callbacks
+        tap: noop,
+        longPress: noop,
+        doubleTap: noop,
+        touchDragStart: noop,
+        touchDragging: noop,
+        touchDragEnd: noop,
+        pinchStart: noop,
+        pinching: noop,
+        pinchEnd: noop,
+    };
+}
 
 function start(element) {
     if (elm) stop();

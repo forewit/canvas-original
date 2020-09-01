@@ -24,6 +24,7 @@ import { interact } from "./interact.js";
     layer.addEntity(sprite);
 
     interact.start(canvas);
+    interact.setTool('pan');
 
     // ************ app loop **************
     var FPS = 0;

@@ -4,82 +4,128 @@ import { Entity } from "./entity.js";
 
 
 // preferences
-let zoomIntensity = 0.2;
+let zoomIntensity = 0.05;
 let inertiaFriction = 0.8; // 0 = infinite friction, 1 = no friction
 let inertiaMemory = 0.2; // 0 = infinite memory, 1 = no memory
 let inertiaDropOff = 5 // in milliseconds
 let epsilon = 0.001;
 
 // tracking state
+/**
+ * Tools:
+ * 0 - pan
+ * 1 - select
+ * 2 - measure
+ * 3 - draw
+ */
+export let interact = {
+    setTool: setTool,
+    start: start,
+    stop: stop,
+};
+
 let canvas = undefined;
 let isPanning = false;
 let lastPanTime, lastPoint;
 let vx = 0, vy = 0;
-
 let log = document.getElementById('log');
 
-// touch gestures
-gestures.on('tap', point => log.innerHTML = 'tap');
-gestures.on('doubleTap', point => log.innerHTML = 'doubleTap');
-gestures.on('longPress', point => log.innerHTML = 'longPress');
-gestures.on('touchDragStart', point => {
-    log.innerHTML = 'touchDragStart';
-    panStart(point);
-});
-gestures.on('touchDragging', point => {
-    log.innerHTML = 'touchDragging';
-    panning(point)
-});
-gestures.on('touchDragEnd', () => {
-    log.innerHTML = 'touchDragEnd';
-    panEnd();
-});
-gestures.on('pinchStart', (point) => {
-    log.innerHTML = "pinchStart";
-    panStart(point);
-});
-gestures.on('pinching', (point, zoom) => {
-    log.innerHTML = "pinching";
-    pinching(point, zoom);
-    panning(point);
-});
-gestures.on('pinchEnd', () => {
-    log.innerHTML = "pinchEnd";
-    panEnd();
-});
+function setTool(name) {
+    gestures.clear();
+    
+    switch (name) {
+        // ********************** PAN TOOL *************************
+        case 'pan':
+            log.innerHTML = 'Pan';
+            // touch gestures
+            gestures.on('tap', point => {
+                console.log('tap');
+            });
+            gestures.on('double tap', point => {
+                console.log('double tap');
+            });
+            gestures.on('longPress', point => {
+                console.log('long press');
+            });
+            gestures.on('touchDragStart', point => {
+                console.log('touch drag start');
+                panStart(point);
+            });
+            gestures.on('touchDragging', point => {
+                console.log('touch dragging');
+                panning(point)
+            });
+            gestures.on('touchDragEnd', () => {
+                console.log('touch drag end');
+                panEnd();
+            });
+            gestures.on('pinchStart', (point) => {
+                console.log('pinch start');
+                panStart(point);
+            });
+            gestures.on('pinching', (point, zoom) => {
+                console.log('pinching');
+                zoomOnPoint(point, zoom);
+                panning(point);
+            });
+            gestures.on('pinchEnd', () => {
+                console.log('pinch end');
+                panEnd();
+            });
 
-// mouse gestures
-gestures.on('click', point => log.innerHTML = 'click');
-gestures.on('doubleClick', point => log.innerHTML = 'doubleClick');
-gestures.on('rightClick', point => log.innerHTML = 'rightClick');
-gestures.on('longClick', point => log.innerHTML = 'longClick');
-gestures.on('wheel', (point, delta) => {
-    log.innerHTML = 'wheel';
-    zoom(point, delta);
-});
-gestures.on('mouseDragStart', point => {
-    log.innerHTML = 'mouseDragStart';
-    panStart(point);
-});
-gestures.on('mouseDragging', point => {
-    log.innerHTML = 'mouseDragging'
-    panning(point);
-});
-gestures.on('mouseDragEnd', () => {
-    log.innerHTML = 'mouseDragEnd';
-    panEnd();
-});
+            // mouse gestures
+            gestures.on('click', point => {
+                console.log('click');
+            });
+            gestures.on('doubleClick', point => {
+                console.log('double click');
+            });
+            gestures.on('rightClick', point => {
+                console.log('right click');
+            });
+            gestures.on('longClick', point => {
+                console.log('long click');
+            });
+            gestures.on('wheel', (point, delta) => {
+                console.log('wheel');
+                wheel(point, delta);
+            });
+            gestures.on('mouseDragStart', point => {
+                console.log('mouse drag start');
+                panStart(point);
+            });
+            gestures.on('mouseDragging', point => {
+                console.log('mouse dragging');
+                panning(point);
+            });
+            gestures.on('mouseDragEnd', () => {
+                console.log('mouse drag end');
+                panEnd();
+            });
+            break;
+
+        // ******************** SELECT TOOL ************************
+        case 'select':
+            break;
+
+        // ******************* MEASURE TOOL ************************
+        case 'measure':
+            break;
+
+        // ********************* DRAW TOOL *************************
+        case 'draw':
+            break;
+        default:
+            console.log('Invalid tool choice!');
+            break;
+    }
+}
 
 // shortcut keys
 keys.on('17 82', function (e) {
     e.preventDefault();
     console.log('Prevented reload!');
 });
-
-export let interact = {
-    start: start,
-    stop: stop,
-};
 
 function start(cnvs) {
     canvas = cnvs;
@@ -93,7 +139,7 @@ function stop() {
     keys.stop();
 }
 
-function panStart(point) { 
+function panStart(point) {
     isPanning = true;
     lastPoint = point;
     vx = 0;
@@ -104,8 +150,8 @@ function panning(point) {
     let dx = (point.x - lastPoint.x) / canvas.scale;
     let dy = (point.y - lastPoint.y) / canvas.scale;
 
-    vx = dx * inertiaMemory + vx * (1-inertiaMemory);
-    vy = dy * inertiaMemory + vy * (1-inertiaMemory);
+    vx = dx * inertiaMemory + vx * (1 - inertiaMemory);
+    vy = dy * inertiaMemory + vy * (1 - inertiaMemory);
 
     canvas.originx -= dx;
     canvas.originy -= dy;
@@ -117,7 +163,7 @@ function panning(point) {
 
 function panEnd() {
     isPanning = false;
-    let elapsed =new Date() - lastPanTime;
+    let elapsed = new Date() - lastPanTime;
 
     vx *= Math.min(1, inertiaDropOff / elapsed);
     vy *= Math.min(1, inertiaDropOff / elapsed);
@@ -137,8 +183,7 @@ function panInertia() {
     vy *= inertiaFriction;
 }
 
-function pinching(point, zoom) {
-
+function zoomOnPoint(point, zoom) {
     // Translate so the visible origin is at the context's origin.
     canvas.ctx.translate(canvas.originx, canvas.originy);
 
@@ -159,32 +204,17 @@ function pinching(point, zoom) {
     canvas.scale *= zoom;
 }
 
-function zoom(point, delta) {
+function wheel(point, delta) {
     // Normalize wheel to +1 or -1.
     let wheel = delta < 0 ? 1 : -1;
 
     // Compute zoom factor.
     let zoom = Math.exp(wheel * zoomIntensity);
 
-    // Translate so the visible origin is at the context's origin.
-    canvas.ctx.translate(canvas.originx, canvas.originy);
-
-    // Compute the new visible origin. Original ly the mouse is at a
-    // distance mouse/scale from the corner, we want the point under
-    // the mouse to remain in the same place after the zoom, but this
-    // is at mouse/new_scale away from the corner. Therefore we need to
-    // shift the origin (coordinates of the corner) to account for this.
-    canvas.originx -= point.x / (canvas.scale * zoom) - point.x / canvas.scale;
-    canvas.originy -= point.y / (canvas.scale * zoom) - point.y / canvas.scale;
-
-    // Scale it (centered around the origin due to the trasnslate above).
-    canvas.ctx.scale(zoom, zoom);
-    // Offset the visible origin to it's proper position.
-    canvas.ctx.translate(-canvas.originx, -canvas.originy);
-
-    // Update scale and others.
-    canvas.scale *= zoom;
+    // zoom
+    zoomOnPoint(point, zoom);
 }
+
 /*
 let handle = new Entity()
 handle.on = function(x,y) {

@@ -7,6 +7,7 @@ export let keys = {
     off: off,
     start: start,
     stop: stop,
+    clear: clear,
 }
 
 function start() {
@@ -23,6 +24,7 @@ function stop() {
 
 function on(keycodes, callback) { listening[keycodes] = callback; }
 function off(keycodes) { delete listening[keycodes]; }
+function clear() { listening = {}; }
 
 function keydownHandler(e) {
     // include to prevent key events while composing text
