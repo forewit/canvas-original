@@ -113,16 +113,18 @@ function panning(point) {
     lastPoint = point;
     lastPanTime = new Date();
 }
+
 function panEnd() {
     isPanning = false;
     let now = new Date();
-    if (now - lastPanTime < 12) requestAnimationFrame(panInertia);
+    if (now - lastPanTime < 10) requestAnimationFrame(panInertia);
 }
 
 function panInertia() {
     if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
     requestAnimationFrame(panInertia);
 
+    //console.log(vx);
     canvas.originx -= vx;
     canvas.originy -= vy;
     canvas.ctx.translate(vx, vy);
