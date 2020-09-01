@@ -6,13 +6,14 @@ import { Entity } from "./entity.js";
 // preferences
 let zoomIntensity = 0.2;
 let inertiaFriction = 0.9;
+let inertiaMemory = 0.2;
 let epsilon = 0.001;
 
 // tracking state
 let canvas = undefined;
 let isPanning = false;
-let lastPanTime, lastPoint, xVelocities, yVelocities;
-let dx, dy;
+let lastPanTime, lastPoint;
+let vx = 0, vy = 0;
 
 let log = document.getElementById('log');
 let log2 = document.getElementById('log2');
@@ -93,19 +94,18 @@ function stop() {
 }
 
 function panStart(point) { 
-    lastPoint = point;
     isPanning = true;
-    xVelocities = [0,0]; yVelocities = [0,0];
+    lastPoint = point;
+    vx = 0;
+    vy = 0;
 }
+
 function panning(point) {
-    dx = (point.x - lastPoint.x) / canvas.scale;
-    dy = (point.y - lastPoint.y) / canvas.scale;
+    let dx = (point.x - lastPoint.x) / canvas.scale;
+    let dy = (point.y - lastPoint.y) / canvas.scale;
 
-    xVelocities[1] = xVelocities[0];
-    xVelocities[0] = dx;
-
-    yVelocities[1] = yVelocities[0];
-    yVelocities[0] = dy;
+    vx = dx * inertiaMemory + vx * (1-inertiaMemory);
+    vy = dy * inertiaMemory + vy * (1-inertiaMemory);
 
     canvas.originx -= dx;
     canvas.originy -= dy;
@@ -115,16 +115,12 @@ function panning(point) {
     lastPanTime = new Date();
 }
 function panEnd() {
-    let now = new Date();
     isPanning = false;
-
-    if (now - lastPanTime < 10) panInertia();
+    let now = new Date();
+    if (now - lastPanTime < 20) requestAnimationFrame(panInertia);
 }
 
 function panInertia() {
-    let vx = (xVelocities[0] + xVelocities[1]) / 2;
-    let vy = (yVelocities[0] + yVelocities[1]) / 2;
-
     if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
     requestAnimationFrame(panInertia);
 
@@ -132,10 +128,8 @@ function panInertia() {
     canvas.originy -= vy;
     canvas.ctx.translate(vx, vy);
 
-    xVelocities[0] *= inertiaFriction;
-    xVelocities[1] *= inertiaFriction;
-    yVelocities[0] *= inertiaFriction;
-    yVelocities[1] *= inertiaFriction;
+    vx *= inertiaFriction;
+    vy *= inertiaFriction;
 }
 
 function pinching(point, zoom) {
