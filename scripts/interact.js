@@ -16,7 +16,6 @@ let lastPanTime, lastPoint;
 let vx = 0, vy = 0;
 
 let log = document.getElementById('log');
-let log2 = document.getElementById('log2');
 
 // touch gestures
 gestures.on('tap', point => log.innerHTML = 'tap');
@@ -35,16 +34,16 @@ gestures.on('touchDragEnd', () => {
     panEnd();
 });
 gestures.on('pinchStart', (point) => {
-    //log2.innerHTML = "pinchStart";
+    log.innerHTML = "pinchStart";
     panStart(point);
 });
 gestures.on('pinching', (point, zoom) => {
-    //log2.innerHTML = zoom;
+    log.innerHTML = "pincing";
     pinching(point, zoom);
     panning(point);
 });
 gestures.on('pinchEnd', () => {
-    //log2.innerHTML = zoom;
+    log.innerHTML = "pinchEnd";
     panEnd();
 });
 
@@ -117,7 +116,7 @@ function panning(point) {
 function panEnd() {
     isPanning = false;
     let now = new Date();
-    if (now - lastPanTime < 20) requestAnimationFrame(panInertia);
+    if (now - lastPanTime < 12) requestAnimationFrame(panInertia);
 }
 
 function panInertia() {

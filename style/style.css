@@ -63,12 +63,6 @@ pre {
     right: 0;
 }
 
-#log2 {
-    position: fixed;
-    top: 0;
-    right: 300px;
-}
-
 #canvas {
     background: lightblue;
     width: 100%;
