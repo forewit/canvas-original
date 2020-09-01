@@ -39,6 +39,7 @@ import { interact } from "./interact.js";
         // DO STUFF
         canvas.render();
         sprite.frame_x = Math.floor(10 * perSec % 6);
+        sprite.rotation += Math.sin(perSec) / 100;
 
         // FPS counter
         var now = Date.now();

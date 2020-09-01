@@ -9,7 +9,7 @@ export class Entity {
         this.y = 100;
         this.w = 128;
         this.h = 128;
-        this.rotation = 1.2; // degrees
+        this.rotation = 0;
         this.handleSize = 5;
     }
     intersects(x, y) {
