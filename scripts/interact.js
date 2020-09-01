@@ -5,8 +5,9 @@ import { Entity } from "./entity.js";
 
 // preferences
 let zoomIntensity = 0.2;
-let inertiaFriction = 0.9;
-let inertiaMemory = 0.2;
+let inertiaFriction = 0.8; // 0 = infinite friction, 1 = no friction
+let inertiaMemory = 0.2; // 0 = infinite memory, 1 = no memory
+let inertiaDropOff = 5 // in milliseconds
 let epsilon = 0.001;
 
 // tracking state
@@ -116,8 +117,11 @@ function panning(point) {
 
 function panEnd() {
     isPanning = false;
-    let now = new Date();
-    if (now - lastPanTime < 10) requestAnimationFrame(panInertia);
+    let elapsed =new Date() - lastPanTime;
+
+    vx *= Math.min(1, inertiaDropOff / elapsed);
+    vy *= Math.min(1, inertiaDropOff / elapsed);
+    requestAnimationFrame(panInertia);
 }
 
 function panInertia() {
