@@ -4,17 +4,14 @@ let doubleTapDelay = 300;
 let longClickDelay = 500;
 let doubleClickDelay = 300;
 
-
 // tracking state
 let elm;
-
 let dragging = false;
 let pinching = false;
 let hypo = undefined;
 let taps = 0;
 let lastTouchEndTime = 0;
 let touch = { identifier: undefined };
-
 let mouseMoving = false;
 let clicks = 0;
 let mouseupTime = 0;

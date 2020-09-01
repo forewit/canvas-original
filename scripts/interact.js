@@ -118,6 +118,8 @@ function setTool(name) {
         default:
             console.log('Invalid tool choice!');
             break;
+
+        // TODO: set default key shortcuts?
     }
 }
 
