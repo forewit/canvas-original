@@ -40,6 +40,7 @@ let callbacks = {
     touchDragEnd: noop,
     pinchStart: noop,
     pinching: noop,
+    pinchEnd: noop,
 };
 
 export let gestures = {
@@ -68,11 +69,11 @@ function stop() {
     elm.removeEventListener('contextmenu', contextmenuHandler);
 }
 
-function copyTouch(touch) {
+function copyTouch(newTouch) {
     return {
-        identifier: touch.identifier,
-        x: touch.clientX,
-        y: touch.clientY
+        identifier: newTouch.identifier,
+        x: newTouch.clientX,
+        y: newTouch.clientY
     }
 }
 
@@ -235,10 +236,11 @@ function touchendHandler(e) {
 
     if (dragging) {
         dragging = false;
-        callbacks.touchDragEnd(touch);
+        callbacks.touchDragEnd();
     } else if (pinching) {
         pinching = false;
         hypo = undefined;
+        callbacks.pinchEnd()
     } else {
         // TAP DETECTION
         if (taps == 0) callbacks.tap(touch);

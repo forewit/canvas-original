@@ -5,10 +5,14 @@ import { Entity } from "./entity.js";
 
 // preferences
 let zoomIntensity = 0.2;
+let inertiaFriction = 0.9;
+let epsilon = 0.001;
 
 // tracking state
 let canvas = undefined;
-let lastPoint = undefined;
+let isPanning = false;
+let lastPanTime, lastPoint, xVelocities, yVelocities;
+let dx, dy;
 
 let log = document.getElementById('log');
 let log2 = document.getElementById('log2');
@@ -25,7 +29,10 @@ gestures.on('touchDragging', point => {
     log.innerHTML = 'touchDragging';
     panning(point)
 });
-gestures.on('touchDragEnd', point => log.innerHTML = 'touchDragEnd');
+gestures.on('touchDragEnd', () => {
+    log.innerHTML = 'touchDragEnd';
+    panEnd();
+});
 gestures.on('pinchStart', (point) => {
     //log2.innerHTML = "pinchStart";
     panStart(point);
@@ -34,6 +41,10 @@ gestures.on('pinching', (point, zoom) => {
     //log2.innerHTML = zoom;
     pinching(point, zoom);
     panning(point);
+});
+gestures.on('pinchEnd', () => {
+    //log2.innerHTML = zoom;
+    panEnd();
 });
 
 // mouse gestures
@@ -53,7 +64,10 @@ gestures.on('mouseDragging', point => {
     log.innerHTML = 'mouseDragging'
     panning(point);
 });
-gestures.on('mouseDragEnd', point => log.innerHTML = 'mouseDragEnd');
+gestures.on('mouseDragEnd', () => {
+    log.innerHTML = 'mouseDragEnd';
+    panEnd();
+});
 
 // shortcut keys
 keys.on('17 82', function (e) {
@@ -78,18 +92,51 @@ function stop() {
     keys.stop();
 }
 
-function panStart(point) { lastPoint = point; }
+function panStart(point) { 
+    lastPoint = point;
+    isPanning = true;
+    xVelocities = [0,0]; yVelocities = [0,0];
+}
 function panning(point) {
-    let dx = (point.x - lastPoint.x) / canvas.scale;
-    let dy = (point.y - lastPoint.y) / canvas.scale;
+    dx = (point.x - lastPoint.x) / canvas.scale;
+    dy = (point.y - lastPoint.y) / canvas.scale;
+
+    xVelocities[1] = xVelocities[0];
+    xVelocities[0] = dx;
+
+    yVelocities[1] = yVelocities[0];
+    yVelocities[0] = dy;
 
     canvas.originx -= dx;
     canvas.originy -= dy;
     canvas.ctx.translate(dx, dy);
 
     lastPoint = point;
+    lastPanTime = new Date();
 }
-function panStop(point) { } // TODO inertia??
+function panEnd() {
+    let now = new Date();
+    isPanning = false;
+
+    if (now - lastPanTime < 10) panInertia();
+}
+
+function panInertia() {
+    let vx = (xVelocities[0] + xVelocities[1]) / 2;
+    let vy = (yVelocities[0] + yVelocities[1]) / 2;
+
+    if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
+    requestAnimationFrame(panInertia);
+
+    canvas.originx -= vx;
+    canvas.originy -= vy;
+    canvas.ctx.translate(vx, vy);
+
+    xVelocities[0] *= inertiaFriction;
+    xVelocities[1] *= inertiaFriction;
+    yVelocities[0] *= inertiaFriction;
+    yVelocities[1] *= inertiaFriction;
+}
 
 function pinching(point, zoom) {
 
@@ -111,17 +158,6 @@ function pinching(point, zoom) {
 
     // Update scale and others.
     canvas.scale *= zoom;
-}
-
-function wheel(point, delta) {
-    // Normalize wheel to +1 or -1.
-    let wheel = delta < 0 ? 1 : -1;
-
-    // Compute zoom factor.
-    let zoom = Math.exp(wheel * zoomIntensity);
-
-    // zoom
-    zoom(point, zoom);
 }
 
 function zoom(point, delta) {
