@@ -17,6 +17,7 @@ import { interact } from "./interact.js";
     let canvas = new Canvas(document.getElementById("canvas"));
     let layer = new Layer();
     let sprite = new Sprite("/img/fireball.png");
+    sprite.rotation = 1;
 
     // resizing canvas
     window.addEventListener("resize", function () { canvas.resize() });
@@ -39,7 +40,7 @@ import { interact } from "./interact.js";
         // DO STUFF
         canvas.render();
         sprite.frame_x = Math.floor(10 * perSec % 6);
-        sprite.rotation += Math.sin(perSec) / 100;
+        //sprite.rotation += Math.sin(perSec) / 300;
 
         // FPS counter
         var now = Date.now();

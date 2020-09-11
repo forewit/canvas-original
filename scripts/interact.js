@@ -1,6 +1,7 @@
 import { gestures } from "./gestures.js";
 import { keys } from "./keys.js";
 import { Entity } from "./entity.js";
+import * as utils from "./utils.js";
 
 
 // preferences
@@ -9,6 +10,7 @@ let inertiaFriction = 0.8; // 0 = infinite friction, 1 = no friction
 let inertiaMemory = 0.2; // 0 = infinite memory, 1 = no memory
 let inertiaDropOff = 5 // in milliseconds
 let epsilon = 0.001;
+let handleSize = 5;
 
 // tracking state
 /**
@@ -18,21 +20,22 @@ let epsilon = 0.001;
  * 2 - measure
  * 3 - draw
  */
-export let interact = {
-    setTool: setTool,
-    start: start,
-    stop: stop,
-};
-
+let selected = [];
 let canvas = undefined;
 let isPanning = false;
 let lastPanTime, lastPoint;
 let vx = 0, vy = 0;
 let log = document.getElementById('log');
 
+export let interact = {
+    setTool: setTool,
+    start: start,
+    stop: stop,
+};
+
 function setTool(name) {
     gestures.clear();
-    
+
     switch (name) {
         // ********************** PAN TOOL *************************
         case 'pan':
@@ -76,6 +79,7 @@ function setTool(name) {
             // mouse gestures
             gestures.on('click', point => {
                 console.log('click');
+                console.log(getActiveHandles(point.x, point.y));
             });
             gestures.on('doubleClick', point => {
                 console.log('double click');
@@ -217,46 +221,52 @@ function wheel(point, delta) {
     zoomOnPoint(point, zoom);
 }
 
-/*
 let handle = new Entity()
-handle.on = function(x,y) {
-        //returns [x, y] where x or y can be -1, 0, or 1. Examples:
-        //* [-1, 0] is the Left edge
-        //* [1, 1] is the bottom right corner
-        //* [] intersects but not on handle
-        //* undefined -0
+handle.rotation= 1;
 
-       let activeHandles = [];
+let outerX, outerY, outerW, outerH,
+    innerX, innerY, innerW, innerH,
+    localPoint, localX, localY,
+    activeHandles = [];
 
-       let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);
-       let localX = localPoint[0];
-       let localY = localPoint[1];
+function getActiveHandles(x, y) {
+    //returns [x, y] where x or y can be -1, 0, or 1. Examples:
+    //* [-1, 0] is the Left edge
+    //* [1, 1] is the bottom right corner
+    //* [] intersects but not on handle
+    //* undefined -0
+    activeHandles = [];
 
-       let outerX = this.x - this.handleSize;
-       let outerY = this.y - this.handleSize;
-       let outerW = this.w + this.handleSize * 2;
-       let outerH = this.h + this.handleSize * 2;
+    localPoint = utils.rotatePoint(handle.x, handle.y, x, y, handle.rotation);
+    localX = localPoint[0];
+    localY = localPoint[1];
 
-       // return if point is outside the outer rect
-       if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return undefined;
+    if (handle.updated) {
+        outerX = handle.x - handleSize;
+        outerY = handle.y - handleSize;
+        outerW = handle.w + handleSize * 2;
+        outerH = handle.h + handleSize * 2;
+    }
+    // return if point is outside the outer rect
+    if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return undefined;
 
+    if (handle.updated) {
+        innerX = handle.x + handleSize;
+        innerY = handle.y + handleSize;
+        innerW = handle.w - handleSize * 2;
+        innerH = handle.h - handleSize * 2;
+    }
 
-       let innerX = this.x + this.handleSize;
-       let innerY = this.y + this.handleSize;
-       let innerW = this.w - this.handleSize * 2;
-       let innerH = this.h - this.handleSize * 2;
+    // return if point is inside the inner rect
+    if (utils.pointInRectangle(localX, localY, innerX, innerY, innerW, innerH)) return activeHandles;
 
-       // return if point is inside the inner rect
-       if (utils.pointInRectangle(localX, localY, innerX, innerY, innerW, innerH)) return activeHandles;
+    activeHandles = [0, 0];
+    // check left and right handles
+    if (localX <= innerX) activeHandles[0] = -1;
+    else if (localX >= innerX + innerW) activeHandles[0] = 1;
 
-       activeHandles = [0,0];
-       // check left and right handles
-       if (localX <= innerX) activeHandles[0] = -1;
-       else if (localX >= innerX + innerW) activeHandles[0] = 1;
-
-       // check top and bottom handles
-       if (localY <= innerY) activeHandles[1] = -1;
-       else if (localY >= innerY + innerH) activeHandles[1] = 1;
-       return activeHandles;
+    // check top and bottom handles
+    if (localY <= innerY) activeHandles[1] = -1;
+    else if (localY >= innerY + innerH) activeHandles[1] = 1;
+    return activeHandles;
 }
-*/
