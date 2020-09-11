@@ -29,13 +29,5 @@ export class Entity {
         return utils.pointInRectangle(localPoint[0], localPoint[1], this._x, this._y, this._w, this._h);
     }
     destroy() { console.log("Please override entity.destroy()!") }
-    render(ctx) {
-        // show handle areas
-        let handleSize = 5;
-        ctx.beginPath();
-        ctx.rect(0, 0, this._w, this._h);
-        ctx.rect(-handleSize, -handleSize, this._w + handleSize * 2, this._h + handleSize * 2);
-        ctx.rect(handleSize, handleSize, this._w - handleSize * 2, this._h - handleSize * 2);
-        ctx.stroke()
-    }
+    render(ctx) { }
 }

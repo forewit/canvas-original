@@ -29,6 +29,9 @@ export class Layer {
         return false;
     }
     addEntity(entity) {
+        for (var i = 0, len = this.entities.length; i < len; i++) {
+            if (this.entities[i].ID == entity.ID) return;
+        }
         this.entities.push(entity);
     }
     destroyEntity(entity) {

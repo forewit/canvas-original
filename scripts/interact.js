@@ -79,7 +79,8 @@ function setTool(name) {
             // mouse gestures
             gestures.on('click', point => {
                 console.log('click');
-                console.log(getActiveHandles(point.x, point.y));
+                console.log(pointOnHandle(point.x, point.y));
+                canvas.layers[0].addEntity(handle);
             });
             gestures.on('doubleClick', point => {
                 console.log('double click');
@@ -229,7 +230,22 @@ let outerX, outerY, outerW, outerH,
     localPoint, localX, localY,
     activeHandles = [];
 
-function getActiveHandles(x, y) {
+handle.render = function (ctx) {
+
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+
+    ctx.beginPath();
+    ctx.rect(0, 0, this.w, this.h);
+    ctx.rect(-handleSize, -handleSize, this.w + handleSize * 2, this.h + handleSize * 2);
+    ctx.rect(handleSize, handleSize, this.w - handleSize * 2, this.h - handleSize * 2);
+    ctx.stroke();
+
+    ctx.rotate(-this.rotation);
+    ctx.translate(-this.x, -this.y);
+}
+
+function pointOnHandle(x, y) {
     //returns [x, y] where x or y can be -1, 0, or 1. Examples:
     //* [-1, 0] is the Left edge
     //* [1, 1] is the bottom right corner
@@ -237,7 +253,7 @@ function getActiveHandles(x, y) {
     //* undefined -0
     activeHandles = [];
 
-    localPoint = utils.rotatePoint(handle.x, handle.y, x, y, handle.rotation);
+    localPoint = utils.rotatePoint(handle.x, handle.y, x + canvas.originx, y + canvas.originy, handle.rotation);
     localX = localPoint[0];
     localY = localPoint[1];
 
