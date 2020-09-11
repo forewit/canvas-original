@@ -222,7 +222,7 @@ function wheel(point, delta) {
 }
 
 let handle = new Entity()
-handle.rotation= 1;
+handle.rotation = 1;
 
 let outerX, outerY, outerW, outerH,
     innerX, innerY, innerW, innerH,
