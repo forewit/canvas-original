@@ -1,22 +1,17 @@
 import { Entity } from "./entity.js";
+import * as utils from "./utils.js";
 
 export class Sprite extends Entity {
-    constructor(URL) {
+    constructor(url) {
         super(); // call entity class constructor
 
-        this.image = new Image();
+        this.image = utils.getImage(url);
         this.frame_w = 512;
         this.frame_h = 512;
         this.frame_x = 0;
         this.frame_y = 0;
-        this.isLoaded = false;
         this.sx = 0;
         this.sy = 0;
-
-        // initialize image
-        var me = this;
-        me.image.src = URL;
-        me.image.onload = function () { me.isLoaded = true; }
     }
 
     get frame_x() { return this._frame_x; }
@@ -34,8 +29,6 @@ export class Sprite extends Entity {
     }
 
     render(ctx) {
-        if (!this.isLoaded) return;
-
         if (this.updated) {
             this.sx = this.frame_x * this.frame_w;
             this.sy = this.frame_y * this.frame_h;

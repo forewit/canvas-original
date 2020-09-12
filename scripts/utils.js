@@ -10,6 +10,15 @@ export function generate_ID() {
     return '_' + Math.random().toString(36).substr(2, 9);
 }
 
+let images = {};
+export function getImage(url) {
+    if (!images[url]) {        
+        images[url] = new Image();
+        images[url].src = url;
+    }
+    return images[url];
+}
+
 /**
  * Rotates a point (x, y) around a center point (cx, cy)
  * a number of radians (rad)
