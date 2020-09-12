@@ -10,8 +10,11 @@ export class Canvas {
         this.originx = 0;
         this.originy = 0;
         this.scale = 1;
+        
+        let firstLayer = new Layer();
+        this.activeLayer = firstLayer;
+        this.addLayer(firstLayer);
 
-        if (!(this.ctx instanceof CanvasRenderingContext2D)) alert("Canvas API unavailable");
         this.resize();
     }
     bringForward(layer) {
@@ -35,12 +38,15 @@ export class Canvas {
         return false;
     }
     addLayer(layer) {
+        for (var i = 0, len = this.layers.length; i < len; i++) {
+            if (this.layers[i].ID == layer.ID) return
+        }
         this.layers.push(layer);
     }
     destroyLayer() {
         for (var i = 0, len = this.layers.length; i < len; i++) {
             if (this.layers[i].ID == layer.ID) {
-                this.layers[i].destroy;
+                this.layers[i].destroy();
                 this.layers.splice(i, 1);
                 return true;
             }isadmin
@@ -70,11 +76,14 @@ export class Canvas {
         this.ctx.rect(this.originx, this.originy, 10, 10);
         this.ctx.stroke();
 
-        // TODO:
-        // - draw active layer
-        // - render all layers
-        for (var i = 0, len = this.layers.length; i < len; i++) {
-            this.layers[i].render(this.ctx); 
-        }
+        // re-render active layer
+        this.activeLayer.render();
+
+        // draw each layer canvas to the context
+        this.layers.forEach(layer => {
+            this.ctx.drawImage(layer.canvas, 
+                this.originx, this.originy, 
+                this.rect.width/this.scale, this.rect.height/this.scale);
+        });
     }
 }

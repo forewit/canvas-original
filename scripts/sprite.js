@@ -34,9 +34,6 @@ export class Sprite extends Entity {
             0, 0, 
             this.w, this.h);
 
-        // draw outline
-        super.render(ctx);
-
         ctx.rotate(-this.rotation);
         ctx.translate(-this.x, -this.y);
     }

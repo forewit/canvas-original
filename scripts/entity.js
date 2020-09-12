@@ -29,5 +29,5 @@ export class Entity {
         return utils.pointInRectangle(localPoint[0], localPoint[1], this._x, this._y, this._w, this._h);
     }
     destroy() { console.log("Please override entity.destroy()!") }
-    render(ctx) { }
+    render() { console.log("Please override entity.render()!") }
 }

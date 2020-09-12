@@ -3,11 +3,14 @@ import * as utils from "./utils.js";
 export class Layer {
     constructor () {
         this.ID = utils.generate_ID();
-        this.opacity = 1;
-        this.x_parallax = 0;
-        this.y_parallax = 0;
+        //this.opacity = 1;
+        //this.x_parallax = 0;
+        //this.y_parallax = 0;
         this.entities = []; //sprites, particles, etc.
+        this.canvas = document.createElement('canvas');
+        this.ctx = canvas.getContext('2d');
     }
+
     bringForward(entity) {
         for (var i = 0, len = this.entities.length; i < len; i++) {
             if (this.entities[i].ID == entity.ID) {
@@ -18,6 +21,7 @@ export class Layer {
         }
         return false;
     }
+    
     sendBackward(entity) {
         for (var i = 0, len = this.entities.length; i < len; i++) {
             if (this.entities[i].ID == entity.ID) {
@@ -28,12 +32,14 @@ export class Layer {
         }
         return false;
     }
+    
     addEntity(entity) {
         for (var i = 0, len = this.entities.length; i < len; i++) {
             if (this.entities[i].ID == entity.ID) return;
         }
         this.entities.push(entity);
     }
+    
     destroyEntity(entity) {
         for (var i = 0, len = this.entities.length; i < len; i++) {
             if (this.entities[i].ID == entity.ID) {
@@ -44,18 +50,23 @@ export class Layer {
         }
         return false;
     }
+    
     destroy() {
-        for (var i = 0, len = this.entities.length; i < len; i++) {
-            this.entities[i].destroy();
-        }
+        this.entities.forEach(entity => entity.destroy());
         this.entities.length = 0;
     }
-    intersections(x, y) {
+    
+    getIntersections(x, y) {
+        let intersections = [];
 
+        this.entities.forEach(entity => {
+            if (entity.intersects(x, y)) intersections.push(entity);
+        });
+
+        return intersections;
     }
-    render(ctx) {
-        for (var i = 0, len = this.entities.length; i < len; i++) {
-            this.entities[i].render(ctx);
-        }
+    
+    render() {
+        this.entities.forEach(entity => entity.render(this.ctx));
     }
 }

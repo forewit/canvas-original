@@ -15,13 +15,12 @@ import { interact } from "./interact.js";
     // Create test canvas and toolbar
     let toolbar = new Toolbar(document.getElementById("toolbar"), true);
     let canvas = new Canvas(document.getElementById("canvas"));
-    let layer = new Layer();
+    let layer = canvas.activeLayer;
     let sprite = new Sprite("/img/fireball.png");
     sprite.rotation = 1;
 
     // resizing canvas
     window.addEventListener("resize", function () { canvas.resize() });
-    canvas.addLayer(layer);
     layer.addEntity(sprite);
 
     interact.start(canvas);
@@ -40,7 +39,7 @@ import { interact } from "./interact.js";
         // DO STUFF
         canvas.render();
         sprite.frame_x = Math.floor(10 * perSec % 6);
-        //sprite.rotation += Math.sin(perSec) / 300;
+        //sprite.x -= 1;
 
         // FPS counter
         var now = Date.now();
