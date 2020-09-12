@@ -79,8 +79,8 @@ function setTool(name) {
             // mouse gestures
             gestures.on('click', point => {
                 console.log('click');
-                console.log(pointOnHandle(point.x, point.y));
-                canvas.layers[0].addEntity(handle);
+                console.log(getHandleIntersections(point.x, point.y));
+                canvas.UILayer.addEntity(handles);
             });
             gestures.on('doubleClick', point => {
                 console.log('double click');
@@ -222,16 +222,15 @@ function wheel(point, delta) {
     zoomOnPoint(point, zoom);
 }
 
-let handle = new Entity()
-handle.rotation = 1;
+let handles = new Entity()
+handles.rotation = 1;
 
 let outerX, outerY, outerW, outerH,
     innerX, innerY, innerW, innerH,
     localPoint, localX, localY,
     activeHandles = [];
 
-handle.render = function (ctx) {
-
+handles.render = function (ctx) {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
 
@@ -245,7 +244,14 @@ handle.render = function (ctx) {
     ctx.translate(-this.x, -this.y);
 }
 
-function pointOnHandle(x, y) {
+function showHandles() {
+
+}
+function hideHandles() {
+
+}
+
+function getHandleIntersections(x, y) {
     //returns [x, y] where x or y can be -1, 0, or 1. Examples:
     //* [-1, 0] is the Left edge
     //* [1, 1] is the bottom right corner
@@ -253,24 +259,24 @@ function pointOnHandle(x, y) {
     //* undefined -0
     activeHandles = [];
 
-    localPoint = utils.rotatePoint(handle.x, handle.y, x + canvas.originx, y + canvas.originy, handle.rotation);
+    localPoint = utils.rotatePoint(handles.x, handles.y, x + canvas.originx, y + canvas.originy, handles.rotation);
     localX = localPoint[0];
     localY = localPoint[1];
 
-    if (handle.updated) {
-        outerX = handle.x - handleSize;
-        outerY = handle.y - handleSize;
-        outerW = handle.w + handleSize * 2;
-        outerH = handle.h + handleSize * 2;
+    if (handles.updated) {
+        outerX = handles.x - handleSize;
+        outerY = handles.y - handleSize;
+        outerW = handles.w + handleSize * 2;
+        outerH = handles.h + handleSize * 2;
     }
     // return if point is outside the outer rect
     if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return undefined;
 
-    if (handle.updated) {
-        innerX = handle.x + handleSize;
-        innerY = handle.y + handleSize;
-        innerW = handle.w - handleSize * 2;
-        innerH = handle.h - handleSize * 2;
+    if (handles.updated) {
+        innerX = handles.x + handleSize;
+        innerY = handles.y + handleSize;
+        innerW = handles.w - handleSize * 2;
+        innerH = handles.h - handleSize * 2;
     }
 
     // return if point is inside the inner rect

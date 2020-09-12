@@ -10,6 +10,8 @@ export class Entity {
         this._w = 128;
         this._h = 128;
         this._rotation = 0;
+
+        // instances should set updatd to false when rendered
         this.updated = true;
     }
     get x() { return this._x; }

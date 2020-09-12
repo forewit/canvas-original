@@ -54,14 +54,11 @@ export class Layer {
         this.entities.length = 0;
     }
     
-    getIntersections(x, y) {
-        let intersections = [];
-
-        this.entities.forEach(entity => {
-            if (entity.intersects(x, y)) intersections.push(entity);
-        });
-
-        return intersections;
+    getFirstIntersection(x, y) {
+        for (var i = this.entities.length - 1; i >= 0; i--) {
+            if (this.entities[i].intersects(x, y)) return this.entities[i];
+        }
+        return undefined;
     }
     
     render(ctx) {

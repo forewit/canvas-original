@@ -15,13 +15,16 @@ import { interact } from "./interact.js";
     // Create test canvas and toolbar
     let toolbar = new Toolbar(document.getElementById("toolbar"), true);
     let canvas = new Canvas(document.getElementById("canvas"));
-    let layer = canvas.activeLayer;
+    let layer = new Layer();
     let sprite = new Sprite("/img/fireball.png");
     sprite.rotation = 1;
 
     // resizing canvas
     window.addEventListener("resize", function () { canvas.resize() });
     layer.addEntity(sprite);
+
+    canvas.addLayer(layer);
+    canvas.activeLayer = layer;
 
     interact.start(canvas);
     interact.setTool('pan');

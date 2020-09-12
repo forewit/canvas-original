@@ -10,13 +10,22 @@ export class Canvas {
         this.originx = 0;
         this.originy = 0;
         this.scale = 1;
-        
-        let firstLayer = new Layer();
-        this.activeLayer = firstLayer;
-        this.addLayer(firstLayer);
+        this.UILayer = new Layer();
+        this._activeLayer = undefined;
 
         this.resize();
     }
+
+    get activeLayer() { return this._activeLayer; }
+    set activeLayer(newActiveLayer) {
+        for (var i = 0, len = this.layers.length; i < len; i++) {
+            if (this.layers[i].ID == newActiveLayer.ID) {
+                this._activeLayer = newActiveLayer;
+                return;
+            }
+        }
+    }
+
     bringForward(layer) {
         for (var i = 0, len = this.layers.length; i < len; i++) {
             if (this.layers[i].ID == layer.ID) {
@@ -27,6 +36,7 @@ export class Canvas {
         }
         return false;
     }
+
     sendBackward(layer) {
         for (var i = 0, len = this.layers.length; i < len; i++) {
             if (this.layers[i].ID == layer.ID) {
@@ -37,15 +47,20 @@ export class Canvas {
         }
         return false;
     }
+
     addLayer(layer) {
         for (var i = 0, len = this.layers.length; i < len; i++) {
             if (this.layers[i].ID == layer.ID) return
         }
         this.layers.push(layer);
     }
+
     destroyLayer() {
         for (var i = 0, len = this.layers.length; i < len; i++) {
             if (this.layers[i].ID == layer.ID) {
+                if (this.layers[i].ID == this._activeLayer.ID) {
+                    this._activeLayer = undefined;
+                }
                 this.layers[i].destroy();
                 this.layers.splice(i, 1);
                 return true;
@@ -53,6 +68,7 @@ export class Canvas {
         }
         return false;
     }
+
     resize() {
         // recalculate canvas size
         this.rect = this.elm.getBoundingClientRect();
@@ -64,6 +80,7 @@ export class Canvas {
         this.ctx.scale(this.scale,this.scale);
         this.ctx.translate(-this.originx, -this.originy);
     }
+
     render() {
         // Use the identity matrix while clearing the canvas
         this.ctx.clearRect(
@@ -76,7 +93,10 @@ export class Canvas {
         this.ctx.rect(this.originx, this.originy, 10, 10);
         this.ctx.stroke();
 
-        // draw each layer
+        // render content layers
         this.layers.forEach(layer => layer.render(this.ctx));
+
+        // render UI layer
+        this.UILayer.render(this.ctx);
     }
 }
