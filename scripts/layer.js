@@ -37,7 +37,7 @@ export class Layer {
         }
         this.entities.push(entity);
     }
-    
+
     destroyEntity(entity) {
         for (var i = 0, len = this.entities.length; i < len; i++) {
             if (this.entities[i].ID == entity.ID) {

@@ -242,12 +242,10 @@ handles.render = function (ctx) {
 
     ctx.rotate(-this.rotation);
     ctx.translate(-this.x, -this.y);
+    this.updated = false;
 }
 
-function showHandles() {
-
-}
-function hideHandles() {
+function drawHandlesOnSeclection() {
 
 }
 
@@ -264,6 +262,7 @@ function getHandleIntersections(x, y) {
     localY = localPoint[1];
 
     if (handles.updated) {
+        console.log("hi");
         outerX = handles.x - handleSize;
         outerY = handles.y - handleSize;
         outerW = handles.w + handleSize * 2;
