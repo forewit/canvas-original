@@ -76,14 +76,7 @@ export class Canvas {
         this.ctx.rect(this.originx, this.originy, 10, 10);
         this.ctx.stroke();
 
-        // re-render active layer
-        this.activeLayer.render();
-
-        // draw each layer canvas to the context
-        this.layers.forEach(layer => {
-            this.ctx.drawImage(layer.canvas, 
-                this.originx, this.originy, 
-                this.rect.width/this.scale, this.rect.height/this.scale);
-        });
+        // draw each layer
+        this.layers.forEach(layer => layer.render(this.ctx));
     }
 }

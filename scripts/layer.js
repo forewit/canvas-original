@@ -7,8 +7,6 @@ export class Layer {
         //this.x_parallax = 0;
         //this.y_parallax = 0;
         this.entities = []; //sprites, particles, etc.
-        this.canvas = document.createElement('canvas');
-        this.ctx = canvas.getContext('2d');
     }
 
     bringForward(entity) {
@@ -66,7 +64,7 @@ export class Layer {
         return intersections;
     }
     
-    render() {
-        this.entities.forEach(entity => entity.render(this.ctx));
+    render(ctx) {
+        this.entities.forEach(entity => entity.render(ctx));
     }
 }
