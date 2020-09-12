@@ -27,8 +27,8 @@ export class Entity {
     set rotation(newRotation) { this._rotation = newRotation; this.updated = true; }
 
     intersects(x, y) {
-        let localPoint = utils.rotatePoint(this._x, this._y, x, y, this._rotation);
-        return utils.pointInRectangle(localPoint[0], localPoint[1], this._x, this._y, this._w, this._h);
+        let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);
+        return utils.pointInRectangle(localPoint[0], localPoint[1], this.x, this.y, this.w, this.h);
     }
     destroy() { console.log("Please override entity.destroy()!") }
     render() { console.log("Please override entity.render()!") }

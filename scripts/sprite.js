@@ -37,8 +37,8 @@ export class Sprite extends Entity {
         if (!this.isLoaded) return;
 
         if (this.updated) {
-            this.sx = this._frame_x * this._frame_w;
-            this.sy = this._frame_y * this._frame_h;
+            this.sx = this.frame_x * this.frame_w;
+            this.sy = this.frame_y * this.frame_h;
         } 
         this.updated = false;
         
