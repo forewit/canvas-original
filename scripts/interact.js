@@ -234,23 +234,31 @@ let outerX, outerY, outerW, outerH,
     activeHandles = [];
 
 handles.render = function (ctx) {
+    if (this.updated) {
+        
+    }
+    this.updated = false;
+
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
 
     ctx.beginPath();
-    ctx.rect(0, 0, this.w, this.h);
-    ctx.rect(-handleSize, -handleSize, this.w + handleSize * 2, this.h + handleSize * 2);
-    ctx.rect(handleSize, handleSize, this.w - handleSize * 2, this.h - handleSize * 2);
+    ctx.rect(-this.halfw, -this.halfh, this.w, this.h);
+    ctx.rect(-handleSize - this.halfw, -handleSize - this.halfh, this.w + handleSize * 2, this.h + handleSize * 2);
+    ctx.rect(handleSize - this.halfw, handleSize - this.halfh, this.w - handleSize * 2, this.h - handleSize * 2);
     ctx.stroke();
 
     ctx.rotate(-this.rotation);
     ctx.translate(-this.x, -this.y);
-    this.updated = false;
 }
 
 function addToSelection(point) {
     canvas.UILayer.addEntity(handles);
     console.log(getHandleIntersection(point.x, point.y));
+
+    // set handle x, y, w, h to encompass selection
+    let intersection = canvas.activeLayer.getFirstIntersection(point.x, point.y);
+    console.log(intersection);
 }
 
 function clearSelection() {
@@ -269,16 +277,16 @@ function getHandleIntersection(x, y) {
     localX = localPoint[0];
     localY = localPoint[1];
 
-    outerX = handles.x - handleSize;
-    outerY = handles.y - handleSize;
+    outerX = handles.x - handles.halfw - handleSize;
+    outerY = handles.y - handles.halfh - handleSize;
     outerW = handles.w + handleSize * 2;
     outerH = handles.h + handleSize * 2;
 
     // return if point is outside the outer rect
     if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return undefined;
 
-    innerX = handles.x + handleSize;
-    innerY = handles.y + handleSize;
+    innerX = handles.x - handles.halfw + handleSize;
+    innerY = handles.y - handles.halfh + handleSize;
     innerW = handles.w - handleSize * 2;
     innerH = handles.h - handleSize * 2;
 

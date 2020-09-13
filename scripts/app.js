@@ -46,7 +46,9 @@ import * as utils from "./utils.js";
         // DO STUFF
         canvas.render();
         sprite.frame_x = Math.floor(10 * perSec % 6);
-        //sprite.x -= 1;
+        sprite.rotation += 0.01;
+        //sprite.h += 0.5;
+        //sprite.x += 1;
 
         // FPS counter
         var now = Date.now();

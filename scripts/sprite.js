@@ -6,10 +6,11 @@ export class Sprite extends Entity {
         super(); // call entity class constructor
 
         this.image = utils.getImage(url);
-        this.frame_w = 512;
-        this.frame_h = 512;
-        this.frame_x = 0;
-        this.frame_y = 0;
+        this._frame_w = 512;
+        this._frame_h = 512;
+        this._frame_x = 0;
+        this._frame_y = 0;
+
         this.sx = 0;
         this.sy = 0;
     }
@@ -28,15 +29,18 @@ export class Sprite extends Entity {
         if (this.updated) {
             this.sx = this.frame_x * this.frame_w;
             this.sy = this.frame_y * this.frame_h;
+            this.updated = false;
         } 
-        this.updated = false;
-        
+
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
+
+        ctx.rect(-this.halfw, -this.halfh, this.w, this.h);
+    ctx.stroke();
         ctx.drawImage(this.image, 
             this.sx, this.sy, 
             this.frame_w, this.frame_h, 
-            0, 0, 
+            -this.halfw, -this.halfh, 
             this.w, this.h);
 
         ctx.rotate(-this.rotation);
