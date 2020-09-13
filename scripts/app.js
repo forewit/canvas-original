@@ -3,7 +3,7 @@ import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Toolbar } from "./toolbar.js";
 import { interact } from "./interact.js";
-
+import * as utils from "./utils.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -59,6 +59,7 @@ import { interact } from "./interact.js";
 
     // Global exports
     exports.canvas = canvas;
+    exports.utils = utils;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 })));

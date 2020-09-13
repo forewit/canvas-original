@@ -24,10 +24,6 @@ export class Sprite extends Entity {
     set frame_w(newFrameW) { this.updated = true; this._frame_w = newFrameW; }
     set frame_h(newFrameH) { this.updated = true; this._frame_h = newFrameH; }
 
-    destroy() {
-
-    }
-
     render(ctx) {
         if (this.updated) {
             this.sx = this.frame_x * this.frame_w;

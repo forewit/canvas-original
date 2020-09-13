@@ -38,21 +38,17 @@ export class Layer {
         this.entities.push(entity);
     }
 
-    destroyEntity(entity) {
+    removeEntity(entity) {
         for (var i = 0, len = this.entities.length; i < len; i++) {
             if (this.entities[i].ID == entity.ID) {
-                this.entities[i].destroy();
                 this.entities.splice(i, 1);
-                return true;
+                return;
             }
         }
         return false;
     }
     
-    destroy() {
-        this.entities.forEach(entity => entity.destroy());
-        this.entities.length = 0;
-    }
+    destroy() { this.entities.length = 0; }
     
     getFirstIntersection(x, y) {
         for (var i = this.entities.length - 1; i >= 0; i--) {
