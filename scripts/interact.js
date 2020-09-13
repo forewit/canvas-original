@@ -277,7 +277,7 @@ function getHandleIntersection(x, y) {
     //* [] intersects but not on handle
     //* undefined = no intersections
     activeHandles = [];
-    localPoint = utils.rotatePoint(handles.x, handles.y, x + canvas.originx, y + canvas.originy, handles.rotation);
+    localPoint = utils.rotatePoint(handles.x, handles.y, x, y, handles.rotation);
 
     outerX = handles.x - handles.halfw - handleSize;
     outerY = handles.y - handles.halfh - handleSize;
