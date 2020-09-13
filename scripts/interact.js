@@ -235,7 +235,7 @@ let outerX, outerY, outerW, outerH,
 
 handles.render = function (ctx) {
     if (this.updated) {
-        
+
     }
     this.updated = false;
 
@@ -256,17 +256,25 @@ function addToSelection(screenPoint) {
     // convert screen point to canvas point
     let point = canvas.screenToCanvas(screenPoint);
 
-    // show handles
-    canvas.UILayer.addEntity(handles);
-
-    let handle = getHandleIntersection(point.x, point.y);
+    // check intersections
+    let activeHandle = getHandleIntersection(point.x, point.y);
     let intersection = canvas.activeLayer.getFirstIntersection(point.x, point.y);
-    
-    console.log(screenPoint, point);
-    console.log(handle, intersection);
+    if (intersection) selected.push(intersection);
+    console.log(activeHandle, selected);
+
+    // show handles
+    //if (selected.length == 0) return;
+    handles.x = selected[0].x;
+    handles.y = selected[0].y;
+    handles.w = selected[0].w;
+    handles.h = selected[0].h;
+    handles.rotation = selected[0].rotation;
+
+    canvas.UILayer.addEntity(handles);
 }
 
 function clearSelection() {
+    selected.length = 0;
     canvas.UILayer.removeEntity(handles);
 }
 
