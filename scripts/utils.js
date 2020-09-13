@@ -28,7 +28,7 @@ export function rotatePoint(cx, cy, x, y, rad) {
         sin = Math.sin(rad),
         nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
         ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-    return [nx, ny];
+    return {x:nx, y:ny};
 }
 
 export function pointInRectangle(x, y, rx, ry, rw, rh) {

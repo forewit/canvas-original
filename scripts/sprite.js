@@ -30,17 +30,17 @@ export class Sprite extends Entity {
             this.sx = this.frame_x * this.frame_w;
             this.sy = this.frame_y * this.frame_h;
             this.updated = false;
-        } 
+        }
 
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
 
         ctx.rect(-this.halfw, -this.halfh, this.w, this.h);
-    ctx.stroke();
-        ctx.drawImage(this.image, 
-            this.sx, this.sy, 
-            this.frame_w, this.frame_h, 
-            -this.halfw, -this.halfh, 
+        ctx.stroke();
+        ctx.drawImage(this.image,
+            this.sx, this.sy,
+            this.frame_w, this.frame_h,
+            -this.halfw, -this.halfh,
             this.w, this.h);
 
         ctx.rotate(-this.rotation);

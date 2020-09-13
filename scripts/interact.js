@@ -252,13 +252,18 @@ handles.render = function (ctx) {
     ctx.translate(-this.x, -this.y);
 }
 
-function addToSelection(point) {
-    canvas.UILayer.addEntity(handles);
-    console.log(getHandleIntersection(point.x, point.y));
+function addToSelection(screenPoint) {
+    // convert screen point to canvas point
+    let point = canvas.screenToCanvas(screenPoint);
 
-    // set handle x, y, w, h to encompass selection
+    // show handles
+    canvas.UILayer.addEntity(handles);
+
+    let handle = getHandleIntersection(point.x, point.y);
     let intersection = canvas.activeLayer.getFirstIntersection(point.x, point.y);
-    console.log(intersection);
+    
+    console.log(screenPoint, point);
+    console.log(handle, intersection);
 }
 
 function clearSelection() {
@@ -272,10 +277,7 @@ function getHandleIntersection(x, y) {
     //* [] intersects but not on handle
     //* undefined = no intersections
     activeHandles = [];
-
     localPoint = utils.rotatePoint(handles.x, handles.y, x + canvas.originx, y + canvas.originy, handles.rotation);
-    localX = localPoint[0];
-    localY = localPoint[1];
 
     outerX = handles.x - handles.halfw - handleSize;
     outerY = handles.y - handles.halfh - handleSize;
@@ -283,7 +285,7 @@ function getHandleIntersection(x, y) {
     outerH = handles.h + handleSize * 2;
 
     // return if point is outside the outer rect
-    if (!utils.pointInRectangle(localX, localY, outerX, outerY, outerW, outerH)) return undefined;
+    if (!utils.pointInRectangle(localPoint.x, localPoint.y, outerX, outerY, outerW, outerH)) return undefined;
 
     innerX = handles.x - handles.halfw + handleSize;
     innerY = handles.y - handles.halfh + handleSize;
@@ -291,15 +293,15 @@ function getHandleIntersection(x, y) {
     innerH = handles.h - handleSize * 2;
 
     // return if point is inside the inner rect
-    if (utils.pointInRectangle(localX, localY, innerX, innerY, innerW, innerH)) return activeHandles;
+    if (utils.pointInRectangle(localPoint.x, localPoint.y, innerX, innerY, innerW, innerH)) return activeHandles;
 
     activeHandles = [0, 0];
     // check left and right handles
-    if (localX <= innerX) activeHandles[0] = -1;
-    else if (localX >= innerX + innerW) activeHandles[0] = 1;
+    if (localPoint.x <= innerX) activeHandles[0] = -1;
+    else if (localPoint.x >= innerX + innerW) activeHandles[0] = 1;
 
     // check top and bottom handles
-    if (localY <= innerY) activeHandles[1] = -1;
-    else if (localY >= innerY + innerH) activeHandles[1] = 1;
+    if (localPoint.y <= innerY) activeHandles[1] = -1;
+    else if (localPoint.y >= innerY + innerH) activeHandles[1] = 1;
     return activeHandles;
 }

@@ -64,9 +64,16 @@ export class Canvas {
                 this.layers[i].destroy();
                 this.layers.splice(i, 1);
                 return true;
-            }isadmin
+            } isadmin
         }
         return false;
+    }
+
+    screenToCanvas(screenPoint) {
+        return {
+            x: (screenPoint.x + this.rect.x) / this.scale + this.originx,
+            y: (screenPoint.y + this.rect.y) / this.scale + this.originy
+        };
     }
 
     resize() {
@@ -77,19 +84,19 @@ export class Canvas {
         this.ctx.canvas.width = this.rect.width;
         this.ctx.canvas.height = this.rect.height;
 
-        this.ctx.scale(this.scale,this.scale);
+        this.ctx.scale(this.scale, this.scale);
         this.ctx.translate(-this.originx, -this.originy);
     }
 
     render() {
         // Use the identity matrix while clearing the canvas
         this.ctx.clearRect(
-            this.originx, this.originy, 
-            this.rect.width/this.scale, this.rect.height/this.scale);
+            this.originx, this.originy,
+            this.rect.width / this.scale, this.rect.height / this.scale);
 
         // draw origin point
         this.ctx.beginPath();
-        this.ctx.ellipse(0,0,10,10,0,0,6.28);
+        this.ctx.ellipse(0, 0, 10, 10, 0, 0, 6.28);
         this.ctx.rect(this.originx, this.originy, 10, 10);
         this.ctx.stroke();
 
