@@ -5,10 +5,10 @@ export class Entity {
         this.ID = utils.generate_ID();
 
         // (x, y) is the entity's center point
-        this._x = 200;
-        this._y = 100;
-        this._w = 128;
-        this._h = 128;
+        this._x = 0;
+        this._y = 0;
+        this._w = 0;
+        this._h = 0;
         this._rotation = 0;
 
         // instances should set updatd to false when rendered

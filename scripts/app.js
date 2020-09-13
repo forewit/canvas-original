@@ -18,6 +18,10 @@ import * as utils from "./utils.js";
     let layer = new Layer();
     let sprite = new Sprite("/img/fireball.png");
     sprite.rotation = 1;
+    sprite.x = 200;
+    sprite.y = 100;
+    sprite.w = 128;
+    sprite.h = 128;
 
     // resizing canvas
     window.addEventListener("resize", function () { canvas.resize() });
