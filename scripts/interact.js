@@ -262,8 +262,8 @@ function addToSelection(screenPoint) {
     if (intersection) selected.push(intersection);
     console.log(activeHandle, selected);
 
-    // show handles
-    //if (selected.length == 0) return;
+    // show handles TEMPORARY
+    if (selected.length == 0) return;
     handles.x = selected[0].x;
     handles.y = selected[0].y;
     handles.w = selected[0].w;
