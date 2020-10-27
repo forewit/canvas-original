@@ -38,7 +38,7 @@ import * as utils from "./utils.js";
     canvas.activeLayer = layer;
 
     interact.start(canvas);
-    interact.setTool('pan');
+    interact.setTool('select');
 
     // ************ app loop **************
     var FPS = 0;

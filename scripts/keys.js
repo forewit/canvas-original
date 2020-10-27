@@ -1,4 +1,5 @@
 // tracking state
+// find keycodes here: https://keycode.info/
 let listening = {};
 
 export let keys = {

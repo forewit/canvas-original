@@ -4,7 +4,7 @@ import { Entity } from "./entity.js";
 import * as utils from "./utils.js";
 
 
-// preferences
+// PREFERENCES
 let zoomIntensity = 0.05;
 let inertiaFriction = 0.8; // 0 = infinite friction, 1 = no friction
 let inertiaMemory = 0.2; // 0 = infinite memory, 1 = no memory
@@ -12,21 +12,16 @@ let inertiaDropOff = 5 // in milliseconds
 let epsilon = 0.001;
 let handleSize = 5;
 
-// tracking state
-/**
- * Tools:
- * 0 - pan
- * 1 - select
- * 2 - measure
- * 3 - draw
- */
+// STATE MANAGEMENT
 let selected = [];
 let canvas = undefined;
 let isPanning = false;
+let isResizing = false;
 let lastPanTime, lastPoint;
 let vx = 0, vy = 0;
 let log = document.getElementById('log');
 
+// EXPORTS-------------------------------------------
 export let interact = {
     setTool: setTool,
     start: start,
@@ -36,10 +31,16 @@ export let interact = {
 function setTool(name) {
     gestures.clear();
 
+    // global keyboard shortcuts
+    keys.on('17 82', function (e) {
+        e.preventDefault();
+        console.log('Prevented reload!');
+    });
+
     switch (name) {
-        // ********************** PAN TOOL *************************
-        case 'pan':
-            log.innerHTML = 'Pan';
+        case 'select':
+            log.innerHTML = 'Select';
+
             // touch gestures
             gestures.on('tap', point => {
                 console.log('tap');
@@ -52,19 +53,19 @@ function setTool(name) {
             });
             gestures.on('touchDragStart', point => {
                 console.log('touch drag start');
-                panStart(point);
+                dragStart(point);
             });
             gestures.on('touchDragging', point => {
                 console.log('touch dragging');
-                panning(point)
+                dragging(point)
             });
             gestures.on('touchDragEnd', () => {
                 console.log('touch drag end');
-                panEnd();
+                dragEnd();
             });
             gestures.on('pinchStart', (point) => {
                 console.log('pinch start');
-                panStart(point);
+                dragStart(point);
             });
             gestures.on('pinching', (point, zoom) => {
                 console.log('pinching');
@@ -73,17 +74,20 @@ function setTool(name) {
             });
             gestures.on('pinchEnd', () => {
                 console.log('pinch end');
-                panEnd();
+                dragEnd();
             });
 
             // mouse gestures
             gestures.on('click', point => {
                 console.log('click');
-                addToSelection(point);
+
+                // clear selection if shift is not being held
+                if (!keys.down[16]) clearSelection();
+
+                selectPoint(point);
             });
             gestures.on('doubleClick', point => {
                 console.log('double click');
-                clearSelection();
             });
             gestures.on('rightClick', point => {
                 console.log('right click');
@@ -97,62 +101,68 @@ function setTool(name) {
             });
             gestures.on('mouseDragStart', point => {
                 console.log('mouse drag start');
-                panStart(point);
+                dragStart(point);
             });
             gestures.on('mouseDragging', point => {
                 console.log('mouse dragging');
-                panning(point);
+                dragging(point);
             });
             gestures.on('mouseDragEnd', () => {
                 console.log('mouse drag end');
-                panEnd();
+                dragEnd();
             });
             break;
 
-        // ******************** SELECT TOOL ************************
-        case 'select':
-            break;
-
-        // ******************* MEASURE TOOL ************************
         case 'measure':
             break;
 
-        // ********************* DRAW TOOL *************************
         case 'draw':
             break;
+
         default:
             console.log('Invalid tool choice!');
             break;
-
-        // TODO: set default key shortcuts?
     }
 }
-
-// shortcut keys
-keys.on('17 82', function (e) {
-    e.preventDefault();
-    console.log('Prevented reload!');
-});
-
 function start(cnvs) {
     canvas = cnvs;
     gestures.start(canvas.elm);
     keys.start()
 }
-
 function stop() {
     canvas = undefined;
     gestures.stop();
     keys.stop();
 }
+// END EXPORTS---------------------------------------
 
+// **************** TRIAGE FUNCTIONS ****************
+function dragStart(point) {
+    // TODO: check if on a sele
+    panStart(point);
+}
+function dragging(point) {
+    if (isPanning) {
+        panning(point);
+        return;
+    } else if (isResizing) {
+
+    }
+}
+function dragEnd() {
+    if (isPanning) panEnd();
+}
+// **************************************************
+
+
+
+// **************** PANNING FUNCTIONS ***************
 function panStart(point) {
     isPanning = true;
     lastPoint = point;
     vx = 0;
     vy = 0;
 }
-
 function panning(point) {
     let dx = (point.x - lastPoint.x) / canvas.scale;
     let dy = (point.y - lastPoint.y) / canvas.scale;
@@ -167,7 +177,6 @@ function panning(point) {
     lastPoint = point;
     lastPanTime = new Date();
 }
-
 function panEnd() {
     isPanning = false;
     let elapsed = new Date() - lastPanTime;
@@ -176,7 +185,6 @@ function panEnd() {
     vy *= Math.min(1, inertiaDropOff / elapsed);
     requestAnimationFrame(panInertia);
 }
-
 function panInertia() {
     if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
     requestAnimationFrame(panInertia);
@@ -189,7 +197,21 @@ function panInertia() {
     vx *= inertiaFriction;
     vy *= inertiaFriction;
 }
+// **************************************************
 
+
+
+// **************** ZOOMING FUNCTIONS ***************
+function wheel(point, delta) {
+    // Normalize wheel to +1 or -1.
+    let wheel = delta < 0 ? 1 : -1;
+
+    // Compute zoom factor.
+    let zoom = Math.exp(wheel * zoomIntensity);
+
+    // zoom
+    zoomOnPoint(point, zoom);
+}
 function zoomOnPoint(point, zoom) {
     // Translate so the visible origin is at the context's origin.
     canvas.ctx.translate(canvas.originx, canvas.originy);
@@ -210,18 +232,11 @@ function zoomOnPoint(point, zoom) {
     // Update scale and others.
     canvas.scale *= zoom;
 }
+// **************************************************
 
-function wheel(point, delta) {
-    // Normalize wheel to +1 or -1.
-    let wheel = delta < 0 ? 1 : -1;
 
-    // Compute zoom factor.
-    let zoom = Math.exp(wheel * zoomIntensity);
 
-    // zoom
-    zoomOnPoint(point, zoom);
-}
-
+// ************ RESIZE HANDLE FUNCTIONS *************
 let handles = new Entity()
 handles.w = 50;
 handles.h = 50;
@@ -230,7 +245,7 @@ handles.y = 50;
 
 let outerX, outerY, outerW, outerH,
     innerX, innerY, innerW, innerH,
-    localPoint, localX, localY,
+    localPoint,
     activeHandles = [];
 
 handles.render = function (ctx) {
@@ -251,33 +266,6 @@ handles.render = function (ctx) {
     ctx.rotate(-this.rotation);
     ctx.translate(-this.x, -this.y);
 }
-
-function addToSelection(screenPoint) {
-    // convert screen point to canvas point
-    let point = canvas.screenToCanvas(screenPoint);
-
-    // check intersections
-    let activeHandle = getHandleIntersection(point.x, point.y);
-    let intersection = canvas.activeLayer.getFirstIntersection(point.x, point.y);
-    if (intersection) selected.push(intersection);
-    console.log(activeHandle, selected);
-
-    // show handles TEMPORARY
-    if (selected.length == 0) return;
-    handles.x = selected[0].x;
-    handles.y = selected[0].y;
-    handles.w = selected[0].w;
-    handles.h = selected[0].h;
-    handles.rotation = selected[0].rotation;
-
-    canvas.UILayer.addEntity(handles);
-}
-
-function clearSelection() {
-    selected.length = 0;
-    canvas.UILayer.removeEntity(handles);
-}
-
 function getHandleIntersection(x, y) {
     //returns [x, y] where x or y can be -1, 0, or 1. Examples:
     //* [-1, 0] is the Left edge
@@ -313,3 +301,56 @@ function getHandleIntersection(x, y) {
     else if (localPoint.y >= innerY + innerH) activeHandles[1] = 1;
     return activeHandles;
 }
+function resizeStart(point) {
+
+}
+function resizing(point) {
+
+}
+function resizeEnd() {
+
+}
+// **************************************************
+
+
+
+// ************** SELECTION FUNCTIONS ***************
+function selectPoint(screenPoint) {
+    // convert screen point to canvas point
+    let point = canvas.screenToCanvas(screenPoint);
+
+    // check for entity intersections
+    let intersectedEntity = canvas.activeLayer.getFirstIntersection(point.x, point.y);
+    if (!intersectedEntity) return;
+    
+    // check for duplicate selections
+    for (let len=selected.length, i=0; i<len; i++) {
+        if (selected[i].ID == intersectedEntity.ID) {
+            return;
+        }
+    }
+
+    // Add intersectedEntity to selected[]
+    selected.push(intersectedEntity);
+
+
+    //TEMP CODE -------------------------------
+    let activeHandle = getHandleIntersection(point.x, point.y);
+
+    console.log(activeHandle, selected);
+
+    if (selected.length == 0) return;
+    handles.x = selected[0].x;
+    handles.y = selected[0].y;
+    handles.w = selected[0].w;
+    handles.h = selected[0].h;
+    handles.rotation = selected[0].rotation;
+
+    canvas.UILayer.addEntity(handles);
+    //END TEMP CODE ---------------------------
+}
+function clearSelection() {
+    selected.length = 0;
+    canvas.UILayer.removeEntity(handles);
+}
+// **************************************************
