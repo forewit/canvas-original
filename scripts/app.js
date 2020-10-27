@@ -23,9 +23,16 @@ import * as utils from "./utils.js";
     sprite.w = 128;
     sprite.h = 128;
 
+    let sprite2 = new Sprite("/img/untitled.png");
+    sprite2.x = 300;
+    sprite2.y = 300;
+    sprite2.w = 64;
+    sprite2.h = 64;
+
     // resizing canvas
     window.addEventListener("resize", function () { canvas.resize() });
     layer.addEntity(sprite);
+    layer.addEntity(sprite2);
 
     canvas.addLayer(layer);
     canvas.activeLayer = layer;
