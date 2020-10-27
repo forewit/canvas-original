@@ -36,7 +36,7 @@ export class Entity {
         this._halfh = newh / 2;
         this.updated = true; 
     }
-    set rotation(newRotation) { this._rotation = newRotation; this.updated = true; }
+    set rotation(newRotation) { this._rotation = newRotation % Math.PI; this.updated = true; }
 
     intersects(x, y) {
         let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);

@@ -312,13 +312,37 @@ function getHandleIntersection(x, y) {
     return activeHandles;
 }
 function showHandles() {
-    // TODO: set handle size based on selection
-    handles.x = selected[0].x;
-    handles.y = selected[0].y;
-    handles.w = selected[0].w;
-    handles.h = selected[0].h;
-    handles.rotation = selected[0].rotation;
 
+    // TODO: need to adjust for larger levels of rotation
+    let boundingLeft = selected[0].x,
+        boundingRight = selected[0].x,
+        boundingTop = selected[0].y,
+        boundingBottom = selected[0].y;
+
+    for (let len = selected.length, i = 0; i < len; i++) {
+        let entity = selected[i];
+
+        let halfW = (Math.sin(entity.rotation) * entity.h + Math.cos(entity.rotation) * entity.w) / 2,
+            halfH = (Math.sin(entity.rotation) * entity.w + Math.cos(entity.rotation) * entity.h) / 2;
+
+        let left = entity.x - halfW,
+            right = entity.x + halfW,
+            top = entity.y - halfH,
+            bottom = entity.y + halfH;
+
+        if (left < boundingLeft) boundingLeft = left;
+        if (right > boundingRight) boundingRight = right;
+        if (top < boundingTop) boundingTop = top;
+        if (bottom > boundingBottom) boundingBottom = bottom;
+    }
+
+    handles.w = boundingRight - boundingLeft;
+    handles.h = boundingBottom - boundingTop;
+    handles.x = boundingLeft + handles.w / 2;
+    handles.y = boundingTop + handles.h / 2;
+    handles.rotation = 0;
+
+    // show handles
     canvas.UILayer.addEntity(handles);
 }
 function hideHandles() {
