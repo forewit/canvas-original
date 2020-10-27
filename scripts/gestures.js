@@ -1,10 +1,12 @@
-// preferences
+// TODO: add longpress drag & middle click drag
+
+// PREFERENCES
 let longPressDelay = 500;
 let doubleTapDelay = 300;
 let longClickDelay = 500;
 let doubleClickDelay = 300;
 
-// tracking state
+// STATE MANAGEMENT
 let elm;
 let dragging = false;
 let pinching = false;
@@ -21,6 +23,7 @@ let noop = function () { };
 let callbacks;
 clear();
 
+// EXPORTS-------------------------------------------
 export let gestures = {
     on: on,
     off: off,
@@ -52,8 +55,12 @@ function clear() {
         pinchStart: noop,
         pinching: noop,
         pinchEnd: noop,
+        // window callbacks
+        blur: noop,
     };
 }
+// END EXPORTS---------------------------------------
+
 
 function start(element) {
     if (elm) stop();
@@ -62,6 +69,7 @@ function start(element) {
     elm.addEventListener('mousedown', mousedownHandler, { passive: false });
     elm.addEventListener('wheel', wheelHandler, { passive: false });
     elm.addEventListener('contextmenu', contextmenuHandler, { passive: false });
+    window.addEventListener('blur', blurHandler);
 }
 
 function stop() {
@@ -69,6 +77,7 @@ function stop() {
     elm.removeEventListener('mousedown', mousedownHandler);
     elm.removeEventListener('wheel', wheelHandler);
     elm.removeEventListener('contextmenu', contextmenuHandler);
+    window.removeEventListener('blur', blurHandler);
 }
 
 function copyTouch(newTouch) {
@@ -77,6 +86,20 @@ function copyTouch(newTouch) {
         x: newTouch.clientX,
         y: newTouch.clientY
     }
+}
+
+function blurHandler(e) {
+    window.removeEventListener('mousemove', mousemoveHandler);
+    window.removeEventListener('mouseup', mouseupHandler);
+
+    mouseupTime = new Date();
+
+    if (mouseMoving) {
+        // MOUSE DRAG END DETECTION
+        callbacks.mouseDragEnd(mouse);
+    } 
+
+    callbacks.blur();
 }
 
 function wheelHandler(e) {

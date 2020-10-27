@@ -17,6 +17,7 @@ let selected = [];
 let canvas = undefined;
 let isPanning = false;
 let isResizing = false;
+let isMoving = false;
 let lastPanTime, lastPoint;
 let vx = 0, vy = 0;
 let log = document.getElementById('log');
@@ -53,19 +54,19 @@ function setTool(name) {
             });
             gestures.on('touchDragStart', point => {
                 console.log('touch drag start');
-                dragStart(point);
+                mouseDragStart(point);
             });
             gestures.on('touchDragging', point => {
                 console.log('touch dragging');
-                dragging(point)
+                mouseDragging(point)
             });
             gestures.on('touchDragEnd', () => {
                 console.log('touch drag end');
-                dragEnd();
+                mouseDragEnd();
             });
             gestures.on('pinchStart', (point) => {
                 console.log('pinch start');
-                dragStart(point);
+                mouseDragStart(point);
             });
             gestures.on('pinching', (point, zoom) => {
                 console.log('pinching');
@@ -74,7 +75,7 @@ function setTool(name) {
             });
             gestures.on('pinchEnd', () => {
                 console.log('pinch end');
-                dragEnd();
+                mouseDragEnd();
             });
 
             // mouse gestures
@@ -101,15 +102,15 @@ function setTool(name) {
             });
             gestures.on('mouseDragStart', point => {
                 console.log('mouse drag start');
-                dragStart(point);
+                mouseDragStart(point);
             });
             gestures.on('mouseDragging', point => {
                 console.log('mouse dragging');
-                dragging(point);
+                mouseDragging(point);
             });
             gestures.on('mouseDragEnd', () => {
                 console.log('mouse drag end');
-                dragEnd();
+                mouseDragEnd();
             });
             break;
 
@@ -136,21 +137,37 @@ function stop() {
 }
 // END EXPORTS---------------------------------------
 
-// **************** TRIAGE FUNCTIONS ****************
-function dragStart(point) {
-    // TODO: check if on a sele
+
+
+// **************** MOUSE TRIAGE FUNCTIONS ****************
+function mouseDragStart(point) {
+    /** TODO CASES
+     * 1. dragging active handle -> resize selection
+     * 2. draging active selection -> move selection
+     * 3. dragging an unselected entity -> select entity & move selection
+     * 4. dragging no entities -> pan
+     */
     panStart(point);
 }
-function dragging(point) {
+function mouseDragging(point) {
+    /** TODO CASES
+     * 1. resize selection
+     * 2. move selection
+     * 3. pan
+     */
     if (isPanning) {
         panning(point);
         return;
     } else if (isResizing) {
 
+    } else if (isMoving) {
+
     }
 }
-function dragEnd() {
+function mouseDragEnd() {
     if (isPanning) panEnd();
+    if (isResizing) resizeEnd();
+    if (isMoving) moveEnd();
 }
 // **************************************************
 
@@ -238,10 +255,6 @@ function zoomOnPoint(point, zoom) {
 
 // ************ RESIZE HANDLE FUNCTIONS *************
 let handles = new Entity()
-handles.w = 50;
-handles.h = 50;
-handles.x = 50;
-handles.y = 50;
 
 let outerX, outerY, outerW, outerH,
     innerX, innerY, innerW, innerH,
@@ -249,11 +262,6 @@ let outerX, outerY, outerW, outerH,
     activeHandles = [];
 
 handles.render = function (ctx) {
-    if (this.updated) {
-
-    }
-    this.updated = false;
-
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
 
@@ -272,6 +280,8 @@ function getHandleIntersection(x, y) {
     //* [1, 1] is the bottom right corner
     //* [] intersects but not on handle
     //* undefined = no intersections
+    if (selected.length <= 0) return undefined;
+
     activeHandles = [];
     localPoint = utils.rotatePoint(handles.x, handles.y, x, y, handles.rotation);
 
@@ -301,6 +311,19 @@ function getHandleIntersection(x, y) {
     else if (localPoint.y >= innerY + innerH) activeHandles[1] = 1;
     return activeHandles;
 }
+function showHandles() {
+    // TODO: set handle size based on selection
+    handles.x = selected[0].x;
+    handles.y = selected[0].y;
+    handles.w = selected[0].w;
+    handles.h = selected[0].h;
+    handles.rotation = selected[0].rotation;
+
+    canvas.UILayer.addEntity(handles);
+}
+function hideHandles() {
+    canvas.UILayer.removeEntity(handles);
+}
 function resizeStart(point) {
 
 }
@@ -322,9 +345,9 @@ function selectPoint(screenPoint) {
     // check for entity intersections
     let intersectedEntity = canvas.activeLayer.getFirstIntersection(point.x, point.y);
     if (!intersectedEntity) return;
-    
+
     // check for duplicate selections
-    for (let len=selected.length, i=0; i<len; i++) {
+    for (let len = selected.length, i = 0; i < len; i++) {
         if (selected[i].ID == intersectedEntity.ID) {
             return;
         }
@@ -332,25 +355,24 @@ function selectPoint(screenPoint) {
 
     // Add intersectedEntity to selected[]
     selected.push(intersectedEntity);
-
+    showHandles();
 
     //TEMP CODE -------------------------------
     let activeHandle = getHandleIntersection(point.x, point.y);
-
     console.log(activeHandle, selected);
-
-    if (selected.length == 0) return;
-    handles.x = selected[0].x;
-    handles.y = selected[0].y;
-    handles.w = selected[0].w;
-    handles.h = selected[0].h;
-    handles.rotation = selected[0].rotation;
-
-    canvas.UILayer.addEntity(handles);
     //END TEMP CODE ---------------------------
 }
 function clearSelection() {
     selected.length = 0;
-    canvas.UILayer.removeEntity(handles);
+    hideHandles();
+}
+function moveStart(point) {
+    isMoving = true;
+}
+function moving(point) {
+
+}
+function moveEnd() {
+    isMoving = false;
 }
 // **************************************************
