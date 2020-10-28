@@ -312,8 +312,6 @@ function getHandleIntersection(x, y) {
     return activeHandles;
 }
 function showHandles() {
-
-    // TODO: need to adjust for larger levels of rotation
     let boundingLeft = selected[0].x,
         boundingRight = selected[0].x,
         boundingTop = selected[0].y,
@@ -322,8 +320,11 @@ function showHandles() {
     for (let len = selected.length, i = 0; i < len; i++) {
         let entity = selected[i];
 
-        let halfW = (Math.sin(entity.rotation) * entity.h + Math.cos(entity.rotation) * entity.w) / 2,
-            halfH = (Math.sin(entity.rotation) * entity.w + Math.cos(entity.rotation) * entity.h) / 2;
+        let angle = entity.rotation % (Math.PI);
+        if (angle > Math.PI/2) angle = Math.PI - angle;
+
+        let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2,
+            halfH = (Math.sin(angle) * entity.w + Math.cos(angle) * entity.h) / 2;
 
         let left = entity.x - halfW,
             right = entity.x + halfW,

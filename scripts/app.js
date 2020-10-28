@@ -16,12 +16,12 @@ import * as utils from "./utils.js";
     let toolbar = new Toolbar(document.getElementById("toolbar"), true);
     let canvas = new Canvas(document.getElementById("canvas"));
     let layer = new Layer();
-    let sprite = new Sprite("/img/untitled.png");
+    let sprite = new Sprite("/img/fireball.png");
     sprite.rotation = 1;
     sprite.x = 200;
     sprite.y = 100;
     sprite.w = 128;
-    sprite.h = 128;
+    sprite.h = 64;
 
     let sprite2 = new Sprite("/img/untitled.png");
     sprite2.x = 300;
