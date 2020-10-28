@@ -262,13 +262,15 @@ let outerX, outerY, outerW, outerH,
     activeHandles = [];
 
 handles.render = function (ctx) {
+    let size = handleSize / canvas.scale;
+    
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
 
     ctx.beginPath();
     ctx.rect(-this.halfw, -this.halfh, this.w, this.h);
-    ctx.rect(-handleSize - this.halfw, -handleSize - this.halfh, this.w + handleSize * 2, this.h + handleSize * 2);
-    ctx.rect(handleSize - this.halfw, handleSize - this.halfh, this.w - handleSize * 2, this.h - handleSize * 2);
+    ctx.rect(-size - this.halfw, -size - this.halfh, this.w + size * 2, this.h + size * 2);
+    ctx.rect(size - this.halfw, size - this.halfh, this.w - size * 2, this.h - size * 2);
     ctx.stroke();
 
     ctx.rotate(-this.rotation);
