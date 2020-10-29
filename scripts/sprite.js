@@ -5,7 +5,6 @@ export class Sprite extends Entity {
     constructor(url) {
         super(); // call entity class constructor
 
-        this.image = utils.getImage(url);
         this._frame_w = 512;
         this._frame_h = 512;
         this._frame_x = 0;
@@ -13,6 +12,10 @@ export class Sprite extends Entity {
 
         this.sx = 0;
         this.sy = 0;
+        this.loaded = false;
+        this.image = utils.getImage(url, () => {
+            this.loaded = true;
+        });
     }
 
     get frame_x() { return this._frame_x; }
@@ -26,6 +29,8 @@ export class Sprite extends Entity {
     set frame_h(newFrameH) { this.updated = true; this._frame_h = newFrameH; }
 
     render(ctx) {
+        if (!this.loaded) return;
+        
         if (this.updated) {
             this.sx = this.frame_x * this.frame_w;
             this.sy = this.frame_y * this.frame_h;

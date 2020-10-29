@@ -10,11 +10,20 @@ export function generate_ID() {
     return '_' + Math.random().toString(36).substr(2, 9);
 }
 
+
 let images = {};
-export function getImage(url) {
+let loader = new PxLoader();
+export function getImage(url, callback) {
     if (!images[url]) {        
-        images[url] = new Image();
-        images[url].src = url;
+        //images[url] = new Image();
+        //images[url].src = url;
+        images[url] = loader.addImage(url);
+        loader.addCompletionListener(function() {
+            callback();
+        });
+        loader.start();
+    } else {
+        callback();
     }
     return images[url];
 }
