@@ -6,6 +6,7 @@ export class Canvas {
         this.elm = elm;
         this.rect = this.elm.getBoundingClientRect();
         this.ctx = elm.getContext("2d");
+        this.dpi = window.devicePixelRatio;
         this.layers = [];
         this.originx = 0;
         this.originy = 0;
@@ -69,16 +70,20 @@ export class Canvas {
         return false;
     }
 
-    screenToCanvas(screenPoint) {
+    screenToCanvas(point) {
         return {
-            x: (screenPoint.x + this.rect.x) / this.scale + this.originx,
-            y: (screenPoint.y + this.rect.y) / this.scale + this.originy
+            x: ((point.x + this.rect.x) * this.dpi) / this.scale + this.originx,
+            y: ((point.y + this.rect.y) * this.dpi) / this.scale + this.originy
         };
     }
 
     resize() {
+        this.dpi = window.devicePixelRatio;
+
         // recalculate canvas size
         this.rect = this.elm.getBoundingClientRect();
+        this.rect.width *= this.dpi;
+        this.rect.height *= this.dpi
 
         this.ctx.resetTransform()
         this.ctx.canvas.width = this.rect.width;
