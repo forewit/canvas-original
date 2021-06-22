@@ -1,5 +1,3 @@
-import * as utils from "./utils.js";
-
 export class Layer {
     constructor () {
         this.ID = utils.generate_ID();

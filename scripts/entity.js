@@ -1,5 +1,3 @@
-import * as utils from "./utils.js";
-
 export class Entity {
     constructor() {
         this.ID = utils.generate_ID();

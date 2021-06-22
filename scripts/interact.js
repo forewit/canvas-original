@@ -1,6 +1,6 @@
-import { keys } from "./keys.js";
+// TODO: Move all "screeToCanvas" responsibility to the canvas object
+
 import { Entity } from "./entity.js";
-import * as utils from "./utils.js";
 
 // PREFERENCES
 let zoomIntensity = 0.05;
@@ -208,7 +208,6 @@ function panInertia() {
     if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
     requestAnimationFrame(panInertia);
 
-    //console.log(vx);
     canvas.originx -= vx;
     canvas.originy -= vy;
     canvas.ctx.translate(vx, vy);

@@ -1,7 +1,3 @@
-import { Draggable } from "./draggable.js";
-//REQUIRES: scroll.js util
-
-
 export class Toolbar {
     constructor(element, horizontal) {
         var me = this;

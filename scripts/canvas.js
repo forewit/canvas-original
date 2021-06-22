@@ -1,5 +1,4 @@
 import { Layer } from "./layer.js";
-import * as utils from "./utils.js";
 
 export class Canvas {
     constructor(elm) {

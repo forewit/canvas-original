@@ -1,5 +1,4 @@
 import { Entity } from "./entity.js";
-import * as utils from "./utils.js";
 
 export class Sprite extends Entity {
     constructor(url) {
