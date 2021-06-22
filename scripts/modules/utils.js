@@ -1,8 +1,6 @@
 /**
  * Utils is a collection of useful standalone functions:
- * 
- * utils.throttle(func, wait, options)
- */
+*/
 
  (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -47,9 +45,6 @@
             return result;
         };
     };
-
-
-
 
     /**
      * Creates a psudo random unique identifier string

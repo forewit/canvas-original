@@ -91,10 +91,13 @@
             }
 
             // set initial state
-            let rect = me.elm.getBoundingClientRect();
+            var rect = me.elm.getBoundingClientRect(),
+                scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+                scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
             me.initial_offset = {
-                x: rect.x - me.pointer.x,    // adjusted for starting mouse x
-                y: rect.y - me.pointer.y,     // adjusted for starting mouse y
+                x: rect.x + scrollLeft - me.pointer.x,    // adjusted for starting mouse x
+                y: rect.y + scrollTop - me.pointer.y,     // adjusted for starting mouse y
             };
         }
 
