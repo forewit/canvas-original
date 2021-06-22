@@ -1,8 +1,6 @@
-import { gestures } from "./gestures.js";
 import { keys } from "./keys.js";
 import { Entity } from "./entity.js";
 import * as utils from "./utils.js";
-
 
 // PREFERENCES
 let zoomIntensity = 0.05;
@@ -21,11 +19,12 @@ let isMoving = false;
 let lastPanTime, lastPoint;
 let vx = 0, vy = 0;
 let log = document.getElementById('log');
+let gestures = {};
 
 // EXPORTS-------------------------------------------
 export let interact = {
     setTool: setTool,
-    start: start,
+    initialize: initialize,
     stop: stop,
 };
 
@@ -43,35 +42,35 @@ function setTool(name) {
             log.innerHTML = 'Select';
 
             // touch gestures
-            gestures.on('tap', point => {
+            gestures.on('tap', () => {
                 console.log('tap');
             });
-            gestures.on('double tap', point => {
+            gestures.on('double tap', (x, y) => {
                 console.log('double tap');
             });
-            gestures.on('longPress', point => {
+            gestures.on('longPress', (x, y) => {
                 console.log('long press');
             });
-            gestures.on('touchDragStart', point => {
+            gestures.on('touchDragStart', (x, y) => {
                 console.log('touch drag start');
-                mouseDragStart(point);
+                mouseDragStart((x, y));
             });
-            gestures.on('touchDragging', point => {
+            gestures.on('touchDragging', (x, y) => {
                 console.log('touch dragging');
-                mouseDragging(point)
+                mouseDragging((x, y))
             });
             gestures.on('touchDragEnd', () => {
                 console.log('touch drag end');
                 mouseDragEnd();
             });
-            gestures.on('pinchStart', (point) => {
+            gestures.on('pinchStart', (x, y) => {
                 console.log('pinch start');
-                mouseDragStart(point);
+                mouseDragStart(x, y);
             });
-            gestures.on('pinching', (point, zoom) => {
+            gestures.on('pinching', (x, y, zoom) => {
                 console.log('pinching');
-                zoomOnPoint(point, zoom);
-                panning(point);
+                zoomOnPoint(x, y, zoom);
+                panning(x, y);
             });
             gestures.on('pinchEnd', () => {
                 console.log('pinch end');
@@ -79,34 +78,34 @@ function setTool(name) {
             });
 
             // mouse gestures
-            gestures.on('click', point => {
+            gestures.on('click', (x, y) => {
                 console.log('click');
 
                 // clear selection if shift is not being held
                 if (!keys.down[16]) clearSelection();
 
-                selectPoint(point);
+                selectPoint(x, y);
             });
-            gestures.on('doubleClick', point => {
+            gestures.on('doubleClick', (x, y) => {
                 console.log('double click');
             });
-            gestures.on('rightClick', point => {
+            gestures.on('rightClick', (x, y) => {
                 console.log('right click');
             });
-            gestures.on('longClick', point => {
+            gestures.on('longClick', (x, y) => {
                 console.log('long click');
             });
-            gestures.on('wheel', (point, delta) => {
+            gestures.on('wheel', (x, y, event) => {
                 console.log('wheel');
-                wheel(point, delta);
+                wheel(x, y, event);
             });
-            gestures.on('mouseDragStart', point => {
+            gestures.on('mouseDragStart', (x, y) => {
                 console.log('mouse drag start');
-                mouseDragStart(point);
+                mouseDragStart(x, y);
             });
-            gestures.on('mouseDragging', point => {
+            gestures.on('mouseDragging', (x, y) => {
                 console.log('mouse dragging');
-                mouseDragging(point);
+                mouseDragging(x, y);
             });
             gestures.on('mouseDragEnd', () => {
                 console.log('mouse drag end');
@@ -125,9 +124,12 @@ function setTool(name) {
             break;
     }
 }
-function start(cnvs) {
+
+// cnvs is a Canvas object, not an element
+function initialize(cnvs) {
     canvas = cnvs;
-    gestures.start(canvas.elm);
+    gestures = new Gestures(canvas.elm)
+    gestures.start();
     keys.start()
 }
 function stop() {
@@ -140,23 +142,23 @@ function stop() {
 
 
 // **************** MOUSE TRIAGE FUNCTIONS ****************
-function mouseDragStart(point) {
+function mouseDragStart(x, y) {
     /** TODO CASES
      * 1. dragging active handle -> resize selection
      * 2. draging active selection -> move selection
      * 3. dragging an unselected entity -> select entity & move selection
      * 4. dragging no entities -> pan
      */
-    panStart(point);
+    panStart(x, y);
 }
-function mouseDragging(point) {
+function mouseDragging(x, y) {
     /** TODO CASES
      * 1. resize selection
      * 2. move selection
      * 3. pan
      */
     if (isPanning) {
-        panning(point);
+        panning(x, y);
         return;
     } else if (isResizing) {
 
@@ -174,15 +176,15 @@ function mouseDragEnd() {
 
 
 // **************** PANNING FUNCTIONS ***************
-function panStart(point) {
+function panStart(x, y) {
     isPanning = true;
-    lastPoint = point;
+    lastPoint = {x: x, y: y};
     vx = 0;
     vy = 0;
 }
-function panning(point) {
-    let dx = (point.x - lastPoint.x) / canvas.scale;
-    let dy = (point.y - lastPoint.y) / canvas.scale;
+function panning(x, y) {
+    let dx = (x - lastPoint.x) / canvas.scale;
+    let dy = (y - lastPoint.y) / canvas.scale;
 
     vx = dx * inertiaMemory + vx * (1 - inertiaMemory);
     vy = dy * inertiaMemory + vy * (1 - inertiaMemory);
@@ -191,7 +193,7 @@ function panning(point) {
     canvas.originy -= dy;
     canvas.ctx.translate(dx, dy);
 
-    lastPoint = point;
+    lastPoint = {x:x, y:y};
     lastPanTime = new Date();
 }
 function panEnd() {
@@ -219,7 +221,9 @@ function panInertia() {
 
 
 // **************** ZOOMING FUNCTIONS ***************
-function wheel(point, delta) {
+function wheel(x, y, event) {
+    let delta = event.deltaY;
+
     // Normalize wheel to +1 or -1.
     let wheel = delta < 0 ? 1 : -1;
 
@@ -227,19 +231,19 @@ function wheel(point, delta) {
     let zoom = Math.exp(wheel * zoomIntensity);
 
     // zoom
-    zoomOnPoint(point, zoom);
+    zoomOnPoint(x, y, zoom);
 }
-function zoomOnPoint(point, zoom) {
+function zoomOnPoint(x, y, zoom) {
     // Translate so the visible origin is at the context's origin.
     canvas.ctx.translate(canvas.originx, canvas.originy);
 
-    // Compute the new visible origin. Original ly the mouse is at a
+    // Compute the new visible origin. Originally the mouse is at a
     // distance mouse/scale from the corner, we want the point under
     // the mouse to remain in the same place after the zoom, but this
     // is at mouse/new_scale away from the corner. Therefore we need to
     // shift the origin (coordinates of the corner) to account for this.
-    canvas.originx -= point.x / (canvas.scale * zoom) - point.x / canvas.scale;
-    canvas.originy -= point.y / (canvas.scale * zoom) - point.y / canvas.scale;
+    canvas.originx -= x * canvas.dpi / (canvas.scale * zoom) - x * canvas.dpi / canvas.scale;
+    canvas.originy -= y * canvas.dpi / (canvas.scale * zoom) - y * canvas.dpi / canvas.scale;
 
     // Scale it (centered around the origin due to the trasnslate above).
     canvas.ctx.scale(zoom, zoom);
@@ -351,10 +355,10 @@ function showHandles() {
 function hideHandles() {
     canvas.UILayer.removeEntity(handles);
 }
-function resizeStart(point) {
+function resizeStart(x, y) {
 
 }
-function resizing(point) {
+function resizing(x, y) {
 
 }
 function resizeEnd() {
@@ -365,9 +369,9 @@ function resizeEnd() {
 
 
 // ************** SELECTION FUNCTIONS ***************
-function selectPoint(screenPoint) {
+function selectPoint(x, y) {
     // convert screen point to canvas point
-    let point = canvas.screenToCanvas(screenPoint);
+    let point = canvas.screenToCanvas(x, y);
 
     // check for entity intersections
     let intersectedEntity = canvas.activeLayer.getFirstIntersection(point.x, point.y);
@@ -393,10 +397,10 @@ function clearSelection() {
     selected.length = 0;
     hideHandles();
 }
-function moveStart(point) {
+function moveStart(x, y) {
     isMoving = true;
 }
-function moving(point) {
+function moving(x, y) {
 
 }
 function moveEnd() {

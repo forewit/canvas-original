@@ -37,7 +37,7 @@ import * as utils from "./utils.js";
     canvas.addLayer(layer);
     canvas.activeLayer = layer;
 
-    interact.start(canvas);
+    interact.initialize(canvas);
     interact.setTool('select');
 
     // ************ app loop **************

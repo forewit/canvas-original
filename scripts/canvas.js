@@ -70,10 +70,10 @@ export class Canvas {
         return false;
     }
 
-    screenToCanvas(point) {
+    screenToCanvas(x, y) {
         return {
-            x: ((point.x + this.rect.x) * this.dpi) / this.scale + this.originx,
-            y: ((point.y + this.rect.y) * this.dpi) / this.scale + this.originy
+            x: ((x + this.rect.x) * this.dpi) / this.scale + this.originx,
+            y: ((y + this.rect.y) * this.dpi) / this.scale + this.originy
         };
     }
 
