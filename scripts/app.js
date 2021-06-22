@@ -1,7 +1,6 @@
 import { Canvas } from "./canvas.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
-import { Toolbar } from "./toolbar.js";
 import { interact } from "./interact.js";
 
 (function (global, factory) {
