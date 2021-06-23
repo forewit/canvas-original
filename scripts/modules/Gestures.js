@@ -90,7 +90,6 @@
 
             // bind handlers
             this.blurHandler = this.blurHandle.bind(this);
-            this.wheelHandler = this.wheelHandle.bind(this);
             this.mousedownHandler = this.mousedownHandle.bind(this);
             this.mousemoveHandler = this.mousemoveHandle.bind(this);
             this.mouseupHandler = this.mouseupHandle.bind(this);
