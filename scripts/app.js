@@ -1,6 +1,7 @@
 import { Dndcanvas } from "./dndcanvas.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
+import { interact } from "./interact.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -32,6 +33,8 @@ import { Sprite } from "./sprite.js";
 
     dndcanvas.addLayer(layer);
     dndcanvas.activeLayer = layer;
+
+    interact(dndcanvas);
 
     // ************ app loop **************
     var FPS = 0;
