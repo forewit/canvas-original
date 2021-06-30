@@ -1,6 +1,6 @@
 import { Entity } from "./entity.js";
 
-export let interact = function (cnvs) {
+export let interact = function (newBoard) {
 
     // PREFERENCES
     let zoomIntensity = 0.05;
@@ -12,7 +12,7 @@ export let interact = function (cnvs) {
 
     // STATE MANAGEMENT
     let selected = [];
-    let dndcanvas = cnvs;
+    let board = newBoard;
     let isPanning = false;
     let isResizing = false;
     let isMoving = false;
@@ -21,29 +21,7 @@ export let interact = function (cnvs) {
     let vx = 0, vy = 0;
     let log = document.getElementById('log');
 
-    gestures.track(dndcanvas.elm);
-    dndcanvas.elm.addEventListener("gesture", function (e) {
-        log.innerHTML = e.detail.name;
-        // convert points to canvas coordinates
 
-        // SELECT TOOL
-        switch (e.detail.name) {
-            case "click":
-            case "tap":
-                // 1. clear selection if shift is not being held
-                // 2. select point
-                break;
-
-            case "touch-drag-start":
-            case "mouse-drag-start":
-            case "pinch-start":
-                // 1. start panning
-                break;
-            default:
-                break;
-        }
-
-    });
 
     // KEYBOARD SHORTCUTS
     keys.start()
@@ -52,12 +30,48 @@ export let interact = function (cnvs) {
         alert('Prevented reload!');
     });
 
+    // MANAGE GESTURES
+    gestures.track(board.elm);
+    board.elm.addEventListener("gesture", gestureHandler);
+
+    function gestureHandler(e) {
+        log.innerHTML = e.detail.name;
+
+        // Convert client coords to board coords
+        let x = ((e.detail.x + board.left) * board.dpi) / board.scale + board.originx,
+            y = ((e.detail.y + board.top) * board.dpi) / board.scale + board.originy
+
+        // triage gestures by name
+        switch (e.detail.name) {
+            case "click":
+                // clear selection if shift is not being held
+                if (!keys.down[16]) clearSelection();
+
+                // select an item at a point
+                selectPoint(x, y);
+                break;
+            case "mouse-drag-start":
+                panStart()
+                break;
+            case "mouse-dragging":
+                let dx = e.detail.data.dx * board.dpi / board.scale,
+                    dy = e.detail.data.dy * board.dpi / board.scale;
+                pan(dx, dy)
+                break;
+            case "mouse-drag-end":
+                panEnd()
+                break;
+            default:
+                break;
+        }
+    }
+
     /*
     // SELECT TOOL GESTURES
     log.innerHTML = 'Select';
     gestures.on('click tap', (x, y) => {
         // convert to canvas coordinates
-        var point = dndcanvas.screenToCanvas({ x: x, y: y });
+        var point = board.screenToCanvas({ x: x, y: y });
 
         // clear selection if shift is not being held
         if (!keys.down[16]) clearSelection();
@@ -66,13 +80,13 @@ export let interact = function (cnvs) {
     });
     gestures.on('touchDragStart mouseDragStart pinchStart', (x, y) => {
         // convert to canvas coordinates
-        var point = dndcanvas.screenToCanvas({ x: x, y: y });
+        var point = board.screenToCanvas({ x: x, y: y });
 
         mouseDragStart(point);
     });
     gestures.on('touchDragging mouseDragging', (x, y) => {
         // convert to canvas coordinates
-        var point = dndcanvas.screenToCanvas({ x: x, y: y });
+        var point = board.screenToCanvas({ x: x, y: y });
 
         mouseDragging(point);
     });
@@ -81,14 +95,14 @@ export let interact = function (cnvs) {
     });
     gestures.on('pinching', (x, y, zoom) => {
         // convert to canvas coordinates
-        var point = dndcanvas.screenToCanvas({ x: x, y: y });
+        var point = board.screenToCanvas({ x: x, y: y });
 
-        dndcanvas.zoomOnPoint(point, zoom);
+        board.zoomOnPoint(point, zoom);
         panning(point);
     });
     gestures.on('wheel', (x, y, event) => {
         // convert to canvas coordinates
-        var point = dndcanvas.screenToCanvas({ x: x, y: y });
+        var point = board.screenToCanvas({ x: x, y: y });
 
         wheel(point, event);
     });
@@ -99,27 +113,19 @@ export let interact = function (cnvs) {
 
 
     // **************** PANNING FUNCTIONS ***************
-    function panStart(point) {
+    function panStart() {
         console.log("PAN START")
 
         isPanning = true;
-        lastPoint.x = point.x;
-        lastPoint.y = point.y;
-
         vx = 0;
         vy = 0;
     }
-    function panning(newPoint) {
-        let dx = newPoint.x - lastPoint.x;
-        let dy = newPoint.y - lastPoint.y;
+    function pan(dx, dy) {
 
-        dndcanvas.translate(dx, dy);
+        board.translate(dx, dy);
 
         vx = dx * inertiaMemory + vx * (1 - inertiaMemory);
         vy = dy * inertiaMemory + vy * (1 - inertiaMemory);
-
-        lastPoint.x = newPoint.x;
-        lastPoint.y = newPoint.y;
 
         lastPanTime = new Date();
     }
@@ -137,7 +143,7 @@ export let interact = function (cnvs) {
         if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
         requestAnimationFrame(panInertia);
 
-        dndcanvas.translate(vx, vy);
+        board.translate(vx, vy);
 
         vx *= inertiaFriction;
         vy *= inertiaFriction;
@@ -157,7 +163,7 @@ export let interact = function (cnvs) {
         let zoom = Math.exp(direction * zoomIntensity);
 
         // zoom
-        dndcanvas.zoomOnPoint(point, zoom);
+        board.zoomOnPoint(point, zoom);
     }
     // **************************************************
 
@@ -172,7 +178,7 @@ export let interact = function (cnvs) {
         activeHandles = [];
 
     handles.render = function (ctx) {
-        let size = handleSize / dndcanvas.scale;
+        let size = handleSize / board.scale;
 
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
@@ -256,10 +262,10 @@ export let interact = function (cnvs) {
         handles.rotation = 0;
 
         // show handles
-        dndcanvas.UILayer.addEntity(handles);
+        board.UILayer.addEntity(handles);
     }
     function hideHandles() {
-        dndcanvas.UILayer.removeEntity(handles);
+        board.UILayer.removeEntity(handles);
     }
     function resizeStart(x, y) {
 
@@ -277,7 +283,7 @@ export let interact = function (cnvs) {
     // ************** SELECTION FUNCTIONS ***************
     function selectPoint(x, y) {
         // check for entity intersections
-        let intersectedEntity = dndcanvas.activeLayer.getFirstIntersection(x, y);
+        let intersectedEntity = board.activeLayer.getFirstIntersection(x, y);
         if (!intersectedEntity) return;
 
         // check for duplicate selections

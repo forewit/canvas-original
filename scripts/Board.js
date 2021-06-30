@@ -13,7 +13,7 @@ export class Board {
         this.layers = [];
         this.originx = 0;
         this.originy = 0;
-        this.scale = 1;
+        this.scale = this.dpi;
         this.UILayer = new Layer();
         this._activeLayer = undefined;
 
@@ -73,31 +73,27 @@ export class Board {
         return false;
     }
 
-    screenToCanvas(point) {
+    screenToCanvas(x, y) {
+        //console.log("left:" + this.left + " dpi:" + this.dpi + " origin:" + this.originx + ", " + this.originy);
 
-        let newX = ((point.x + this.left) * this.dpi) / this.scale + this.originx;
-        let newY = ((point.y + this.top) * this.dpi) / this.scale + this.originy;
-        
         return {
-            x: newX,
-            y: newY
+            x: ((x + this.left) * this.dpi) / this.scale + this.originx,
+            y: ((y + this.top) * this.dpi) / this.scale + this.originy
         };
     }
 
     translate(dx, dy) {
         this.originx -= dx;
         this.originy -= dy;
-        this.ctx.translate(dx, dy);
     }
 
-    zoomOnPoint(point, zoom) {
+    zoomOnPoint(x, y, zoom) {
         this.ctx.translate(this.originx, this.originy);
 
         this.ctx.scale(zoom, zoom);
         this.scale *= zoom;
 
         this.ctx.translate(-this.originx, -this.originy);
-
 
         /*
         // Translate so the visible origin is at the context's origin.
@@ -132,17 +128,22 @@ export class Board {
         this.width = rect.width * this.dpi;
         this.height = rect.height * this.dpi;
 
-        // reset and re-apply canvas transforms
+        // reset canvas transforms
         this.ctx.resetTransform()
         this.elm.width = this.width;
         this.elm.height = this.height;
-        this.ctx.scale(this.scale, this.scale);
-        this.ctx.translate(-this.originx, -this.originy);
+        //this.ctx.scale(this.scale, this.scale);
+        //this.ctx.translate(-this.originx, -this.originy);
 
         console.log("RESIZE!");
     }
 
     render() {
+        // save and apply canvas transforms
+        this.ctx.save()
+        this.ctx.scale(this.scale, this.scale); // scale first
+        this.ctx.translate(-this.originx, -this.originy) // then translate
+
         // Use the identity matrix while clearing the canvas
         // TODO: verify that this is ONLY clearing the screen
         this.ctx.clearRect(
@@ -160,5 +161,8 @@ export class Board {
 
         // render UI layer
         this.UILayer.render(this.ctx);
+
+        // restore saved canvas transforms
+        this.ctx.restore();
     }
 }

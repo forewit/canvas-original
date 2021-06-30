@@ -36,6 +36,7 @@ export class Sprite extends Entity {
             this.updated = false;
         }
 
+        ctx.save()
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
 
@@ -47,7 +48,8 @@ export class Sprite extends Entity {
             -this.halfw, -this.halfh,
             this.w, this.h);
 
-        ctx.rotate(-this.rotation);
-        ctx.translate(-this.x, -this.y);
+        ctx.restore()
+        //ctx.rotate(-this.rotation);
+        //ctx.translate(-this.x, -this.y);
     }
 }
