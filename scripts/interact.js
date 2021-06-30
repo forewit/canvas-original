@@ -20,8 +20,30 @@ export let interact = function (cnvs) {
     let lastPoint = { x: 0, y: 0 };
     let vx = 0, vy = 0;
     let log = document.getElementById('log');
-    let gestures = new Gestures(dndcanvas.elm);
 
+    gestures.track(dndcanvas.elm);
+    dndcanvas.elm.addEventListener("gesture", function (e) {
+        log.innerHTML = e.detail.name;
+        // convert points to canvas coordinates
+
+        // SELECT TOOL
+        switch (e.detail.name) {
+            case "click":
+            case "tap":
+                // 1. clear selection if shift is not being held
+                // 2. select point
+                break;
+
+            case "touch-drag-start":
+            case "mouse-drag-start":
+            case "pinch-start":
+                // 1. start panning
+                break;
+            default:
+                break;
+        }
+
+    });
 
     // KEYBOARD SHORTCUTS
     keys.start()
@@ -30,6 +52,7 @@ export let interact = function (cnvs) {
         alert('Prevented reload!');
     });
 
+    /*
     // SELECT TOOL GESTURES
     log.innerHTML = 'Select';
     gestures.on('click tap', (x, y) => {
@@ -70,40 +93,8 @@ export let interact = function (cnvs) {
         wheel(point, event);
     });
     gestures.start();
+    */
 
-
-
-    // **************** MOUSE TRIAGE FUNCTIONS ****************
-    function mouseDragStart(point) {
-        /** TODO CASES
-         * 1. dragging active handle -> resize selection
-         * 2. draging active selection -> move selection
-         * 3. dragging an unselected entity -> select entity & move selection
-         * 4. dragging no entities -> pan
-         */
-        panStart(point);
-    }
-    function mouseDragging(point) {
-        /** TODO CASES
-         * 1. resize selection
-         * 2. move selection
-         * 3. pan
-         */
-        if (isPanning) {
-            panning(point);
-            return;
-        } else if (isResizing) {
-
-        } else if (isMoving) {
-
-        }
-    }
-    function mouseDragEnd() {
-        if (isPanning) panEnd();
-        if (isResizing) resizeEnd();
-        if (isMoving) moveEnd();
-    }
-    // **************************************************
 
 
 

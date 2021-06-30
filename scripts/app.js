@@ -1,4 +1,4 @@
-import { Dndcanvas } from "./dndcanvas.js";
+import { Board } from "./Board.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { interact } from "./interact.js";
@@ -11,7 +11,7 @@ import { interact } from "./interact.js";
     'use strict';
 
     // Create test canvas and toolbar
-    let dndcanvas = new Dndcanvas(document.getElementById("canvas"));
+    let board = new Board(document.getElementById("canvas"));
     let layer = new Layer();
     let sprite = new Sprite("/img/placeholder.png");
     sprite.rotation = 1;
@@ -27,14 +27,14 @@ import { interact } from "./interact.js";
     sprite2.h = 64;
 
     // resizing canvas
-    window.addEventListener("resize", function () { dndcanvas.resize() });
+    window.addEventListener("resize", function () { board.resize() });
     layer.addEntity(sprite);
     layer.addEntity(sprite2);
 
-    dndcanvas.addLayer(layer);
-    dndcanvas.activeLayer = layer;
+    board.addLayer(layer);
+    board.activeLayer = layer;
 
-    interact(dndcanvas);
+    interact(board);
 
     // ************ app loop **************
     var FPS = 0;
@@ -47,7 +47,7 @@ import { interact } from "./interact.js";
         var perSec = delta / 1000;
 
         // DO STUFF
-        dndcanvas.render();
+        board.render();
         sprite.frame_x = Math.floor(10 * perSec % 6);
         sprite.rotation += 0.01;
         //sprite.h += 0.5;
@@ -67,7 +67,7 @@ import { interact } from "./interact.js";
     // ************************************
 
     // Global exports
-    exports.dndcanvas = dndcanvas;
+    exports.board = board;
     exports.utils = utils;
 
     Object.defineProperty(exports, '__esModule', { value: true });
