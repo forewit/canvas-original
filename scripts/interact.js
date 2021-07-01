@@ -17,7 +17,7 @@ export let interact = function (newBoard) {
         isResizing = false,
         isMoving = false,
         lastPanTime,
-        vx = 0, 
+        vx = 0,
         vy = 0,
         log = document.getElementById('log');
 
@@ -36,9 +36,13 @@ export let interact = function (newBoard) {
     function gestureHandler(e) {
         log.innerHTML = e.detail.name;
 
-        // Convert client coords to board coords
-        let x = ((e.detail.x + board.left) * board.dpi) / board.scale + board.originx,
-            y = ((e.detail.y + board.top) * board.dpi) / board.scale + board.originy;
+        // Convert client gesture coords to canvas coords
+        let x = (e.detail.x) ? ((e.detail.x + board.left) * board.dpi) / board.scale + board.originx : 0,
+            y = (e.detail.y) ? ((e.detail.y + board.top) * board.dpi) / board.scale + board.originy : 0,
+            dx = (e.detail.dx) ? e.detail.dx * board.dpi / board.scale : 0,
+            dy = (e.detail.dy) ? e.detail.dy * board.dpi / board.scale : 0,
+            zoom = (e.detail.zoom) ? e.detail.zoom : 1,
+            event = (e.detail.event) ? e.detail.event : undefined;
 
         // triage gestures by name
         switch (e.detail.name) {
@@ -59,12 +63,13 @@ export let interact = function (newBoard) {
 
             case "mouse-dragging":
             case "touch-dragging":
-            case "pinching":
-                // scale detla x and y to the board's dpi and scale
-                let dx = e.detail.data.dx * board.dpi / board.scale,
-                    dy = e.detail.data.dy * board.dpi / board.scale;
-
                 // pan by delta x and y
+                pan(dx, dy);
+                break;
+
+            case "pinching":
+                // pan and zoom
+                board.zoomOnPoint(x, y, zoom);
                 pan(dx, dy);
                 break;
 
@@ -75,8 +80,7 @@ export let interact = function (newBoard) {
                 break;
 
             case "wheel":
-            case "pinching":
-                wheelHandler(x, y, e.detail.data)
+                wheelHandler(x, y, event)
                 break;
 
             default:
