@@ -53,8 +53,11 @@ export let interact = function (newBoard) {
                 panStart();
                 break;
             case "mouse-dragging":
+                // scale detla x and y to the board's dpi and scale
                 let dx = e.detail.data.dx * board.dpi / board.scale,
                     dy = e.detail.data.dy * board.dpi / board.scale;
+
+                // pan by delta x and y
                 pan(dx, dy);
                 break;
             case "mouse-drag-end":
