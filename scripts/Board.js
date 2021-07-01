@@ -73,15 +73,6 @@ export class Board {
         return false;
     }
 
-    screenToCanvas(x, y) {
-        //console.log("left:" + this.left + " dpi:" + this.dpi + " origin:" + this.originx + ", " + this.originy);
-
-        return {
-            x: ((x + this.left) * this.dpi) / this.scale + this.originx,
-            y: ((y + this.top) * this.dpi) / this.scale + this.originy
-        };
-    }
-
     translateView(dx, dy) {
         this.originx -= dx;
         this.originy -= dy;
