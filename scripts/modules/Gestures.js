@@ -23,7 +23,7 @@
  * pinch-end
  */
 
-(function (global, factory) {
+ (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
         typeof define === 'function' && define.amd ? define(['exports'], factory) :
             (global = global || self, factory(global.gestures = {}));
@@ -146,7 +146,7 @@
         mouseMoving = true;
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
-        dispatchGesture(activeMouseElm, "mouse-dragging", e.clientX, e.clientY, {dx:dx, dy:dy})
+        dispatchGesture(activeMouseElm, "mouse-dragging", e.clientX, e.clientY, { dx: dx, dy: dy })
     }
 
     function mouseupHandler(e) {
@@ -220,11 +220,19 @@
         e.stopPropagation();
 
         if (dragging) {
+            let lastX = touch.x,
+                lastY = touch.y;
+
             touch = copyTouch(e.targetTouches[0]);
+
+            // calculate change in x and y from last touch event
+            let dx = touch.x - lastX,
+                dy = touch.y - lastY;
+
             if (longpressed) {
-                dispatchGesture(activeTouchElm, "longpress-dragging", touch.x, touch.y)
+                dispatchGesture(activeTouchElm, "longpress-dragging", touch.x, touch.y, { dx: dx, dy: dy })
             } else {
-                dispatchGesture(activeTouchElm, "touch-dragging", touch.x, touch.y);
+                dispatchGesture(activeTouchElm, "touch-dragging", touch.x, touch.y, { dx: dx, dy: dy });
             }
             return;
         } else if (!longpressed && (pinching || e.targetTouches.length > 1)) {
@@ -243,7 +251,7 @@
 
             pinching = true;
             let scale = hypo1 / hypo;
-            dispatchGesture(activeTouchElm, "pinching", center.x, center.y, { scale: scale });
+            dispatchGesture(activeTouchElm, "pinching", center.x, center.y, { scale: scale, dx: 0, dy: 0 });
             hypo = hypo1;
             return;
         } else {
@@ -251,12 +259,12 @@
             if (longpressed) {
                 dispatchGesture(activeTouchElm, "longpress-drag-start", touch.x, touch.y)
                 touch = copyTouch(e.targetTouches[0]);
-                dispatchGesture(activeTouchElm, "longpress-dragging", touch.x, touch.y);
+                dispatchGesture(activeTouchElm, "longpress-dragging", touch.x, touch.y, { dx: 0, dy: 0 });
 
             } else {
                 dispatchGesture(activeTouchElm, "touch-drag-start", touch.x, touch.y);
                 touch = copyTouch(e.targetTouches[0]);
-                dispatchGesture(activeTouchElm, "touch-dragging", touch.x, touch.y);
+                dispatchGesture(activeTouchElm, "touch-dragging", touch.x, touch.y, { dx: 0, dy: 0 });
             }
         }
     }

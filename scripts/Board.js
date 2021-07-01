@@ -3,7 +3,6 @@ import { Layer } from "./layer.js";
 export class Board {
     constructor(elm) {
         this.elm = elm;
-        //this.rect = this.elm.getBoundingClientRect();
         this.left = 0;
         this.top = 0;
         this.width = 0;
@@ -17,6 +16,7 @@ export class Board {
         this.UILayer = new Layer();
         this._activeLayer = undefined;
 
+        // initial resizing
         this.resize();
     }
 

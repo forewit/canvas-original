@@ -23,13 +23,13 @@ export let interact = function (newBoard) {
 
 
     // KEYBOARD SHORTCUTS
-    keys.start()
+    keys.start();
     keys.on('17 82', function (e) {
         e.preventDefault();
         alert('Prevented reload!');
     });
 
-    // MANAGE GESTURES
+    // LISTEN FOR GESTURES
     gestures.track(board.elm);
     board.elm.addEventListener("gesture", gestureHandler);
 
@@ -38,21 +38,28 @@ export let interact = function (newBoard) {
 
         // Convert client coords to board coords
         let x = ((e.detail.x + board.left) * board.dpi) / board.scale + board.originx,
-            y = ((e.detail.y + board.top) * board.dpi) / board.scale + board.originy
+            y = ((e.detail.y + board.top) * board.dpi) / board.scale + board.originy;
 
         // triage gestures by name
         switch (e.detail.name) {
             case "click":
+            case "tap":
                 // clear selection if shift is not being held
                 if (!keys.down[16]) clearSelection();
 
                 // select an item at a point
                 selectPoint(x, y);
                 break;
+
             case "mouse-drag-start":
+            case "touch-drag-start":
+            case "pinch-start":
                 panStart();
                 break;
+
             case "mouse-dragging":
+            case "touch-dragging":
+            case "pinching":
                 // scale detla x and y to the board's dpi and scale
                 let dx = e.detail.data.dx * board.dpi / board.scale,
                     dy = e.detail.data.dy * board.dpi / board.scale;
@@ -60,12 +67,18 @@ export let interact = function (newBoard) {
                 // pan by delta x and y
                 pan(dx, dy);
                 break;
+
             case "mouse-drag-end":
+            case "touch-drag-end":
+            case "pinch-end":
                 panEnd();
                 break;
+
             case "wheel":
+            case "pinching":
                 wheelHandler(x, y, e.detail.data)
                 break;
+
             default:
                 break;
         }
