@@ -115,7 +115,6 @@ export class Board {
         this.ctx.translate(-this.originx, -this.originy) // then translate
 
         // Use the identity matrix while clearing the canvas
-        // TODO: verify that this is ONLY clearing the screen
         this.ctx.clearRect(
             this.originx, this.originy,
             this.width / this.scale, this.height / this.scale);
