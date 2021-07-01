@@ -88,51 +88,6 @@ export let interact = function (newBoard) {
         }
     }
 
-    /*
-    // SELECT TOOL GESTURES
-    log.innerHTML = 'Select';
-    gestures.on('click tap', (x, y) => {
-        // convert to canvas coordinates
-        var point = board.screenToCanvas({ x: x, y: y });
-
-        // clear selection if shift is not being held
-        if (!keys.down[16]) clearSelection();
-
-        selectPoint(point.x, point.y);
-    });
-    gestures.on('touchDragStart mouseDragStart pinchStart', (x, y) => {
-        // convert to canvas coordinates
-        var point = board.screenToCanvas({ x: x, y: y });
-
-        mouseDragStart(point);
-    });
-    gestures.on('touchDragging mouseDragging', (x, y) => {
-        // convert to canvas coordinates
-        var point = board.screenToCanvas({ x: x, y: y });
-
-        mouseDragging(point);
-    });
-    gestures.on('touchDragEnd mouseDragEnd pinchEnd', () => {
-        mouseDragEnd();
-    });
-    gestures.on('pinching', (x, y, zoom) => {
-        // convert to canvas coordinates
-        var point = board.screenToCanvas({ x: x, y: y });
-
-        board.zoomOnPoint(point, zoom);
-        panning(point);
-    });
-    gestures.on('wheel', (x, y, event) => {
-        // convert to canvas coordinates
-        var point = board.screenToCanvas({ x: x, y: y });
-
-        wheel(point, event);
-    });
-    gestures.start();
-    */
-
-
-
 
     // **************** PANNING FUNCTIONS ***************
     function panStart() {
