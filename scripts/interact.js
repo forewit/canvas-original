@@ -22,7 +22,6 @@ export let interact = function (newBoard) {
     let log = document.getElementById('log');
 
 
-
     // KEYBOARD SHORTCUTS
     keys.start()
     keys.on('17 82', function (e) {
@@ -51,15 +50,15 @@ export let interact = function (newBoard) {
                 selectPoint(x, y);
                 break;
             case "mouse-drag-start":
-                panStart()
+                panStart();
                 break;
             case "mouse-dragging":
                 let dx = e.detail.data.dx * board.dpi / board.scale,
                     dy = e.detail.data.dy * board.dpi / board.scale;
-                pan(dx, dy)
+                pan(dx, dy);
                 break;
             case "mouse-drag-end":
-                panEnd()
+                panEnd();
                 break;
             default:
                 break;
@@ -121,7 +120,6 @@ export let interact = function (newBoard) {
         vy = 0;
     }
     function pan(dx, dy) {
-
         board.translate(dx, dy);
 
         vx = dx * inertiaMemory + vx * (1 - inertiaMemory);
@@ -178,19 +176,21 @@ export let interact = function (newBoard) {
         activeHandles = [];
 
     handles.render = function (ctx) {
-        let size = handleSize / board.scale;
-
+        // save and adjust canvas transforms
+        ctx.save()
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
 
+        // draw handles to canvas
+        let size = handleSize / board.scale;
         ctx.beginPath();
         ctx.rect(-this.halfw, -this.halfh, this.w, this.h);
         ctx.rect(-size - this.halfw, -size - this.halfh, this.w + size * 2, this.h + size * 2);
         ctx.rect(size - this.halfw, size - this.halfh, this.w - size * 2, this.h - size * 2);
         ctx.stroke();
 
-        ctx.rotate(-this.rotation);
-        ctx.translate(-this.x, -this.y);
+        // restore canvas transforms
+        ctx.restore()
     }
     function getHandleIntersection(x, y) {
         //returns [x, y] where x or y can be -1, 0, or 1. Examples:
