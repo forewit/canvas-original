@@ -3,23 +3,23 @@ import { Entity } from "./entity.js";
 export let interact = function (newBoard) {
 
     // PREFERENCES
-    let zoomIntensity = 0.05;
-    let inertiaFriction = 0.8; // 0 = infinite friction, 1 = no friction
-    let inertiaMemory = 0.2; // 0 = infinite memory, 1 = no memory
-    let inertiaDropOff = 5 // in milliseconds
-    let epsilon = 0.001; // replacement for 0 to prevent divide-by-zero errors
-    let handleSize = 5;
+    let zoomIntensity = 0.05,
+        inertiaFriction = 0.8, // 0 = infinite friction, 1 = no friction
+        inertiaMemory = 0.2, // 0 = infinite memory, 1 = no memory
+        inertiaDropOff = 5, // in milliseconds
+        epsilon = 0.001, // replacement for 0 to prevent divide-by-zero errors
+        handleSize = 5;
 
     // STATE MANAGEMENT
-    let selected = [];
-    let board = newBoard;
-    let isPanning = false;
-    let isResizing = false;
-    let isMoving = false;
-    let lastPanTime;
-    let lastPoint = { x: 0, y: 0 };
-    let vx = 0, vy = 0;
-    let log = document.getElementById('log');
+    let selected = [],
+        board = newBoard,
+        isPanning = false,
+        isResizing = false,
+        isMoving = false,
+        lastPanTime,
+        vx = 0, 
+        vy = 0,
+        log = document.getElementById('log');
 
 
     // KEYBOARD SHORTCUTS
