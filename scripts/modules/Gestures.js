@@ -95,7 +95,7 @@
     }
 
     function wheelHandler(e) {
-        dispatchGesture(e.target, "wheel", e.clientX, e.clientY)
+        dispatchGesture(e.target, "wheel", e.clientX, e.clientY, e)
 
         e.preventDefault();
         e.stopPropagation();

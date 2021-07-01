@@ -63,6 +63,9 @@ export let interact = function (newBoard) {
             case "mouse-drag-end":
                 panEnd();
                 break;
+            case "wheel":
+                wheelHandler(x, y, e.detail.data)
+                break;
             default:
                 break;
         }
@@ -123,7 +126,7 @@ export let interact = function (newBoard) {
         vy = 0;
     }
     function pan(dx, dy) {
-        board.translate(dx, dy);
+        board.translateView(dx, dy);
 
         vx = dx * inertiaMemory + vx * (1 - inertiaMemory);
         vy = dy * inertiaMemory + vy * (1 - inertiaMemory);
@@ -144,7 +147,7 @@ export let interact = function (newBoard) {
         if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
         requestAnimationFrame(panInertia);
 
-        board.translate(vx, vy);
+        board.translateView(vx, vy);
 
         vx *= inertiaFriction;
         vy *= inertiaFriction;
@@ -154,7 +157,8 @@ export let interact = function (newBoard) {
 
 
     // **************** ZOOMING FUNCTIONS ***************
-    function wheel(point, event) {
+    function wheelHandler(x, y, event) {
+        //console.log(x,y)
         let delta = event.deltaY;
 
         // Normalize wheel to +1 or -1.
@@ -164,7 +168,7 @@ export let interact = function (newBoard) {
         let zoom = Math.exp(direction * zoomIntensity);
 
         // zoom
-        board.zoomOnPoint(point, zoom);
+        board.zoomOnPoint(x, y, zoom);
     }
     // **************************************************
 

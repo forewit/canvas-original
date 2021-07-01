@@ -82,41 +82,22 @@ export class Board {
         };
     }
 
-    translate(dx, dy) {
+    translateView(dx, dy) {
         this.originx -= dx;
         this.originy -= dy;
     }
 
     zoomOnPoint(x, y, zoom) {
-        this.ctx.translate(this.originx, this.originy);
+        // calculate the distance from the viewable origin
+        let offsetX = x - this.originx,
+            offsetY = y - this.originy;
 
-        this.ctx.scale(zoom, zoom);
+        // move the origin by scaling the offset
+        this.originx += offsetX - offsetX/zoom;
+        this.originy += offsetY - offsetY/zoom;
+
+        // apply the new scale to the canvas
         this.scale *= zoom;
-
-        this.ctx.translate(-this.originx, -this.originy);
-
-        /*
-        // Translate so the visible origin is at the context's origin.
-        this.ctx.translate(this.originx, this.originy);
-
-        // Compute the new visible origin. Originally the mouse is at a
-        // distance mouse/scale from the corner, we want the point under
-        // the mouse to remain in the same place after the zoom, but this
-        // is at mouse/new_scale away from the corner. Therefore we need to
-        // shift the origin (coordinates of the corner) to account for this.
-        let dx = x - this.originx;
-        let dy = y - this.originy;
-
-        // Scale it (centered around the origin due to the trasnslate above).
-        this.ctx.scale(zoom, zoom);
-
-        // Offset the visible origin to it's proper position.
-        this.ctx.translate(-this.originx, -this.originy);
-        this.translate(x, y);
-
-        // Update scale and others.
-        this.scale *= zoom;
-        */
     }
 
     resize() {
@@ -132,8 +113,6 @@ export class Board {
         this.ctx.resetTransform()
         this.elm.width = this.width;
         this.elm.height = this.height;
-        //this.ctx.scale(this.scale, this.scale);
-        //this.ctx.translate(-this.originx, -this.originy);
 
         console.log("RESIZE!");
     }
