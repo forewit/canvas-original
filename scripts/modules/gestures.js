@@ -52,6 +52,8 @@
         taps = 0,
         lastTouchEndTime = 0,
         hypo = undefined,
+        lastCenterX = 0,
+        lastCenterY = 0,
         touch = { identifier: undefined, x: 0, y: 0 };
 
     // ************ HELPER FUNCTIONS **************
@@ -246,13 +248,19 @@
             let hypo1 = Math.hypot((touch.x - touch2.x), (touch.y - touch2.y));
             if (hypo === undefined) {
                 hypo = hypo1;
+                lastCenterX = center.x;
+                lastCenterY = center.y;
                 dispatchGesture(activeTouchElm, {name:"pinch-start", x:center.x, y:center.y})
             }
 
             pinching = true;
             let zoom = hypo1 / hypo;
-            dispatchGesture(activeTouchElm, {name:"pinching", x:center.x, y:center.y, zoom: zoom, dx: 0, dy: 0 });
+            let dx = center.x - lastCenterX,
+                dy = center.y - lastCenterY;
+            dispatchGesture(activeTouchElm, {name:"pinching", x:center.x, y:center.y, zoom: zoom, dx: dx, dy: dy });
             hypo = hypo1;
+            lastCenterX = center.x;
+            lastCenterY = center.y;
             return;
         } else {
             dragging = true;
