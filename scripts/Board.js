@@ -68,7 +68,7 @@ export class Board {
                 this.layers[i].destroy();
                 this.layers.splice(i, 1);
                 return true;
-            } isadmin
+            }
         }
         return false;
     }

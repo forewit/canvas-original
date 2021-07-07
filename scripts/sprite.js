@@ -49,7 +49,5 @@ export class Sprite extends Entity {
             this.w, this.h);
 
         ctx.restore()
-        //ctx.rotate(-this.rotation);
-        //ctx.translate(-this.x, -this.y);
     }
 }

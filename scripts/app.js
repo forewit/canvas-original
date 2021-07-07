@@ -10,31 +10,33 @@ import Interact from "./interact.js";
 }(this, (function (exports) {
     'use strict';
 
-    // Create test canvas and toolbar
-    let board = new Board(document.getElementById("canvas"));
+    // Create a couple Sprites
+    let placeholderSprite = new Sprite("/img/placeholder.png");
+    placeholderSprite.x = 200;
+    placeholderSprite.y = 100;
+    placeholderSprite.w = 128;
+    placeholderSprite.h = 64;
+
+    let fireballSprite = new Sprite("/img/fireball.png");
+    fireballSprite.x = 300;
+    fireballSprite.y = 300;
+    fireballSprite.w = 64;
+    fireballSprite.h = 64;
+    fireballSprite.frame_w = 512;
+    fireballSprite.frame_h = 512;
+
+    // create a layer for the sprites to live on
     let layer = new Layer();
-    let sprite = new Sprite("/img/placeholder.png");
-    sprite.rotation = 1;
-    sprite.x = 200;
-    sprite.y = 100;
-    sprite.w = 128;
-    sprite.h = 64;
+    layer.addEntity(placeholderSprite);
+    layer.addEntity(fireballSprite);
 
-    let sprite2 = new Sprite("/img/placeholder.png");
-    sprite2.x = 300;
-    sprite2.y = 300;
-    sprite2.w = 64;
-    sprite2.h = 64;
-
-    // resizing canvas
-    window.addEventListener("resize", function () { board.resize() });
-    layer.addEntity(sprite);
-    layer.addEntity(sprite2);
-
+    // create a board for the layer to exist on
+    let board = new Board(document.getElementById("canvas"));
     board.addLayer(layer);
     board.activeLayer = layer;
 
-    //interact(board);
+    // initialize interaction model and add event listener for resizing
+    window.addEventListener("resize", function () { board.resize() });
     Interact.init(board);
 
     // ************ app loop **************
@@ -49,10 +51,8 @@ import Interact from "./interact.js";
 
         // DO STUFF
         board.render();
-        sprite.frame_x = Math.floor(10 * perSec % 6);
-        sprite.rotation += 0.01;
-        //sprite.h += 0.5;
-        //sprite.x += 1;
+        placeholderSprite.rotation = perSec;
+        fireballSprite.frame_x = Math.floor(10 * perSec % 6);
 
         // FPS counter
         var now = Date.now();
