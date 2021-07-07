@@ -24,11 +24,7 @@ export let interact = function (newBoard) {
         log = document.getElementById('log');
 
 
-    // KEYBOARD SHORTCUTS
-    Mousetrap.bind('ctrl+r', function(){
-        alert('Prevented reload!');
-        return false;
-    });
+
 
     // LISTEN FOR GESTURES
     gestures.track(board.elm);
