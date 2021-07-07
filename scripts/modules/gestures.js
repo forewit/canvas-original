@@ -169,7 +169,7 @@
                 dispatchGesture(activeMouseElm, {name:"right-click", x:e.clientX, y:e.clientY});
             } else {
                 // CLICK DETECTION
-                if (clicks == 0) dispatchGesture(activeMouseElm, {name:"click", x:e.clientX, y:e.clientY});
+                if (clicks == 0) dispatchGesture(activeMouseElm, {name:"click", x:e.clientX, y:e.clientY, event:e});
 
                 // DOUBLE CLICK DETECTION
                 clicks++;
@@ -302,7 +302,7 @@
             dispatchGesture(activeTouchElm, {name:"pinch-end", x:touch.x, y:touch.y})
         } else if (!longpressed) {
             // TAP DETECTION
-            if (taps == 0) dispatchGesture(activeTouchElm, {name:"tap", x:touch.x, y:touch.y});
+            if (taps == 0) dispatchGesture(activeTouchElm, {name:"tap", x:touch.x, y:touch.y, event:e});
 
             // DOUBLE TAP DETECTION
             taps++;

@@ -91,6 +91,9 @@ export class Board {
         this.scale *= zoom;
     }
 
+    importJSON() {}
+    exportJSON() {}
+
     resize() {
         // recalculate canvas size
         let rect = this.elm.getBoundingClientRect();

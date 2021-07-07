@@ -1,7 +1,7 @@
 import { Board } from "./Board.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
-import { interact } from "./interact.js";
+import Interact from "./interact.js";
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -34,7 +34,8 @@ import { interact } from "./interact.js";
     board.addLayer(layer);
     board.activeLayer = layer;
 
-    interact(board);
+    //interact(board);
+    Interact.init(board);
 
     // ************ app loop **************
     var FPS = 0;
