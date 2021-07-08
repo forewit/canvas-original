@@ -142,7 +142,7 @@
         if (dx == 0 && dy == 0) return;
 
         // MOUSE DRAG START DETECTION
-        if (!mouseMoving) dispatchGesture(activeMouseElm, {name:"mouse-drag-start", x:e.clientX, y:e.clientY});
+        if (!mouseMoving) dispatchGesture(activeMouseElm, {name:"mouse-drag-start", x:e.clientX, y:e.clientY, event:e});
 
         // MOUUSE DRAGGING DETECTION
         mouseMoving = true;
@@ -265,12 +265,12 @@
         } else {
             dragging = true;
             if (longpressed) {
-                dispatchGesture(activeTouchElm, {name:"longpress-drag-start", x:touch.x, y:touch.y})
+                dispatchGesture(activeTouchElm, {name:"longpress-drag-start", x:touch.x, y:touch.y, event:e})
                 touch = copyTouch(e.targetTouches[0]);
                 dispatchGesture(activeTouchElm, {name:"longpress-dragging", x:touch.x, y:touch.y, dx: 0, dy: 0});
 
             } else {
-                dispatchGesture(activeTouchElm, {name:"touch-drag-start", x:touch.x, y:touch.y});
+                dispatchGesture(activeTouchElm, {name:"touch-drag-start", x:touch.x, y:touch.y, event:e});
                 touch = copyTouch(e.targetTouches[0]);
                 dispatchGesture(activeTouchElm, {name:"touch-dragging", x:touch.x, y:touch.y, dx: 0, dy: 0 });
             }

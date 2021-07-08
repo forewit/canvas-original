@@ -62,8 +62,6 @@
     let loader = new PxLoader();
     function getImage(url, callback) {
         if (!images[url]) {
-            //images[url] = new Image();
-            //images[url].src = url;
             images[url] = loader.addImage(url);
             loader.addCompletionListener(function () {
                 callback();
