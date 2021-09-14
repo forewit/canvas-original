@@ -1,110 +1,108 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+* {
+  box-sizing: border-box;
 }
-/* https://www.cssfontstack.com/Open-Sans */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+@supports (padding: max(0px)) {
+  body {
+    padding-left: min(0vmin, var(--sal));
+    padding-right: min(0vmin, var(--sar));
+  }
+}
 
+/* https://www.cssfontstack.com/Open-Sans */
 h1 {
-    font-family: "Open Sans";
-    font-size: 23px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 700;
-    line-height: 23px;
+  font-family: "Open Sans";
+  font-size: 23px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 700;
+  line-height: 23px;
 }
 
 h3 {
-    font-family: "Open Sans";
-    font-size: 17px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 700;
-    line-height: 23px;
+  font-family: "Open Sans";
+  font-size: 17px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 700;
+  line-height: 23px;
 }
 
-p, #log, #fps {
-    font-family: "Open Sans";
-    font-size: 14px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 400;
-    line-height: 23px;
+p {
+  font-family: "Open Sans";
+  font-size: 14px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 23px;
 }
 
 blockquote {
-    font-family: "Open Sans";
-    font-size: 17px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 400;
-    line-height: 23px;
+  font-family: "Open Sans";
+  font-size: 17px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 23px;
 }
 
 pre {
-    font-family: "Open Sans";
-    font-size: 11px;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 400;
-    line-height: 23px;
+  font-family: "Open Sans";
+  font-size: 11px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 23px;
 }
 
 #fps {
-    position: fixed;
-    display: inline-block;
-    bottom: 0;
-    right: 0;
+  position: fixed;
+  display: inline-block;
+  bottom: 0;
+  right: 0;
 }
 
 #log {
-    position: fixed;
-    top: 0;
-    right: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
 }
 
 #canvas {
-    background: lightcyan;
-    width: 100%;
-    height: 100%;
+  background: lightcyan;
+  width: 100%;
+  height: 100%;
 }
 
-#toolbar-wrapper {
+.fill {
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
-}
-
-#toolbar {
-    display: grid;
-    gap: 10px;
-    grid-auto-flow: column;
-}
-
-.toolbar-item {
-    width: 40px;
-    height: 40px;
-}
-
-.dragging {
-    opacity: 0.8;
+    right: 0;
+    bottom: 0;
+    margin: 0;
 }
 
 .no-select {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .white-rounded {
-    margin: 20px;
-    padding: 8px;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 4px 3px 9px 0px rgba(0,0,0, 0.3);
+  margin: 20px;
+  padding: 8px;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 4px 3px 9px 0px rgba(0, 0, 0, 0.3);
 }
 
 /* TODO: add @media for smaller screens.

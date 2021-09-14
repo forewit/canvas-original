@@ -64,13 +64,13 @@ function gestureHandler(e) {
             selectPoint(x, y);
             break;
 
-        case "mouse-drag-start":
+        case "left-click-drag-start":
         case "touch-drag-start":
         case "pinch-start":
             panStart();
             break;
 
-        case "mouse-dragging":
+        case "left-click-dragging":
         case "touch-dragging":
             // pan by delta x and y
             pan(dx, dy);
@@ -82,7 +82,7 @@ function gestureHandler(e) {
             pan(dx, dy);
             break;
 
-        case "mouse-drag-end":
+        case "left-click-drag-end":
         case "touch-drag-end":
         case "pinch-end":
             panEnd();
