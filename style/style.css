@@ -6,12 +6,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-@supports (padding: max(0px)) {
-  body {
-    padding-left: min(0vmin, var(--sal));
-    padding-right: min(0vmin, var(--sar));
-  }
+  background: steelblue;
 }
 
 /* https://www.cssfontstack.com/Open-Sans */
@@ -65,27 +60,30 @@ pre {
   display: inline-block;
   bottom: 0;
   right: 0;
+  z-index: 10;
 }
 
 #log {
   position: fixed;
   top: 0;
   right: 0;
+  z-index: 10;
 }
 
 #canvas {
+  border: 5px solid goldenrod;
   background: lightcyan;
   width: 100%;
   height: 100%;
 }
 
 .fill {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
 }
 
 .no-select {
