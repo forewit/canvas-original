@@ -82,14 +82,15 @@
         }
     }
 
-    function dispatchGesture(elm, data) {
-        let event = new CustomEvent("gesture", {
+    function dispatchGesture(elm, event, data) {
+        data.event = event;
+        let e = new CustomEvent("gesture", {
             detail: data,
             bubbles: false,
             cancelable: false
         })
 
-        elm.dispatchEvent(event);
+        elm.dispatchEvent(e);
     }
     // *********** END HELPER FUNCTIONS ***********
 
@@ -110,13 +111,13 @@
         if (mouseMoving) {
             switch (mouseButton) {
                 case 0:
-                    dispatchGesture(activeMouseElm, { name: "left-click-drag-end", x: lastMouseX, y: lastMouseY });
+                    dispatchGesture(activeMouseElm, e, { name: "left-click-drag-end", x: lastMouseX, y: lastMouseY });
                     break;
                 case 1:
-                    dispatchGesture(activeMouseElm, { name: "middle-click-drag-end", x: lastMouseX, y: lastMouseY });
+                    dispatchGesture(activeMouseElm, e, { name: "middle-click-drag-end", x: lastMouseX, y: lastMouseY });
                     break;
                 case 2:
-                    dispatchGesture(activeMouseElm, { name: "right-click-drag-end", x: lastMouseX, y: lastMouseY });
+                    dispatchGesture(activeMouseElm, e, { name: "right-click-drag-end", x: lastMouseX, y: lastMouseY });
                     break;
             }
             mouseMoving = false;
@@ -124,7 +125,7 @@
     }
 
     function wheelHandler(e) {
-        dispatchGesture(e.target, { name: "wheel", x: e.clientX, y: e.clientY, event: e })
+        dispatchGesture(e.target, e, { name: "wheel", x: e.clientX, y: e.clientY, event: e })
 
         e.preventDefault();
         e.stopPropagation();
@@ -158,7 +159,7 @@
                     window.removeEventListener('mousemove', mousemoveHandler);
                     window.removeEventListener('mouseup', mouseupHandler);
 
-                    dispatchGesture(activeMouseElm, { name: "longclick", x: e.clientX, y: e.clientY })
+                    dispatchGesture(activeMouseElm, e, { name: "longclick", x: e.clientX, y: e.clientY })
                 }
             }, LONG_CLICK_DELAY)
         }
@@ -178,13 +179,13 @@
         if (!mouseMoving) {
             switch (mouseButton) {
                 case 0:
-                    dispatchGesture(activeMouseElm, { name: "left-click-drag-start", x: e.clientX, y: e.clientY });
+                    dispatchGesture(activeMouseElm, e, { name: "left-click-drag-start", x: e.clientX, y: e.clientY });
                     break;
                 case 1:
-                    dispatchGesture(activeMouseElm, { name: "middle-click-drag-start", x: e.clientX, y: e.clientY });
+                    dispatchGesture(activeMouseElm, e, { name: "middle-click-drag-start", x: e.clientX, y: e.clientY });
                     break;
                 case 2:
-                    dispatchGesture(activeMouseElm, { name: "right-click-drag-start", x: e.clientX, y: e.clientY });
+                    dispatchGesture(activeMouseElm, e, { name: "right-click-drag-start", x: e.clientX, y: e.clientY });
                     break;
             }
         }
@@ -196,13 +197,13 @@
 
         switch (mouseButton) {
             case 0:
-                dispatchGesture(activeMouseElm, { name: "left-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
+                dispatchGesture(activeMouseElm, e, { name: "left-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
                 break;
             case 1:
-                dispatchGesture(activeMouseElm, { name: "middle-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
+                dispatchGesture(activeMouseElm, e, { name: "middle-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
                 break;
             case 2:
-                dispatchGesture(activeMouseElm, { name: "right-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
+                dispatchGesture(activeMouseElm, e, { name: "right-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
                 break;
         }
     }
@@ -219,13 +220,13 @@
             // MOUSE DRAG END DETECTION
             switch (mouseButton) {
                 case 0:
-                    dispatchGesture(activeMouseElm, { name: "left-click-drag-end", x: lastMouseX, y: lastMouseY });
+                    dispatchGesture(activeMouseElm, e, { name: "left-click-drag-end", x: lastMouseX, y: lastMouseY });
                     break;
                 case 1:
-                    dispatchGesture(activeMouseElm, { name: "middle-click-drag-end", x: lastMouseX, y: lastMouseY });
+                    dispatchGesture(activeMouseElm, e, { name: "middle-click-drag-end", x: lastMouseX, y: lastMouseY });
                     break;
                 case 2:
-                    dispatchGesture(activeMouseElm, { name: "right-click-drag-end", x: lastMouseX, y: lastMouseY });
+                    dispatchGesture(activeMouseElm, e, { name: "right-click-drag-end", x: lastMouseX, y: lastMouseY });
                     break;
             }
 
@@ -233,17 +234,17 @@
         } else {
             // RIGHT CLICK DETECTION
             if (e.which === 3 || e.button === 2) {
-                dispatchGesture(activeMouseElm, { name: "right-click", x: e.clientX, y: e.clientY });
+                dispatchGesture(activeMouseElm, e, { name: "right-click", x: e.clientX, y: e.clientY });
             } else if (e.which === 2 || e.button === 1) {
-                dispatchGesture(activeMouseElm, { name: "middle-click", x: e.clientX, y: e.clientY });
+                dispatchGesture(activeMouseElm, e, { name: "middle-click", x: e.clientX, y: e.clientY });
             } else {
                 // CLICK DETECTION
-                if (clicks == 0) dispatchGesture(activeMouseElm, { name: "click", x: e.clientX, y: e.clientY });
+                if (clicks == 0) dispatchGesture(activeMouseElm, e, { name: "click", x: e.clientX, y: e.clientY });
 
                 // DOUBLE CLICK DETECTION
                 clicks++;
                 window.setTimeout(function () {
-                    if (clicks > 1) dispatchGesture(activeMouseElm, { name: "double-click", x: e.clientX, y: e.clientY });
+                    if (clicks > 1) dispatchGesture(activeMouseElm, e, { name: "double-click", x: e.clientX, y: e.clientY });
                     clicks = 0;
                 }, DOUBLE_CLICK_DELAY);
             }
@@ -282,7 +283,7 @@
                 hypo = undefined;
                 longpressed = true;
 
-                dispatchGesture(activeTouchElm, { name: "longpress", x: touch.x, y: touch.y })
+                dispatchGesture(activeTouchElm, e, { name: "longpress", x: touch.x, y: touch.y })
             }
         }, LONG_PRESS_DELAY);
     }
@@ -303,9 +304,9 @@
                 dy = touch.y - lastY;
 
             if (longpressed) {
-                dispatchGesture(activeTouchElm, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy })
+                dispatchGesture(activeTouchElm, e, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy })
             } else {
-                dispatchGesture(activeTouchElm, { name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
+                dispatchGesture(activeTouchElm, e, { name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
             }
             return;
         } else if (!longpressed && (pinching || e.targetTouches.length > 1)) {
@@ -321,14 +322,14 @@
                 hypo = hypo1;
                 lastCenterX = center.x;
                 lastCenterY = center.y;
-                dispatchGesture(activeTouchElm, { name: "pinch-start", x: center.x, y: center.y })
+                dispatchGesture(activeTouchElm, e, { name: "pinch-start", x: center.x, y: center.y })
             }
 
             pinching = true;
             let zoom = hypo1 / hypo;
             let dx = center.x - lastCenterX,
                 dy = center.y - lastCenterY;
-            dispatchGesture(activeTouchElm, { name: "pinching", x: center.x, y: center.y, zoom: zoom, dx: dx, dy: dy });
+            dispatchGesture(activeTouchElm, e, { name: "pinching", x: center.x, y: center.y, zoom: zoom, dx: dx, dy: dy });
             hypo = hypo1;
             lastCenterX = center.x;
             lastCenterY = center.y;
@@ -336,14 +337,14 @@
         } else {
             dragging = true;
             if (longpressed) {
-                dispatchGesture(activeTouchElm, { name: "longpress-drag-start", x: touch.x, y: touch.y })
+                dispatchGesture(activeTouchElm, e, { name: "longpress-drag-start", x: touch.x, y: touch.y })
                 touch = copyTouch(e.targetTouches[0]);
-                dispatchGesture(activeTouchElm, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
+                dispatchGesture(activeTouchElm, e, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
 
             } else {
-                dispatchGesture(activeTouchElm, { name: "touch-drag-start", x: touch.x, y: touch.y });
+                dispatchGesture(activeTouchElm, e, { name: "touch-drag-start", x: touch.x, y: touch.y });
                 touch = copyTouch(e.targetTouches[0]);
-                dispatchGesture(activeTouchElm, { name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
+                dispatchGesture(activeTouchElm, e, { name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
             }
         }
     }
@@ -363,22 +364,22 @@
         if (dragging) {
             dragging = false;
             if (longpressed) {
-                dispatchGesture(activeTouchElm, { name: "longpress-drag-end", x: touch.x, y: touch.y });
+                dispatchGesture(activeTouchElm, e, { name: "longpress-drag-end", x: touch.x, y: touch.y });
             } else {
-                dispatchGesture(activeTouchElm, { name: "touch-drag-end", x: touch.x, y: touch.y });
+                dispatchGesture(activeTouchElm, e, { name: "touch-drag-end", x: touch.x, y: touch.y });
             }
         } else if (pinching) {
             pinching = false;
             hypo = undefined;
-            dispatchGesture(activeTouchElm, { name: "pinch-end", x: touch.x, y: touch.y })
+            dispatchGesture(activeTouchElm, e, { name: "pinch-end", x: touch.x, y: touch.y })
         } else if (!longpressed) {
             // TAP DETECTION
-            if (taps == 0) dispatchGesture(activeTouchElm, { name: "tap", x: touch.x, y: touch.y });
+            if (taps == 0) dispatchGesture(activeTouchElm, e, { name: "tap", x: touch.x, y: touch.y });
 
             // DOUBLE TAP DETECTION
             taps++;
             window.setTimeout(function () {
-                if (taps > 1) dispatchGesture(activeTouchElm, { name: "doubletap", x: touch.x, y: touch.y });
+                if (taps > 1) dispatchGesture(activeTouchElm, e, { name: "doubletap", x: touch.x, y: touch.y });
                 taps = 0;
             }, DOUBLE_TAP_DELAY);
         }

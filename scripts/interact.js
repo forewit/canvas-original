@@ -26,9 +26,11 @@ function init(newBoard) {
     // start event listeners
 
     // KEYBOARD SHORTCUTS
-    Mousetrap.bind('ctrl+r', function () {
-        alert('Prevented reload!');
-        return false;
+    keys.start();
+    keys.on('17 82', (e) => {
+        alert("Prevented reload!");
+        e.preventDefault();
+        e.stopPropagation();
     });
 
     // LISTEN FOR GESTURES
