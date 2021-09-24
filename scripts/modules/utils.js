@@ -58,21 +58,6 @@
         return '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    let images = {};
-    let loader = new PxLoader();
-    function getImage(url, callback) {
-        if (!images[url]) {
-            images[url] = loader.addImage(url);
-            loader.addCompletionListener(function () {
-                callback();
-            });
-            loader.start();
-        } else {
-            callback();
-        }
-        return images[url];
-    }
-
     /**
      * Rotates a point (x, y) around a center point (cx, cy)
      * a number of radians (rad)
@@ -108,7 +93,6 @@
     exports.pointInRotatedRectangle = pointInRotatedRectangle;
     exports.pointInRectangle = pointInRectangle;
     exports.rotatePoint = rotatePoint;
-    exports.getImage = getImage;
     exports.generate_ID = generate_ID;
     exports.throttle = throttle;
 

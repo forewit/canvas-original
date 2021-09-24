@@ -12,8 +12,11 @@ export class Sprite extends Entity {
         this.sx = 0;
         this.sy = 0;
         this.loaded = false;
-        this.image = utils.getImage(url, () => {
-            this.loaded = true;
+        
+        var me = this;
+        files.getImageFromURL(url, (img) => {
+            me.image = img;
+            me.loaded = true;
         });
     }
 
