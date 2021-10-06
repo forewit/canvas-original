@@ -26,7 +26,9 @@ import Interact from "./interact.js";
     fireballSprite.frame_w = 512;
     fireballSprite.frame_h = 512;
 
-    let myNote = new Note("note");
+    let noteElm = document.createElement("div");
+    noteElm.classList.add("note", "no-select");
+    let myNote = new Note(noteElm);
 
     // create a layer for the sprites to live on
     let layer = new Layer();

@@ -2,17 +2,18 @@
 import { Entity } from "./entity.js";
 
 export class Note extends Entity {
-    constructor(cssClass) {
+    constructor(elm) {
+        // the note entity will be rendered in the canvas
+        // and the transforms, position, left and top will be adjusted
+
         super(); // call entity class constructor
 
         // set any note specific properties
         this.content = [];
-        this.cssClass = cssClass;
-        this.elm = document.createElement("div");
+        this.elm = elm;
         this.isLoaded = false;
 
         // setup the note
-        this.elm.classList.add(this.cssClass);
         this.elm.style.position = "absolute";
         this.elm.style.transformOrigin = "top left";
     }
