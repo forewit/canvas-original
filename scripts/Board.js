@@ -117,7 +117,7 @@ export class Board {
         this.ctx.scale(this.scale, this.scale); // scale first
         this.ctx.translate(-this.originx, -this.originy) // then translate
 
-        // Use the identity matrix while clearing the canvas
+        // clearing the canvas
         this.ctx.clearRect(
             this.originx, this.originy,
             this.width / this.scale, this.height / this.scale);

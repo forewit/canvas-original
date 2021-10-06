@@ -75,6 +75,13 @@ pre {
   background: lightcyan;
   width: 100%;
   height: 100%;
+  visibility: visible;
+}
+
+.note {
+  background: lightcoral;
+  width: 100px;
+  height: 200px;
 }
 
 .fill {

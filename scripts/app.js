@@ -1,6 +1,7 @@
 import { Board } from "./Board.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
+import { Note } from "./note.js";
 import Interact from "./interact.js";
 
 (function (global, factory) {
@@ -25,10 +26,13 @@ import Interact from "./interact.js";
     fireballSprite.frame_w = 512;
     fireballSprite.frame_h = 512;
 
+    let myNote = new Note("note");
+
     // create a layer for the sprites to live on
     let layer = new Layer();
     layer.addEntity(placeholderSprite);
     layer.addEntity(fireballSprite);
+    layer.addEntity(myNote);
 
     // create a board for the layer to exist on
     let board = new Board(document.getElementById("canvas"));
