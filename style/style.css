@@ -72,15 +72,8 @@ pre {
 
 
 #board {
-  border: 5px solid goldenrod;
+  /*border: 5px solid goldenrod;*/
   background: lightcyan;
-}
-
-.layer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
 }
 
 .note {

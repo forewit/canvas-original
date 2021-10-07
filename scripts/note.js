@@ -22,7 +22,7 @@ export class Note extends Entity {
         // add note element to the canvas if it is not already there
         if (!this.isLoaded) {
             this.isLoaded = true;
-            ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas.nextSibling);
+            ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas);
         }
 
         // adjust note position by the canvas transformations
