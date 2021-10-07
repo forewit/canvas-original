@@ -2,6 +2,7 @@
 ### TODO
 - [ ] resizing entities
 - [ ] create **Drawing** entity
+- [ ] create **Pin** entity
 
 ### [Optimizations](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
 - draw inactive layers offscreen
