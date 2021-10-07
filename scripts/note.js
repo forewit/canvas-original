@@ -27,13 +27,13 @@ export class Note extends Entity {
 
         // account for canvas transforms
         let transforms = ctx.getTransform();
-        let x_offset = transforms.e / window.devicePixelRatio;
-        let y_offset = transforms.f / window.devicePixelRatio;
         let scale = transforms.a / window.devicePixelRatio;
+        let x_offset = (this.x - this.halfw) * scale + transforms.e / window.devicePixelRatio;
+        let y_offset = (this.y - this.halfh) * scale + transforms.f / window.devicePixelRatio;
                 
         // update the note's position and scale
-        this.elm.style.left = (this.x - this.halfw) * scale + x_offset + "px";
-        this.elm.style.top = (this.y - this.halfh) * scale + y_offset + "px";
+        this.elm.style.left =  x_offset + "px";
+        this.elm.style.top =  y_offset + "px";
         this.elm.style.width = this.w + "px";
         this.elm.style.height = this.h + "px";
         this.elm.style.transform = `scale(${scale})`;
