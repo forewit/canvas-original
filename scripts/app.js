@@ -28,7 +28,12 @@ import Interact from "./interact.js";
 
     let noteElm = document.createElement("div");
     noteElm.classList.add("note", "no-select");
+
     let myNote = new Note(noteElm);
+    myNote.w = 100;
+    myNote.h = 100;
+    myNote.x = 500;
+    myNote.y = 100;
 
     // create a layer for the sprites to live on
     let layer = new Layer();
