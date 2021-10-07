@@ -25,7 +25,7 @@ export class Note extends Entity {
             ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas);
         }
 
-        // adjust note position by the canvas transformations
+        // account for canvas transforms
         let transforms = ctx.getTransform();
         let x_offset = transforms.e / window.devicePixelRatio;
         let y_offset = transforms.f / window.devicePixelRatio;
