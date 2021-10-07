@@ -11,7 +11,7 @@ let zoomIntensity = 0.05,
 
 // STATE MANAGEMENT
 let selected = [],
-    board = undefined,
+    trackedBoard = undefined,
     isPanning = false,
     isResizing = false,
     isMoving = false,
@@ -21,9 +21,8 @@ let selected = [],
     log = document.getElementById('log');
 
 
-function init(newBoard) {
-    board = newBoard;
-    // start event listeners
+function start(board) {
+    trackedBoard = board;
 
     // KEYBOARD SHORTCUTS
     keys.start();
@@ -34,24 +33,25 @@ function init(newBoard) {
     });
 
     // LISTEN FOR GESTURES
-    gestures.track(board.elm);
-    board.elm.addEventListener("gesture", gestureHandler);
+    window.addEventListener("resize", trackedBoard.resizeHandler);
+    gestures.track(trackedBoard.elm);
+    trackedBoard.elm.addEventListener("gesture", gestureHandler);
 }
 
 function stop() {
-    Mousetrap.reset();
-    gestures.untrack(board.elm);
-    board.elm.removeEventListener("gesture", gestureHandler);
+    gestures.untrack(trackedBoard.elm);
+    trackedBoard.elm.removeEventListener("gesture", gestureHandler);
+    window.removeEventListener("resize", trackedBoard.resizeHandler);
 }
 
 function gestureHandler(e) {
     log.innerHTML = e.detail.name;
 
     // Convert client gesture coords to canvas coords
-    let x = (e.detail.x) ? ((e.detail.x + board.left) * board.dpi) / board.scale + board.originx : 0,
-        y = (e.detail.y) ? ((e.detail.y + board.top) * board.dpi) / board.scale + board.originy : 0,
-        dx = (e.detail.dx) ? e.detail.dx * board.dpi / board.scale : 0,
-        dy = (e.detail.dy) ? e.detail.dy * board.dpi / board.scale : 0,
+    let x = (e.detail.x) ? ((e.detail.x + trackedBoard.left) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originx : 0,
+        y = (e.detail.y) ? ((e.detail.y + trackedBoard.top) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originy : 0,
+        dx = (e.detail.dx) ? e.detail.dx * trackedBoard.dpi / trackedBoard.scale : 0,
+        dy = (e.detail.dy) ? e.detail.dy * trackedBoard.dpi / trackedBoard.scale : 0,
         zoom = (e.detail.zoom) ? e.detail.zoom : 1,
         event = (e.detail.event) ? e.detail.event : undefined;
 
@@ -80,7 +80,7 @@ function gestureHandler(e) {
 
         case "pinching":
             // pan and zoom
-            board.zoomOnPoint(x, y, zoom);
+            trackedBoard.zoomOnPoint(x, y, zoom);
             pan(dx, dy);
             break;
 
@@ -110,7 +110,7 @@ function panStart() {
     vy = 0;
 }
 function pan(dx, dy) {
-    board.translateView(dx, dy);
+    trackedBoard.translateView(dx, dy);
 
     vx = dx * inertiaMemory + vx * (1 - inertiaMemory);
     vy = dy * inertiaMemory + vy * (1 - inertiaMemory);
@@ -131,7 +131,7 @@ function panInertia() {
     if (isPanning || (Math.abs(vx) < epsilon && Math.abs(vy) < epsilon)) return;
     requestAnimationFrame(panInertia);
 
-    board.translateView(vx, vy);
+    trackedBoard.translateView(vx, vy);
 
     vx *= inertiaFriction;
     vy *= inertiaFriction;
@@ -152,7 +152,7 @@ function wheelHandler(x, y, event) {
     let zoom = Math.exp(direction * zoomIntensity);
 
     // zoom
-    board.zoomOnPoint(x, y, zoom);
+    trackedBoard.zoomOnPoint(x, y, zoom);
 }
 // **************************************************
 
@@ -173,7 +173,7 @@ handles.render = function (ctx) {
     ctx.rotate(this.rotation);
 
     // draw handles to canvas
-    let size = handleSize / board.scale;
+    let size = handleSize / trackedBoard.scale;
     ctx.beginPath();
     ctx.rect(-this.halfw, -this.halfh, this.w, this.h);
     ctx.rect(-size - this.halfw, -size - this.halfh, this.w + size * 2, this.h + size * 2);
@@ -253,10 +253,10 @@ function showHandles() {
     handles.rotation = 0;
 
     // show handles
-    board.UILayer.addEntity(handles);
+    trackedBoard.UILayer.addEntity(handles);
 }
 function hideHandles() {
-    board.UILayer.removeEntity(handles);
+    trackedBoard.UILayer.removeEntity(handles);
 }
 function resizeStart(x, y) {
 
@@ -274,7 +274,7 @@ function resizeEnd() {
 // ************** SELECTION FUNCTIONS ***************
 function selectPoint(x, y) {
     // check for entity intersections
-    let intersectedEntity = board.activeLayer.getFirstIntersection(x, y);
+    let intersectedEntity = trackedBoard.activeLayer.getFirstIntersection(x, y);
     if (!intersectedEntity) return;
 
     // check for duplicate selections
@@ -308,4 +308,4 @@ function moveEnd() {
 }
 // **************************************************
 
-export default { init: init, stop: stop }
+export default { start: start, stop: stop }

@@ -31,7 +31,6 @@ export class Note extends Entity {
         let y = transforms.f / window.devicePixelRatio;
         let scale = transforms.a / window.devicePixelRatio;
                 
-        console.log(transforms);
         // update the note's position and scale
         this.elm.style.left = x + "px";
         this.elm.style.top = y + "px";

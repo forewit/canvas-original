@@ -3,11 +3,12 @@ import { Layer } from "./layer.js";
 export class Board {
     constructor(elm) {
         this.elm = elm;
+        this.canvas = document.createElement("canvas");
         this.left = 0;
         this.top = 0;
         this.width = 0;
         this.height = 0;
-        this.ctx = elm.getContext("2d");
+        this.ctx = this.canvas.getContext("2d");
         this.dpi = window.devicePixelRatio;
         this.layers = [];
         this.originx = 0;
@@ -16,7 +17,13 @@ export class Board {
         this.UILayer = new Layer();
         this._activeLayer = undefined;
 
+        // add canvas to DOM
+        this.canvas.style.width = "100%";
+        this.canvas.style.height = "100%";
+        this.elm.appendChild(this.canvas);
+
         // initial resizing
+        this.resizeHandler = this.resize.bind(this);
         this.resize();
     }
 
@@ -96,7 +103,7 @@ export class Board {
 
     resize() {
         // recalculate canvas size
-        let rect = this.elm.getBoundingClientRect();
+        let rect = this.canvas.getBoundingClientRect();
         this.dpi = window.devicePixelRatio;
         this.left = rect.left;
         this.top = rect.top;
@@ -105,8 +112,8 @@ export class Board {
 
         // reset canvas transforms
         this.ctx.resetTransform()
-        this.elm.width = this.width;
-        this.elm.height = this.height;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
 
         console.log("RESIZE!");
     }

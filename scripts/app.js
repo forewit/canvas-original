@@ -37,13 +37,10 @@ import Interact from "./interact.js";
     layer.addEntity(myNote);
 
     // create a board for the layer to exist on
-    let board = new Board(document.getElementById("canvas"));
+    let board = new Board(document.getElementById("board"));
     board.addLayer(layer);
     board.activeLayer = layer;
-
-    // initialize interaction model and add event listener for resizing
-    window.addEventListener("resize", function () { board.resize() });
-    Interact.init(board);
+    Interact.start(board);
 
     // ************ app loop **************
     var FPS = 0;
