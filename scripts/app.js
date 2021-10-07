@@ -28,7 +28,12 @@ import Interact from "./interact.js";
 
     let noteElm = document.createElement("div");
     noteElm.classList.add("note", "no-select");
+
     let myNote = new Note(noteElm);
+    myNote.w = 100;
+    myNote.h = 100;
+    myNote.x = 500;
+    myNote.y = 100;
 
     // create a layer for the sprites to live on
     let layer = new Layer();
@@ -37,13 +42,10 @@ import Interact from "./interact.js";
     layer.addEntity(myNote);
 
     // create a board for the layer to exist on
-    let board = new Board(document.getElementById("canvas"));
+    let board = new Board(document.getElementById("board"));
     board.addLayer(layer);
     board.activeLayer = layer;
-
-    // initialize interaction model and add event listener for resizing
-    window.addEventListener("resize", function () { board.resize() });
-    Interact.init(board);
+    Interact.start(board);
 
     // ************ app loop **************
     var FPS = 0;

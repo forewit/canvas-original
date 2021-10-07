@@ -22,19 +22,20 @@ export class Note extends Entity {
         // add note element to the canvas if it is not already there
         if (!this.isLoaded) {
             this.isLoaded = true;
-            ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas.nextSibling);
+            ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas);
         }
 
-        // adjust note position by the canvas transformations
+        // account for canvas transforms
         let transforms = ctx.getTransform();
-        let x = transforms.e / window.devicePixelRatio;
-        let y = transforms.f / window.devicePixelRatio;
+        let x_offset = transforms.e / window.devicePixelRatio - this.halfw;
+        let y_offset = transforms.f / window.devicePixelRatio - this.halfh;
         let scale = transforms.a / window.devicePixelRatio;
                 
-        console.log(transforms);
         // update the note's position and scale
-        this.elm.style.left = x + "px";
-        this.elm.style.top = y + "px";
+        this.elm.style.left = this.x * scale + x_offset + "px";
+        this.elm.style.top = this.y * scale + y_offset + "px";
+        this.elm.style.width = this.w + "px";
+        this.elm.style.height = this.h + "px";
         this.elm.style.transform = `scale(${scale})`;
     }
 }
