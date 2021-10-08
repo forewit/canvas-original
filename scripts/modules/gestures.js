@@ -82,10 +82,6 @@
         }
     }
 
-    function isScrollable(element) {
-        return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
-    }
-
     function dispatchGesture(elm, event, data) {
         data.event = event;
         let e = new CustomEvent("gesture", {
@@ -129,9 +125,6 @@
     }
 
     function wheelHandler(e) {
-        // check if item target is scrollable
-        if (isScrollable(e.target)) return;
-        
         dispatchGesture(this, e, { name: "wheel", x: e.clientX, y: e.clientY, event: e })
 
         e.preventDefault();
@@ -148,6 +141,8 @@
 
     function mousedownHandler(e) {
         //mouseMoving = false; TODO: delete?
+        // return if mouse down is on an active text field
+        if (document.activeElement == e.target) return;
 
         window.addEventListener('mousemove', mousemoveHandler);
         window.addEventListener('mouseup', mouseupHandler);
@@ -259,6 +254,9 @@
     }
 
     function touchstartHandler(e) {
+        // return if touch is on an active text field
+        if (document.activeElement == e.target) return;
+
         e.preventDefault();
         e.stopPropagation();
 

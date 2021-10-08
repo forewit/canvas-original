@@ -90,16 +90,12 @@
             localY >= -rectOffsetY && localY <= rectHeight - rectOffsetY;
     }
 
-    function isScrollable(element) {
-        return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
-    };
 
     exports.pointInRotatedRectangle = pointInRotatedRectangle;
     exports.pointInRectangle = pointInRectangle;
     exports.rotatePoint = rotatePoint;
     exports.generate_ID = generate_ID;
     exports.throttle = throttle;
-    exports.isScrollable = isScrollable;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 })));
