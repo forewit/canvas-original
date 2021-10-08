@@ -54,6 +54,7 @@
 
     // STATE MANAGEMENT
     let trackedElms = [],
+        excludedElms = [],
         activeMouseElm = undefined,
         mouseMoving = false,
         mouseButton = 0, // 0 = left, 1 = middle, 2 = right

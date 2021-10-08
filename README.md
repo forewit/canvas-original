@@ -5,7 +5,7 @@
 - [ ] create **Pin** entity
 - [ ] adjust velocity based on fps
 - [ ] verify the board functions when not fullscreen
-- [ ] when a selection is made, make sure focus can pass to the element
+- [ ] add an exclusion option to gestures
 
 ### [Optimizations](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
 - draw inactive layers offscreen
