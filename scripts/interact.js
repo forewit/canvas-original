@@ -68,13 +68,12 @@ function gestureHandler(e) {
             //event.target.focus();
 
             // if only one item is selected, pass focus to the entity
-            // if nothing is selected, pass focus to the board
-            if (selected.length == 0) {
-                document.activeElement.blur();
-            } else if (selected.length == 1 && selected[0].elm) {
+            if (selected.length == 1 && selected[0].elm) {
                 selected[0].elm.focus();
+                gestures.exclude(selected[0].elm);
             } else {
                 document.activeElement.blur();
+                gestures.clearExclusions();
             }
             break;
 

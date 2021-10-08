@@ -54,7 +54,6 @@
 
     // STATE MANAGEMENT
     let trackedElms = [],
-        excludedElms = [],
         activeMouseElm = undefined,
         mouseMoving = false,
         mouseButton = 0, // 0 = left, 1 = middle, 2 = right
@@ -81,6 +80,10 @@
             x: newTouch.clientX,
             y: newTouch.clientY
         }
+    }
+
+    function isScrollable(element) {
+        return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
     }
 
     function dispatchGesture(elm, event, data) {
@@ -126,6 +129,9 @@
     }
 
     function wheelHandler(e) {
+        // check if item target is scrollable
+        if (isScrollable(e.target)) return;
+        
         dispatchGesture(this, e, { name: "wheel", x: e.clientX, y: e.clientY, event: e })
 
         e.preventDefault();
