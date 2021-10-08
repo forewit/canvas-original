@@ -70,10 +70,8 @@ function gestureHandler(e) {
             // if only one item is selected, pass focus to the entity
             if (selected.length == 1 && selected[0].elm) {
                 selected[0].elm.focus();
-                gestures.exclude(selected[0].elm);
             } else {
                 document.activeElement.blur();
-                gestures.clearExclusions();
             }
             break;
 
