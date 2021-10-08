@@ -257,8 +257,8 @@
 
 
         // don't handle multiple touches if already tracking a touch
-        if (thisTouches.length > 1) {
-            if (thisTouches[0].identifier == touch.identifier) return;
+        if (e.targetTouches.length > 1) {
+            if (e.targetTouches[0].identifier == touch.identifier) return;
             pinching = true;
         }
 
@@ -267,7 +267,7 @@
         window.addEventListener('touchcancel', touchendHandler);
 
         // update primary touch location
-        touch = copyTouch(thisTouches[0]);
+        touch = copyTouch(e.targetTouches[0]);
         activeTouchElm = this;
 
         // longpress DETECTION
@@ -297,7 +297,7 @@
             let lastX = touch.x,
                 lastY = touch.y;
 
-            touch = copyTouch(thisTouches[0]);
+            touch = copyTouch(e.targetTouches[0]);
 
             // calculate change in x and y from last touch event
             let dx = touch.x - lastX,
@@ -309,9 +309,9 @@
                 dispatchGesture(activeTouchElm, e, { name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
             }
             return;
-        } else if (!longpressed && (pinching || thisTouches.length > 1)) {
-            touch = copyTouch(thisTouches[0]);
-            let touch2 = copyTouch(thisTouches[1]);
+        } else if (!longpressed && (pinching || e.targetTouches.length > 1)) {
+            touch = copyTouch(e.targetTouches[0]);
+            let touch2 = copyTouch(e.targetTouches[1]);
             let center = {
                 x: (touch.x + touch2.x) / 2,
                 y: (touch.y + touch2.y) / 2
@@ -338,12 +338,12 @@
             dragging = true;
             if (longpressed) {
                 dispatchGesture(activeTouchElm, e, { name: "longpress-drag-start", x: touch.x, y: touch.y })
-                touch = copyTouch(thisTouches[0]);
+                touch = copyTouch(e.targetTouches[0]);
                 dispatchGesture(activeTouchElm, e, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
 
             } else {
                 dispatchGesture(activeTouchElm, e, { name: "touch-drag-start", x: touch.x, y: touch.y });
-                touch = copyTouch(thisTouches[0]);
+                touch = copyTouch(e.targetTouches[0]);
                 dispatchGesture(activeTouchElm, e, { name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
             }
         }
@@ -351,8 +351,8 @@
 
     function touchendHandler(e) {
         if (dragging &&
-            thisTouches.length > 0 &&
-            thisTouches[0].identifier == touch.identifier) {
+            e.targetTouches.length > 0 &&
+            e.targetTouches[0].identifier == touch.identifier) {
             return;
         }
 
