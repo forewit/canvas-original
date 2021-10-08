@@ -26,8 +26,8 @@ import Interact from "./interact.js";
     fireballSprite.frame_w = 512;
     fireballSprite.frame_h = 512;
 
-    let noteElm = document.createElement("div");
-    noteElm.classList.add("note", "no-select");
+    let noteElm = document.createElement("textarea");
+    noteElm.classList.add("note");
 
     let myNote = new Note(noteElm);
     myNote.w = 100;

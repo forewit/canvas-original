@@ -64,6 +64,17 @@ function gestureHandler(e) {
 
             // select an item at a point
             selectPoint(x, y);
+            //event.target.focus();
+
+            // if only one item is selected, pass focus to the entity
+            // if nothing is selected, pass focus to the board
+            if (selected.length == 0) {
+                document.activeElement.blur();
+            } else if (selected.length == 1 && selected[0].elm) {
+                selected[0].elm.focus();
+            } else {
+                document.activeElement.blur();
+            }
             break;
 
         case "left-click-drag-start":
@@ -295,6 +306,8 @@ function selectPoint(x, y) {
     let activeHandle = getHandleIntersection(x, y);
     console.log(activeHandle, selected);
     //END TEMP CODE ---------------------------
+
+    return intersectedEntity;
 }
 function clearSelection() {
     selected.length = 0;
