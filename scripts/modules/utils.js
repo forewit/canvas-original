@@ -90,6 +90,7 @@
             localY >= -rectOffsetY && localY <= rectHeight - rectOffsetY;
     }
 
+
     exports.pointInRotatedRectangle = pointInRotatedRectangle;
     exports.pointInRectangle = pointInRectangle;
     exports.rotatePoint = rotatePoint;

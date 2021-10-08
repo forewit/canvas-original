@@ -54,7 +54,6 @@
 
     // STATE MANAGEMENT
     let trackedElms = [],
-        excludedElms = [],
         activeMouseElm = undefined,
         mouseMoving = false,
         mouseButton = 0, // 0 = left, 1 = middle, 2 = right
@@ -142,6 +141,8 @@
 
     function mousedownHandler(e) {
         //mouseMoving = false; TODO: delete?
+        // return if mouse down is on an active text field
+        if (document.activeElement == e.target) return;
 
         window.addEventListener('mousemove', mousemoveHandler);
         window.addEventListener('mouseup', mouseupHandler);
@@ -253,6 +254,9 @@
     }
 
     function touchstartHandler(e) {
+        // return if touch is on an active text field
+        if (document.activeElement == e.target) return;
+
         e.preventDefault();
         e.stopPropagation();
 
