@@ -9,7 +9,6 @@ export class Note extends Entity {
         super(); // call entity class constructor
 
         // set any note specific properties
-        this.content = [];
         this.elm = elm;
         this.isLoaded = false;
 
@@ -32,10 +31,10 @@ export class Note extends Entity {
         let y_offset = (this.y - this.halfh) * scale + transforms.f / window.devicePixelRatio;
                 
         // update the note's position and scale
-        this.elm.style.left =  x_offset.toFixed(3) + "px";
-        this.elm.style.top =  y_offset.toFixed(3) + "px";
+        this.elm.style.left =  x_offset + "px";
+        this.elm.style.top =  y_offset + "px";
         this.elm.style.width = this.w + "px";
         this.elm.style.height = this.h + "px";
-        this.elm.style.transform = `scale(${scale.toFixed(3)})`;
+        this.elm.style.transform = `scale(${scale})`;
     }
 }
