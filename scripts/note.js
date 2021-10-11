@@ -14,7 +14,6 @@ export class Note extends Entity {
 
         // setup the note
         this.elm.style.position = "absolute";
-        this.elm.style.transformOrigin = "top left";
     }
 
     render(ctx) {
@@ -27,14 +26,15 @@ export class Note extends Entity {
         // account for canvas transforms
         let transforms = ctx.getTransform();
         let scale = transforms.a / window.devicePixelRatio;
-        let x_offset = (this.x - this.halfw) * scale + transforms.e / window.devicePixelRatio;
-        let y_offset = (this.y - this.halfh) * scale + transforms.f / window.devicePixelRatio;
+        let x_offset = (transforms.e / window.devicePixelRatio) / scale - this.halfw;
+        let y_offset = (transforms.f / window.devicePixelRatio) / scale - this.halfh;
                 
         // update the note's position and scale
-        this.elm.style.left =  x_offset + "px";
-        this.elm.style.top =  y_offset + "px";
+        this.elm.style.left = this.x + x_offset + "px";
+        this.elm.style.top = this.y + y_offset + "px";
         this.elm.style.width = this.w + "px";
         this.elm.style.height = this.h + "px";
-        this.elm.style.transform = `scale(${scale})`;
+        //this.elm.style.setProperty("-moz-transform", `scale(${scale})`);
+        this.elm.style.zoom = scale;
     }
 }
