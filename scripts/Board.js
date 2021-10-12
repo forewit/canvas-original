@@ -1,14 +1,13 @@
 import { Layer } from "./layer.js";
 
 export class Board {
-    constructor(elm) {
-        this.elm = elm;
-        this.canvas = document.createElement("canvas");
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = this.canvas.getContext("2d");
         this.left = 0;
         this.top = 0;
         this.width = 0;
         this.height = 0;
-        this.ctx = this.canvas.getContext("2d");
         this.dpi = window.devicePixelRatio;
         this.layers = [];
         this.originx = 0;
@@ -16,11 +15,6 @@ export class Board {
         this.scale = this.dpi;
         this.UILayer = new Layer();
         this._activeLayer = undefined;
-
-        // add canvas to DOM
-        this.canvas.style.width = "100%";
-        this.canvas.style.height = "100%";
-        this.elm.appendChild(this.canvas);
 
         // initial resizing
         this.resizeHandler = this.resize.bind(this);
@@ -91,7 +85,7 @@ export class Board {
             offsetY = y - this.originy;
 
         // move the origin by scaling the offset
-        this.originx += offsetX - offsetX/zoom;
+        this.originx +=  offsetX - offsetX/zoom;
         this.originy += offsetY - offsetY/zoom;
 
         // apply the new scale to the canvas

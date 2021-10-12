@@ -11,11 +11,17 @@
 </head>
 
 <body>
-	<!-- CONTENT -->
 	<p id="log" class="white-rounded">log</p>
 	<p id="fps" class="white-rounded">fps</p>
-	<div id="board" class="fullscreen"></div>
 
+	<!-- CONTENT -->
+	<div id="main-container" class="fullscreen">
+		<div id="grid-container">
+			<div id="toolbar"></div>
+			<canvas id="board"></canvas>
+		</div>
+	</div>
+	
 	<!-- MODULES -->
 	<script src="scripts/modules/utils.js"></script>
     <script src="scripts/modules/gestures.js"></script>

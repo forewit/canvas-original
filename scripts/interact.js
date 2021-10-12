@@ -34,13 +34,13 @@ function start(board) {
 
     // LISTEN FOR GESTURES
     window.addEventListener("resize", trackedBoard.resizeHandler);
-    gestures.track(trackedBoard.elm);
-    trackedBoard.elm.addEventListener("gesture", gestureHandler);
+    gestures.track(trackedBoard.canvas);
+    trackedBoard.canvas.addEventListener("gesture", gestureHandler);
 }
 
 function stop() {
-    gestures.untrack(trackedBoard.elm);
-    trackedBoard.elm.removeEventListener("gesture", gestureHandler);
+    gestures.untrack(trackedBoard.canvas);
+    trackedBoard.canvas.removeEventListener("gesture", gestureHandler);
     window.removeEventListener("resize", trackedBoard.resizeHandler);
 }
 
@@ -49,8 +49,8 @@ function gestureHandler(e) {
     console.log(e.detail.name);
 
     // Convert client gesture coords to canvas coords
-    let x = (e.detail.x) ? ((e.detail.x + trackedBoard.left) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originx : 0,
-        y = (e.detail.y) ? ((e.detail.y + trackedBoard.top) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originy : 0,
+    let x = (e.detail.x) ? ((e.detail.x - trackedBoard.left) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originx : 0,
+        y = (e.detail.y) ? ((e.detail.y - trackedBoard.top) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originy : 0,
         dx = (e.detail.dx) ? e.detail.dx * trackedBoard.dpi / trackedBoard.scale : 0,
         dy = (e.detail.dy) ? e.detail.dy * trackedBoard.dpi / trackedBoard.scale : 0,
         zoom = (e.detail.zoom) ? e.detail.zoom : 1,
