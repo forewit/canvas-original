@@ -1,8 +1,9 @@
 import { Layer } from "./layer.js";
 
 export class Board {
-    constructor(canvas) {
-        this.canvas = canvas;
+    constructor(elm) {
+        this.elm = elm;
+        this.canvas = document.createElement("canvas");
         this.ctx = this.canvas.getContext("2d");
         this.left = 0;
         this.top = 0;
@@ -16,6 +17,9 @@ export class Board {
         this.UILayer = new Layer();
         this._activeLayer = undefined;
 
+        // add canvas to DOM
+        this.elm.appendChild(this.canvas);
+        
         // initial resizing
         this.resizeHandler = this.resize.bind(this);
         this.resize();
@@ -97,7 +101,7 @@ export class Board {
 
     resize() {
         // recalculate canvas size
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.elm.getBoundingClientRect();
         this.dpi = window.devicePixelRatio;
         this.left = rect.left;
         this.top = rect.top;

@@ -31,8 +31,8 @@ export class Note extends Entity {
         let y_offset = (transforms.f / dpi) / scale - this.halfh;
 
         // update the note's position and scale
-        this.elm.style.left = this.x + "px";
-        this.elm.style.top = this.y + "px";
+        this.elm.style.left = this.x + x_offset + "px";
+        this.elm.style.top = this.y + y_offset + "px";
         this.elm.style.width = this.w + "px";
         this.elm.style.height = this.h + "px";
         this.elm.style.zoom = scale;

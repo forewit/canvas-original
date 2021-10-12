@@ -34,13 +34,13 @@ function start(board) {
 
     // LISTEN FOR GESTURES
     window.addEventListener("resize", trackedBoard.resizeHandler);
-    gestures.track(trackedBoard.canvas);
-    trackedBoard.canvas.addEventListener("gesture", gestureHandler);
+    gestures.track(trackedBoard.elm);
+    trackedBoard.elm.addEventListener("gesture", gestureHandler);
 }
 
 function stop() {
-    gestures.untrack(trackedBoard.canvas);
-    trackedBoard.canvas.removeEventListener("gesture", gestureHandler);
+    gestures.untrack(trackedBoard.elm);
+    trackedBoard.elm.removeEventListener("gesture", gestureHandler);
     window.removeEventListener("resize", trackedBoard.resizeHandler);
 }
 
