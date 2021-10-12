@@ -33,8 +33,14 @@ export class Note extends Entity {
         // update the note's position and scale
         this.elm.style.left = this.x + x_offset + "px";
         this.elm.style.top = this.y + y_offset + "px";
-        this.elm.style.width = this.w + "px";
-        this.elm.style.height = this.h + "px";
         this.elm.style.zoom = scale;
+
+        // if updated, update the note's size
+        if (this.updated) {
+            this.elm.style.width = this.w + "px";
+            this.elm.style.height = this.h + "px";
+            console.log("HI")
+            this.updated = false;
+        }
     }
 }
