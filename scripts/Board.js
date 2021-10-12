@@ -19,7 +19,9 @@ export class Board {
 
         // add canvas to DOM
         this.elm.appendChild(this.canvas);
-        
+        this.canvas.style.width = 100 + "%";
+        this.canvas.style.height = 100 + "%";
+
         // initial resizing
         this.resizeHandler = this.resize.bind(this);
         this.resize();
