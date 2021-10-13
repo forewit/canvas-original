@@ -114,8 +114,6 @@ export class Board {
         this.ctx.resetTransform()
         this.canvas.width = this.width;
         this.canvas.height = this.height;
-
-        console.log("RESIZE!");
     }
 
     render() {

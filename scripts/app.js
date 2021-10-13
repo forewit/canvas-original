@@ -4,7 +4,13 @@ import { Sprite } from "./sprite.js";
 import { Note } from "./note.js";
 import Interact from "./interact.js";
 
-
+// manually handle gestures
+gestures.track(document.body);
+document.body.addEventListener("gesture", e => {
+    console.log("Container gestures: " + e.detail.name);
+});
+window.addEventListener('orientationchange', utils.setNotchCssProperties);
+utils.setNotchCssProperties();
 
 // Create a couple Sprites
 let placeholderSprite = new Sprite("/img/placeholder.png");

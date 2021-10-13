@@ -2,7 +2,7 @@
  * Utils is a collection of useful standalone functions:
 */
 
- (function (global, factory) {
+(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
         typeof define === 'function' && define.amd ? define(['exports'], factory) :
             (global = global || self, factory(global.utils = {}));
@@ -90,6 +90,22 @@
             localY >= -rectOffsetY && localY <= rectHeight - rectOffsetY;
     }
 
+    // set notch css property on orientationchange
+    function setNotchCssProperties() {
+        document.documentElement.style.setProperty('--notch-top', '0');
+        document.documentElement.style.setProperty('--notch-right', '0');
+        document.documentElement.style.setProperty('--notch-left', '0');
+
+        if (window.orientation == 0) {
+            document.documentElement.style.setProperty('--notch-top', '1');
+        } else if (window.orientation == 90) {
+            document.documentElement.style.setProperty('--notch-left', '1');
+        } else if (window.orientation == -90) {
+            document.documentElement.style.setProperty('--notch-right', '1');
+        }
+    }
+
+    exports.setNotchCssProperties = setNotchCssProperties;
     exports.pointInRotatedRectangle = pointInRotatedRectangle;
     exports.pointInRectangle = pointInRectangle;
     exports.rotatePoint = rotatePoint;

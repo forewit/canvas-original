@@ -9,6 +9,13 @@ body {
   background: steelblue;
 }
 
+/*
+These variables are set in JS and have a value of 0 or 1:
+  --notch-left
+  --notch-right
+  --notch-top
+*/
+
 #fps {
   position: fixed;
   display: inline-block;
@@ -30,7 +37,7 @@ body {
 
   display: grid;
   gap: 0px 0px;
-  grid-template-columns: 128px 1fr;
+  grid-template-columns: calc(env(safe-area-inset-left) * var(--notch-left) + 100px) 1fr;
   grid-template-rows: 1fr;
   grid-template-areas: "toolbar board";
 }
@@ -47,7 +54,7 @@ body {
 
 #toolbar {
   grid-area: toolbar;
-  box-shadow: inset 0px 0px 0px 5px black;
+  box-shadow: inset 0px 0px 0px 5px coral;
   z-index: 1000;
 }
 
@@ -63,10 +70,10 @@ body {
 .fullscreen {
   box-shadow: inset 0px 0px 10px 5px white;
   position: fixed;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .no-select {
