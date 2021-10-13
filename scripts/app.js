@@ -9,6 +9,8 @@ gestures.track(document.body);
 document.body.addEventListener("gesture", e => {
     console.log("Container gestures: " + e.detail.name);
 });
+
+//
 window.addEventListener('orientationchange', utils.setNotchCssProperties);
 utils.setNotchCssProperties();
 
