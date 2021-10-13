@@ -51,7 +51,7 @@ function gestureHandler(e) {
     log.innerHTML = e.detail.name;
     console.log(e.detail.name);
 
-    // Convert client gesture coords to canvas coords
+    // Convert window coords to canvas coords
     let x = (e.detail.x) ? ((e.detail.x - trackedBoard.left) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originx : 0,
         y = (e.detail.y) ? ((e.detail.y - trackedBoard.top) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originy : 0,
         dx = (e.detail.dx) ? e.detail.dx * trackedBoard.dpi / trackedBoard.scale : 0,
