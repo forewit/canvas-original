@@ -9,6 +9,13 @@ body {
   background: steelblue;
 }
 
+/*
+These variables are set in JS and have a value of 0 or 1:
+  --notch-left
+  --notch-right
+  --notch-top
+*/
+
 #fps {
   position: fixed;
   display: inline-block;
@@ -24,29 +31,49 @@ body {
   z-index: 10;
 }
 
+#grid-container {
+  position: relative;
+  height: 100%;
+
+  display: grid;
+  gap: 0px 0px;
+  grid-template-columns: calc(env(safe-area-inset-left) * var(--notch-left) + 100px) 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: "toolbar board";
+}
+
+@media only screen and (max-width: 600px) {
+  #grid-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 128px 1fr;
+    grid-template-areas:
+      "toolbar"
+      "board";
+  }
+}
+
+#toolbar {
+  grid-area: toolbar;
+  box-shadow: inset 0px 0px 0px 5px coral;
+  z-index: 1000;
+}
 
 #board {
-  /*border: 5px solid goldenrod;*/
-  background: lightcyan;
-}
+  grid-area: board;
+  box-shadow: inset 0px 0px 10px 1px goldenrod;
 
-.note {
-  background: lightcoral;
-  padding: 10px;
-  resize: none;
-  cursor: default;
-}
-.note:focus-within {
-  cursor: text;
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 .fullscreen {
+  box-shadow: inset 0px 0px 10px 5px white;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  margin: 0;
 }
 
 .no-select {
@@ -58,6 +85,10 @@ body {
   user-select: none;
 }
 
+.hidden {
+  display: none;
+}
+
 .white-rounded {
   margin: 20px;
   padding: 8px;
@@ -66,6 +97,14 @@ body {
   box-shadow: 4px 3px 9px 0px rgba(0, 0, 0, 0.3);
 }
 
-/* TODO: add @media for smaller screens.
-This should also update the HTML merge the
-menus into one. */
+/* --- TEMPORARY --- */
+.note {
+  background: lightcoral;
+  padding: 10px;
+  resize: none;
+  cursor: default;
+}
+.note:focus-within {
+  cursor: text;
+}
+/* ------------------ */

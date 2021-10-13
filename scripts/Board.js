@@ -4,11 +4,11 @@ export class Board {
     constructor(elm) {
         this.elm = elm;
         this.canvas = document.createElement("canvas");
+        this.ctx = this.canvas.getContext("2d");
         this.left = 0;
         this.top = 0;
         this.width = 0;
         this.height = 0;
-        this.ctx = this.canvas.getContext("2d");
         this.dpi = window.devicePixelRatio;
         this.layers = [];
         this.originx = 0;
@@ -18,9 +18,9 @@ export class Board {
         this._activeLayer = undefined;
 
         // add canvas to DOM
-        this.canvas.style.width = "100%";
-        this.canvas.style.height = "100%";
         this.elm.appendChild(this.canvas);
+        this.canvas.style.width = 100 + "%";
+        this.canvas.style.height = 100 + "%";
 
         // initial resizing
         this.resizeHandler = this.resize.bind(this);
@@ -91,7 +91,7 @@ export class Board {
             offsetY = y - this.originy;
 
         // move the origin by scaling the offset
-        this.originx += offsetX - offsetX/zoom;
+        this.originx +=  offsetX - offsetX/zoom;
         this.originy += offsetY - offsetY/zoom;
 
         // apply the new scale to the canvas
@@ -103,7 +103,7 @@ export class Board {
 
     resize() {
         // recalculate canvas size
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.elm.getBoundingClientRect();
         this.dpi = window.devicePixelRatio;
         this.left = rect.left;
         this.top = rect.top;
@@ -114,8 +114,6 @@ export class Board {
         this.ctx.resetTransform()
         this.canvas.width = this.width;
         this.canvas.height = this.height;
-
-        console.log("RESIZE!");
     }
 
     render() {

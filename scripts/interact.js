@@ -24,7 +24,7 @@ let selected = [],
 function start(board) {
     trackedBoard = board;
 
-    // KEYBOARD SHORTCUTS
+    // keyboard shortcuts
     keys.start();
     keys.on('17 82', (e) => {
         alert("Prevented reload!");
@@ -32,16 +32,19 @@ function start(board) {
         e.stopPropagation();
     });
 
-    // LISTEN FOR GESTURES
-    window.addEventListener("resize", trackedBoard.resizeHandler);
+    // add event listeners
     gestures.track(trackedBoard.elm);
     trackedBoard.elm.addEventListener("gesture", gestureHandler);
+    window.addEventListener("resize", trackedBoard.resizeHandler);
+    window.addEventListener("orientationchange", trackedBoard.resizeHandler);
 }
 
 function stop() {
+    // remove event listeners
     gestures.untrack(trackedBoard.elm);
     trackedBoard.elm.removeEventListener("gesture", gestureHandler);
     window.removeEventListener("resize", trackedBoard.resizeHandler);
+    window.removeEventListener("orientationchange", trackedBoard.resizeHandler);
 }
 
 function gestureHandler(e) {
@@ -49,8 +52,8 @@ function gestureHandler(e) {
     console.log(e.detail.name);
 
     // Convert client gesture coords to canvas coords
-    let x = (e.detail.x) ? ((e.detail.x + trackedBoard.left) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originx : 0,
-        y = (e.detail.y) ? ((e.detail.y + trackedBoard.top) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originy : 0,
+    let x = (e.detail.x) ? ((e.detail.x - trackedBoard.left) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originx : 0,
+        y = (e.detail.y) ? ((e.detail.y - trackedBoard.top) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originy : 0,
         dx = (e.detail.dx) ? e.detail.dx * trackedBoard.dpi / trackedBoard.scale : 0,
         dy = (e.detail.dy) ? e.detail.dy * trackedBoard.dpi / trackedBoard.scale : 0,
         zoom = (e.detail.zoom) ? e.detail.zoom : 1,
