@@ -39,7 +39,6 @@ export class Note extends Entity {
         if (this.updated) {
             this.elm.style.width = this.w + "px";
             this.elm.style.height = this.h + "px";
-            console.log("HI")
             this.updated = false;
         }
     }
