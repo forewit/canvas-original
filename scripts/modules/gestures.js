@@ -18,6 +18,10 @@
  * right-click-drag-start
  * right-click-dragging
  * right-click-drag-end
+ * 
+ * longclick-drag-start
+ * longclick-dragging
+ * longclick-drag-end
  * --------------------------------
  * 
  * TOUCH GESTURES -------------------
@@ -66,6 +70,7 @@
         dragging = false,
         pinching = false,
         longpressed = false,
+        longclicked = false,
         taps = 0,
         lastTouchEndTime = 0,
         hypo = undefined,
@@ -158,9 +163,10 @@
             window.setTimeout(function () {
                 let now = new Date();
                 if (now - mouseupTime >= LONG_CLICK_DELAY && !mouseMoving) {
-                    window.removeEventListener('mousemove', mousemoveHandler);
-                    window.removeEventListener('mouseup', mouseupHandler);
+                    //window.removeEventListener('mousemove', mousemoveHandler);
+                    //window.removeEventListener('mouseup', mouseupHandler);
 
+                    longclicked = true;
                     dispatchGesture(activeMouseElm, e, { name: "longclick", x: e.clientX, y: e.clientY })
                 }
             }, LONG_CLICK_DELAY)
@@ -168,7 +174,6 @@
 
         e.preventDefault();
         e.stopPropagation();
-
     }
 
     function mousemoveHandler(e) {
@@ -179,16 +184,20 @@
 
         // MOUSE DRAG START DETECTION
         if (!mouseMoving) {
-            switch (mouseButton) {
-                case 0:
-                    dispatchGesture(activeMouseElm, e, { name: "left-click-drag-start", x: e.clientX, y: e.clientY });
-                    break;
-                case 1:
-                    dispatchGesture(activeMouseElm, e, { name: "middle-click-drag-start", x: e.clientX, y: e.clientY });
-                    break;
-                case 2:
-                    dispatchGesture(activeMouseElm, e, { name: "right-click-drag-start", x: e.clientX, y: e.clientY });
-                    break;
+            if (longclicked) {
+                dispatchGesture(activeMouseElm, e, { name: "longclick-drag-start", x: e.clientX, y: e.clientY });
+            } else {
+                switch (mouseButton) {
+                    case 0:
+                        dispatchGesture(activeMouseElm, e, { name: "left-click-drag-start", x: e.clientX, y: e.clientY });
+                        break;
+                    case 1:
+                        dispatchGesture(activeMouseElm, e, { name: "middle-click-drag-start", x: e.clientX, y: e.clientY });
+                        break;
+                    case 2:
+                        dispatchGesture(activeMouseElm, e, { name: "right-click-drag-start", x: e.clientX, y: e.clientY });
+                        break;
+                }
             }
         }
 
@@ -197,16 +206,20 @@
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
 
-        switch (mouseButton) {
-            case 0:
-                dispatchGesture(activeMouseElm, e, { name: "left-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
-                break;
-            case 1:
-                dispatchGesture(activeMouseElm, e, { name: "middle-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
-                break;
-            case 2:
-                dispatchGesture(activeMouseElm, e, { name: "right-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
-                break;
+        if (longclicked) {
+            dispatchGesture(activeMouseElm, e, { name: "longclick-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
+        } else {
+            switch (mouseButton) {
+                case 0:
+                    dispatchGesture(activeMouseElm, e, { name: "left-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
+                    break;
+                case 1:
+                    dispatchGesture(activeMouseElm, e, { name: "middle-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
+                    break;
+                case 2:
+                    dispatchGesture(activeMouseElm, e, { name: "right-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
+                    break;
+            }
         }
     }
 
@@ -220,16 +233,20 @@
 
         if (mouseMoving) {
             // MOUSE DRAG END DETECTION
-            switch (mouseButton) {
-                case 0:
-                    dispatchGesture(activeMouseElm, e, { name: "left-click-drag-end", x: lastMouseX, y: lastMouseY });
-                    break;
-                case 1:
-                    dispatchGesture(activeMouseElm, e, { name: "middle-click-drag-end", x: lastMouseX, y: lastMouseY });
-                    break;
-                case 2:
-                    dispatchGesture(activeMouseElm, e, { name: "right-click-drag-end", x: lastMouseX, y: lastMouseY });
-                    break;
+            if (longclicked) {
+                dispatchGesture(activeMouseElm, e, { name: "longclick-drag-end", x: lastMouseX, y: lastMouseY });
+            } else {
+                switch (mouseButton) {
+                    case 0:
+                        dispatchGesture(activeMouseElm, e, { name: "left-click-drag-end", x: lastMouseX, y: lastMouseY });
+                        break;
+                    case 1:
+                        dispatchGesture(activeMouseElm, e, { name: "middle-click-drag-end", x: lastMouseX, y: lastMouseY });
+                        break;
+                    case 2:
+                        dispatchGesture(activeMouseElm, e, { name: "right-click-drag-end", x: lastMouseX, y: lastMouseY });
+                        break;
+                }
             }
 
             mouseMoving = false;
@@ -251,6 +268,8 @@
                 }, DOUBLE_CLICK_DELAY);
             }
         }
+
+        longclicked = false;
     }
 
     function touchstartHandler(e) {

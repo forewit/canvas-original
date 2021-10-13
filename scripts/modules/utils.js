@@ -90,7 +90,8 @@
             localY >= -rectOffsetY && localY <= rectHeight - rectOffsetY;
     }
 
-    // set notch css property on orientationchange
+    // Set notch css properties based on window orientation.
+    // These properties can be used to determine which side of the screen the notch is on
     function setNotchCssProperties() {
         document.documentElement.style.setProperty('--notch-top', '0');
         document.documentElement.style.setProperty('--notch-right', '0');
