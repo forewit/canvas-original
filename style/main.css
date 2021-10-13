@@ -60,7 +60,7 @@ These variables are set in JS and have a value of 0 or 1:
 
 #board {
   grid-area: board;
-  box-shadow: inset 0px 0px 10px 1px goldenrod;
+  box-shadow: inset 0px 0px 0px 5px goldenrod;
 
   position: absolute;
   height: 100%;
