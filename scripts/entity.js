@@ -41,6 +41,6 @@ export class Entity {
         return utils.pointInRectangle(localPoint.x, localPoint.y, this.x - this.halfw, this.y - this.halfh, this.w, this.h);
     }
 
-    _destroy() { /* should be overwritten */ }
+    _destroy() { /* can be overwritten */ }
     _render() { console.Error("Entity render function is missing!") }
 }

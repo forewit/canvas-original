@@ -102,9 +102,12 @@ These variables are set in JS and have a value of 0 or 1:
   background: lightgrey; /* lightcoral */
   padding: 10px;
   cursor: default;
+  resize: none;
+  position: absolute;
 }
 
 .note:focus-within {
   cursor: text;
+  resize: both;;
 }
 /* ------------------ */

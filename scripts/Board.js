@@ -138,15 +138,13 @@ export class Board {
         this.ctx.rect(this.originx, this.originy, 10, 10);
         this.ctx.stroke();
 
-        // render content layers
+        // render layers
         this.layers.forEach(layer => layer._render(this.ctx, this.updated));
-
-        // render UI layer
-        this.UILayer._render(this.ctx);
+        this.UILayer._render(this.ctx, false);
 
         // restore saved canvas transforms
         this.ctx.restore();
-
+        
         // reset updated flag
         this.updated = false;
     }

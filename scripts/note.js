@@ -8,12 +8,10 @@ export class Note extends Entity {
         // Rotations are not supported!
 
         super(); // Entity class constructor
-        this.isLoaded = false;
 
-        // Setup DOM element
+        // Properties
+        this.isLoaded = false;
         this.elm = elm;
-        this.elm.style.position = "absolute";
-        this.elm.style.resize = "both";
 
         // Enable resizing
         this.resizeObserver = new ResizeObserver(this.resize.bind(this));
