@@ -30,7 +30,7 @@ export class Sprite extends Entity {
     set frame_w(newFrameW) { this.updated = true; this._frame_w = newFrameW; }
     set frame_h(newFrameH) { this.updated = true; this._frame_h = newFrameH; }
 
-    render(ctx) {
+    _render(ctx) {
         if (!this.loaded) return;
         
         if (this.updated) {

@@ -46,16 +46,21 @@ export class Layer {
         return false;
     }
     
-    destroy() { this.entities.length = 0; }
-    
     getFirstIntersection(x, y) {
         for (var i = this.entities.length - 1; i >= 0; i--) {
             if (this.entities[i].intersects(x, y)) return this.entities[i];
         }
         return undefined;
     }
-    
-    render(ctx) {
-        this.entities.forEach(entity => entity.render(ctx));
+        
+    _destroy() { 
+        for (var i = 0, len = this.entities.length; i < len; i++) {
+            this.entities[i]._destroy();
+        }
+        this.entities.length = 0;
+    }
+
+    _render(ctx, updated) {
+        this.entities.forEach(entity => entity._render(ctx, updated));
     }
 }

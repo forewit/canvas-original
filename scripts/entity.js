@@ -40,5 +40,6 @@ export class Entity {
         let localPoint = utils.rotatePoint(this.x, this.y, x, y, this.rotation);
         return utils.pointInRectangle(localPoint.x, localPoint.y, this.x - this.halfw, this.y - this.halfh, this.w, this.h);
     }
-    render() { console.log("Please override entity.render()!") }
+    _render() { console.log("Please override entity.render()!") }
+    _destroy() { /* should be overwritten */ }
 }

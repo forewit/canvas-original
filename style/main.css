@@ -6,7 +6,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: steelblue;
+  background: white; /* steelblue */
 }
 
 /*
@@ -99,11 +99,11 @@ These variables are set in JS and have a value of 0 or 1:
 
 /* --- TEMPORARY --- */
 .note {
-  background: lightcoral;
+  background: lightgrey; /* lightcoral */
   padding: 10px;
-  resize: none;
   cursor: default;
 }
+
 .note:focus-within {
   cursor: text;
 }

@@ -14,6 +14,7 @@ export class Board {
         this.originx = 0;
         this.originy = 0;
         this.scale = this.dpi;
+        this.updated = true;
         this.UILayer = new Layer();
         this._activeLayer = undefined;
 
@@ -72,7 +73,7 @@ export class Board {
                 if (this.layers[i].ID == this._activeLayer.ID) {
                     this._activeLayer = undefined;
                 }
-                this.layers[i].destroy();
+                this.layers[i]._destroy();
                 this.layers.splice(i, 1);
                 return true;
             }
@@ -83,6 +84,8 @@ export class Board {
     translateView(dx, dy) {
         this.originx -= dx;
         this.originy -= dy;
+
+        this.updated = true;
     }
 
     zoomOnPoint(x, y, zoom) {
@@ -96,6 +99,8 @@ export class Board {
 
         // apply the new scale to the canvas
         this.scale *= zoom;
+
+        this.updated = true;
     }
 
     importJSON() {}
@@ -134,12 +139,14 @@ export class Board {
         this.ctx.stroke();
 
         // render content layers
-        this.layers.forEach(layer => layer.render(this.ctx));
+        this.layers.forEach(layer => layer._render(this.ctx, this.updated));
 
         // render UI layer
-        this.UILayer.render(this.ctx);
+        this.UILayer._render(this.ctx);
 
         // restore saved canvas transforms
         this.ctx.restore();
+
+        this.updated = false;
     }
 }

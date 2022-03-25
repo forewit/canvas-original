@@ -40,8 +40,8 @@ myNote.y = 100;
 
 // create a layer for the sprites to live on
 let layer = new Layer();
-layer.addEntity(placeholderSprite);
-layer.addEntity(fireballSprite);
+//layer.addEntity(placeholderSprite);
+//layer.addEntity(fireballSprite);
 layer.addEntity(myNote);
 
 // create a board for the layer to exist on
