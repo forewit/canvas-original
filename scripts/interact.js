@@ -181,7 +181,7 @@ let outerX, outerY, outerW, outerH,
     localPoint,
     activeHandles = [];
 
-handles.render = function (ctx) {
+handles._render = function (ctx) {
     // save and adjust canvas transforms
     ctx.save()
     ctx.translate(this.x, this.y);

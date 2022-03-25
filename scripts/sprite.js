@@ -1,16 +1,16 @@
+// Sprites are used to draw images or animations as Enities.
 import { Entity } from "./entity.js";
 
 export class Sprite extends Entity {
     constructor(url) {
-        super(); // call entity class constructor
+        super(); // Entity class constructor
 
-        this._frame_w = 512;
-        this._frame_h = 512;
-        this._frame_x = 0;
-        this._frame_y = 0;
-
-        this.sx = 0;
-        this.sy = 0;
+        this._frame_w = 512; // Width of a single frame
+        this._frame_h = 512; // Height of a single frame
+        this._frame_x = 0; // Iterates by 1 for each horizontal frame
+        this._frame_y = 0; // Iterates by 1 for each vertical frame
+        this.sx = 0; // "Scaled x" is the current frame x offset 
+        this.sy = 0; // "Scaled y" is the current frame y offset
         this.loaded = false;
         
         var me = this;
@@ -30,7 +30,8 @@ export class Sprite extends Entity {
     set frame_w(newFrameW) { this.updated = true; this._frame_w = newFrameW; }
     set frame_h(newFrameH) { this.updated = true; this._frame_h = newFrameH; }
 
-    render(ctx) {
+    _render(ctx) {
+        // Sprites should always render because will be cleared each frame by the Board
         if (!this.loaded) return;
         
         if (this.updated) {
