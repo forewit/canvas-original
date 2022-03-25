@@ -1,4 +1,4 @@
-// entity for rendering html elements "in" the canvas
+// Note's allow you to add a DOM element as an Entity.
 import { Entity } from "./entity.js";
 
 export class Note extends Entity {
@@ -7,23 +7,21 @@ export class Note extends Entity {
         // will be applied to the Note's DOM element.
         // Rotations are not supported!
 
-        super(); // call entity class constructor
-
-        // set any note specific properties
-        this.elm = elm;
+        super(); // Entity class constructor
         this.isLoaded = false;
 
-        // setup the note
+        // Setup DOM element
+        this.elm = elm;
         this.elm.style.position = "absolute";
         this.elm.style.resize = "both";
 
-        // enable resizing
+        // Enable resizing
         this.resizeObserver = new ResizeObserver(this.resize.bind(this));
         this.resizeObserver.observe(this.elm);
     }
 
     resize() {
-        // resize the note
+        // Update Entity properties to match the DOM element
         let rect = this.elm.getBoundingClientRect();
 
         this.x += (rect.width - this.w)/2;
@@ -33,7 +31,6 @@ export class Note extends Entity {
     }
 
     _destroy() {
-        // remove the note from the DOM
         this.resizeObserver.disconnect();
         this.elm.remove();
     }
@@ -42,7 +39,7 @@ export class Note extends Entity {
         // Only render if the board has been updated (moved or scaled)
         if (!updated) return;
 
-        // Add the Note's element to the canvas if it is not already there
+        // Add elemnent to DOM
         if (!this.isLoaded) {
             this.isLoaded = true;
             ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas);
@@ -55,7 +52,7 @@ export class Note extends Entity {
         let x_offset = (transforms.e / dpi) / scale - this.halfw;
         let y_offset = (transforms.f / dpi) / scale - this.halfh;
 
-        // Update the note's position and scale
+        // Update position and scale
         this.elm.style.left = this.x + x_offset + "px";
         this.elm.style.top = this.y + y_offset + "px";
         this.elm.style.zoom = scale;

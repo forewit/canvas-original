@@ -147,6 +147,7 @@ export class Board {
         // restore saved canvas transforms
         this.ctx.restore();
 
+        // reset updated flag
         this.updated = false;
     }
 }
