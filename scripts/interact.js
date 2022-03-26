@@ -68,14 +68,10 @@ function gestureHandler(e) {
 
             // select an item at a point
             selectPoint(x, y);
-            //event.target.focus();
 
-            // if only one item is selected, pass focus to the entity
-            if (selected.length == 1 && selected[0].elm) {
-                selected[0].elm.focus();
-            } else {
-                document.activeElement.blur();
-            }
+            // break target focus
+            if (selected.length == 0) document.activeElement.blur();
+
             break;
 
         case "left-click-drag-start":
@@ -83,6 +79,14 @@ function gestureHandler(e) {
         case "touch-drag-start":
         case "pinch-start":
             panStart();
+            break;
+
+        case "doubletap":
+        case "double-click":
+            // if only one item is selected, pass focus to the entity
+            if (selected.length == 1 && selected[0].elm) {
+                selected[0].elm.focus();
+            } 
             break;
 
         case "left-click-dragging":

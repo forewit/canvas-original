@@ -14,11 +14,11 @@ export class Note extends Entity {
         this.elm = elm;
 
         // Enable resizing
-        this.resizeObserver = new ResizeObserver(this.resize.bind(this));
+        this.resizeObserver = new ResizeObserver(this._resize.bind(this));
         this.resizeObserver.observe(this.elm);
     }
 
-    resize() {
+    _resize() {
         // Update Entity properties to match the DOM element
         let rect = this.elm.getBoundingClientRect();
 
