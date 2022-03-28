@@ -107,6 +107,8 @@ export class Board {
     exportJSON() {}
 
     resize() {
+        console.log("resizing board...");
+        
         // recalculate canvas size
         let rect = this.elm.getBoundingClientRect();
         this.dpi = window.devicePixelRatio;

@@ -2,6 +2,7 @@ import { Board } from "./Board.js";
 import { Layer } from "./layer.js";
 import { Sprite } from "./sprite.js";
 import { Note } from "./note.js";
+import { Drawing } from "./drawing.js";
 import Interact from "./interact.js";
 
 // manually handle gestures
@@ -35,14 +36,21 @@ noteElm.classList.add("note");
 let myNote = new Note(noteElm);
 myNote.w = 100;
 myNote.h = 100;
-myNote.x = 500;
+myNote.x = 100;
 myNote.y = 100;
+
+let myDrawing = new Drawing(document.createElement("canvas"));
+myDrawing.x = 300;
+myDrawing.y = 100;
+myDrawing.w = 150;
+myDrawing.h = 100;
 
 // create a layer for the sprites to live on
 let layer = new Layer();
 //layer.addEntity(placeholderSprite);
 //layer.addEntity(fireballSprite);
 layer.addEntity(myNote);
+layer.addEntity(myDrawing);
 
 // create a board for the layer to exist on
 let board = new Board(document.getElementById("board"));
