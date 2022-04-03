@@ -1,0 +1,114 @@
+* {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: white; /* steelblue */
+  }
+  
+  /*
+  These variables are set in JS and have a value of 0 or 1:
+    --notch-left
+    --notch-right
+    --notch-top
+  */
+  
+  #fps {
+    position: fixed;
+    display: inline-block;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+  }
+  
+  #log {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 10;
+  }
+  
+  #grid-container {
+    position: relative;
+    height: 100%;
+  
+    display: grid;
+    gap: 0px 0px;
+    grid-template-columns: calc(env(safe-area-inset-left) * var(--notch-left) + 100px) 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "toolbar board";
+  }
+  
+  @media only screen and (max-width: 600px) {
+    #grid-container {
+      grid-template-columns: 1fr;
+      grid-template-rows: 128px 1fr;
+      grid-template-areas:
+        "toolbar"
+        "board";
+    }
+  }
+  
+  #toolbar {
+    grid-area: toolbar;
+    box-shadow: inset 0px 0px 0px 5px coral;
+    z-index: 1000;
+  }
+  
+  #board {
+    grid-area: board;
+    box-shadow: inset 0px 0px 0px 5px goldenrod;
+  
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .fullscreen {
+    box-shadow: inset 0px 0px 10px 5px white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .white-rounded {
+    margin: 20px;
+    padding: 8px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 4px 3px 9px 0px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* --- TEMPORARY --- */
+  .note {
+    background: lightgrey; /* lightcoral */
+    padding: 10px;
+    cursor: default;
+    resize: none;
+    position: absolute;
+  }
+  
+  .note:focus-within {
+    cursor: text;
+    resize: both;;
+  }
+  /* ------------------ */
+  
