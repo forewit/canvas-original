@@ -54,8 +54,8 @@ function gestureHandler(e) {
     // Convert window coords to canvas coords
     let x = (e.detail.x) ? ((e.detail.x - trackedBoard.left) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originx : 0,
         y = (e.detail.y) ? ((e.detail.y - trackedBoard.top) * trackedBoard.dpi) / trackedBoard.scale + trackedBoard.originy : 0,
-        dx = (e.detail.dx) ? e.detail.dx * trackedBoard.dpi / trackedBoard.scale : 0,
-        dy = (e.detail.dy) ? e.detail.dy * trackedBoard.dpi / trackedBoard.scale : 0,
+        dx = (e.detail.dx) ? e.detail.event.movementX * trackedBoard.dpi / trackedBoard.scale : 0,
+        dy = (e.detail.dy) ? e.detail.event.movementY * trackedBoard.dpi / trackedBoard.scale : 0,
         zoom = (e.detail.zoom) ? e.detail.zoom : 1,
         event = (e.detail.event) ? e.detail.event : undefined;
 
