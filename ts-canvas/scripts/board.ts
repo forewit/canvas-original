@@ -9,7 +9,6 @@ export class Board {
     scale = window.devicePixelRatio;
     isUpdated = true;
 
-    // getters and setters
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");

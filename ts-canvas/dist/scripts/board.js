@@ -1,5 +1,4 @@
 export class Board {
-    // getters and setters
     constructor(canvas) {
         this.origin = { x: 0, y: 0 };
         this.scale = window.devicePixelRatio;
