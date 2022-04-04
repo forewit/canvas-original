@@ -4,23 +4,12 @@ import { Layer } from "./layer.js";
 export class Board {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
-    
-    _rect: Rect;
-    _origin: Point = { x: 0, y: 0 };
-    _scale = window.devicePixelRatio;
-    _isUpdated = true;
+    rect: Rect;
+    origin: Point = { x: 0, y: 0 };
+    scale = window.devicePixelRatio;
+    isUpdated = true;
 
     // getters and setters
-    get isUpdated(): boolean { return this._isUpdated; }
-    get rect(): Rect { return this._rect; }
-    get origin(): Point { return this._origin; }
-    get scale(): number { return this._scale; }
-
-    private set isUpdated(value: boolean) { this._isUpdated = value; }
-    private set rect(value: Rect) { this._rect = value;}
-    private set origin(value: Point) { this._origin = value; }
-    private set scale(value: number) { this._scale = value; }
-
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -35,7 +24,6 @@ export class Board {
 
         // get canvas element size
         let bounds = this.canvas.getBoundingClientRect();
-        console.log(bounds)
         this.rect = {
             left: bounds.left,
             top: bounds.top,

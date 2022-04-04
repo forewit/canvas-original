@@ -6,7 +6,6 @@ window.addEventListener('orientationchange', utils.setNotchCssProperties);
 utils.setNotchCssProperties();
 // create board
 let board = new Board(document.getElementById("board"));
-board._scale = 2;
 // ********** render loop ************
 var FPS = 0;
 var ticks = 0;

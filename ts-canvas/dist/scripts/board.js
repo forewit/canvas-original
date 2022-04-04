@@ -1,28 +1,19 @@
 export class Board {
+    // getters and setters
     constructor(canvas) {
-        this._origin = { x: 0, y: 0 };
-        this._scale = window.devicePixelRatio;
-        this._isUpdated = true;
+        this.origin = { x: 0, y: 0 };
+        this.scale = window.devicePixelRatio;
+        this.isUpdated = true;
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         // add resize listener
         window.addEventListener("resize", () => { this.resize(); });
         this.resize();
     }
-    // getters and setters
-    get isUpdated() { return this._isUpdated; }
-    get rect() { return this._rect; }
-    get origin() { return this._origin; }
-    get scale() { return this._scale; }
-    set isUpdated(value) { this._isUpdated = value; }
-    set rect(value) { this._rect = value; }
-    set origin(value) { this._origin = value; }
-    set scale(value) { this._scale = value; }
     resize() {
         console.log("resizing board...");
         // get canvas element size
         let bounds = this.canvas.getBoundingClientRect();
-        console.log(bounds);
         this.rect = {
             left: bounds.left,
             top: bounds.top,
