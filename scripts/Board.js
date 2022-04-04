@@ -6,7 +6,6 @@ export class Board {
         this.canvas = document.createElement("canvas");
         this.ctx = this.canvas.getContext("2d");
         this.left = 0;
-        this.top = 0;
         this.width = 0;
         this.height = 0;
         this.dpi = window.devicePixelRatio;
