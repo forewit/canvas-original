@@ -13,3 +13,15 @@
 - stick to integer canvas transforms
 - update notes only if the canvas is moved
 - skip render loop if nothing is happening
+
+
+
+# API
+
+### Board 
+- addLayer()
+- destroyLayer()
+
+### Entity
+- setLayer()
+- 
