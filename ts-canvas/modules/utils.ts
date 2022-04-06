@@ -89,13 +89,12 @@ export function pointInRotatedRectangle(
     rectX: number, rectY: number,
     pivotOffsetX: number, pivotOffsetY: number,
     w: number, h: number,
-    rotation: number
+    angle: number
 ): boolean {
     let relX = x - rectX,
         relY = y - rectY,
-        angle = -rotation,
-        cos = Math.cos(angle),
-        sin = Math.sin(angle),
+        cos = Math.cos(-angle),
+        sin = Math.sin(-angle),
         localX = cos * relX - sin * relY,
         localY = sin * relX + cos * relY;
 

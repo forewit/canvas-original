@@ -8,6 +8,7 @@ export class Board {
     origin: Point = { x: 0, y: 0 };
     scale = window.devicePixelRatio;
     isUpdated = true;
+    layers: Layer[] = [];
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;

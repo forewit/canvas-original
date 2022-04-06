@@ -7,5 +7,6 @@ export interface Rect {
     left: number,
     top: number,
     width: number,
-    height: number
+    height: number,
+    angle?: number
 }
