@@ -45,10 +45,8 @@ export const throttle = (fn: Function, wait: number, options?: { [name: string]:
 export function generate_ID(): string {
     return '_' + Math.random().toString(36).substring(2, 9);
 }
-/**
- * Rotates a point (x, y) around a center point (cx, cy)
- * a number of radians (rad)
- */
+
+//Rotates a point (x, y) around a pivot in radians
 export function rotatePoint(
     x: number, y: number,
     pivotX: number, pivotY: number,
@@ -62,51 +60,39 @@ export function rotatePoint(
     return { x: nx, y: ny };
 }
 
-
-/**
- * 
- * 
- * @param {number} x 
- * @param {number} y
- * @param {number} rectX rect left edge
- * @param {number} rectY rect top edge
- * @param {number} w rect width
- * @param {number} h rect height
- * @returns {boolean}
- */
+/*
+A rectangle is defined by it's center, width, and height, and angle in radians
+        w
+┌─────────────────┐
+│                 │
+│       *(x, y)   | h
+│                 |
+└─────────────────┘
+*/
 export function pointInRectangle(
     x: number, y: number,
-    rectX: number, rectY: number,
+    centerX: number, centerY: number,
     w: number, h: number
 ): boolean {
-    return x >= rectX && x <= rectX + w &&
-        y >= rectY && y <= rectY + h;
+    return (x >= centerX - w / 2 && x <= centerX + w / 2) &&
+        (y >= centerY - h / 2 && y <= centerY + h / 2);
 }
 
-// credit: https://yal.cc/rot-rect-vs-circle-intersection/
 export function pointInRotatedRectangle(
     x: number, y: number,
-    rectX: number, rectY: number,
-    pivotOffsetX: number, pivotOffsetY: number,
+    centerX: number, centerY: number,
     w: number, h: number,
-    angle: number
+    rad: number
 ): boolean {
-    let relX = x - rectX,
-        relY = y - rectY,
-        cos = Math.cos(-angle),
-        sin = Math.sin(-angle),
-        localX = cos * relX - sin * relY,
-        localY = sin * relX + cos * relY;
-
-    return localX >= -pivotOffsetX && localX <= w - pivotOffsetX &&
-        localY >= -pivotOffsetY && localY <= h - pivotOffsetY;
+    let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
+    return pointInRectangle(rotatedPoint.x, rotatedPoint.y, centerX, centerY, w, h);
 }
 
-// simple log formatting
+// Function for creating formatted logs
 interface LogOptions {
-    color?: string, // "color: {color};"
-    background?: string, // "background: {color};"
-    bold?: boolean, // "font-weight: bold;"
+    color?: string, 
+    background?: string, 
+    bold?: boolean, 
     stringify?: boolean, // print objects as JSON
 }
 

@@ -2,10 +2,10 @@ import { Entity } from "./entity.js";
 import { Board } from "./board.js";
 
 export class Layer {
-    entities: Entity[];
+    entities: Entity[] = [];
 
     getIntersectingEntities(x: number, y: number): Entity[] { 
-        return this.entities.filter(entity => entity.isIntersecting(x, y));
+        return this.entities.filter(entity => entity.isIntersectingPoint(x, y));
     }
 
     duplicate(): Layer {

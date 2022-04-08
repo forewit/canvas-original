@@ -1,9 +1,9 @@
 import { Board } from "./board.js";
-import { pointInRotatedRectangle } from "../modules/utils.js";
+import { pointInRectangle, rotatePoint, pointInRotatedRectangle } from "../modules/utils.js";
 
 export class Entity {
     /*
-    An entity's origin is at the center
+    A rectangle is defined by it's center, width, and height, and angle in radians
              w
     ┌─────────────────┐
     │                 │
@@ -30,10 +30,8 @@ export class Entity {
     set h(h: number) { this._h = h; this.isUpdated = true; }
     set angle(angle: number) { this._angle = angle % (2 * Math.PI); this.isUpdated = true; }
 
-    isIntersecting(x: number, y: number): boolean {
-        // assuming pivot is in the center 
-        // TODO: pointInRotatedRectangle(x, y, this.x-this.w/2, this.y-this.h/2, this.w/2, this.h/2, this.w, this.h, this.angle);
-        return false;
+    isIntersectingPoint(x: number, y: number): boolean {
+        return pointInRotatedRectangle(x, y, this.x, this.y, this.w, this.h, this.angle);
     }
     duplicate(): Entity { console.error("Entity.duplicate() not implemented."); return null; }
     render(board: Board): void { console.error("Entity.render() not implemented.") };
