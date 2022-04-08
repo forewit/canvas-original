@@ -64,8 +64,8 @@ export function pointInRectangle(x, y, rectX, rectY, w, h) {
         y >= rectY && y <= rectY + h;
 }
 // credit: https://yal.cc/rot-rect-vs-circle-intersection/
-export function pointInRotatedRectangle(x, y, rectX, rectY, pivotOffsetX, pivotOffsetY, w, h, rotation) {
-    let relX = x - rectX, relY = y - rectY, angle = -rotation, cos = Math.cos(angle), sin = Math.sin(angle), localX = cos * relX - sin * relY, localY = sin * relX + cos * relY;
+export function pointInRotatedRectangle(x, y, rectX, rectY, pivotOffsetX, pivotOffsetY, w, h, angle) {
+    let relX = x - rectX, relY = y - rectY, cos = Math.cos(-angle), sin = Math.sin(-angle), localX = cos * relX - sin * relY, localY = sin * relX + cos * relY;
     return localX >= -pivotOffsetX && localX <= w - pivotOffsetX &&
         localY >= -pivotOffsetY && localY <= h - pivotOffsetY;
 }
