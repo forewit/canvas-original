@@ -50,14 +50,14 @@ export function generate_ID(): string {
  * a number of radians (rad)
  */
 export function rotatePoint(
-    cx: number, cy: number,
     x: number, y: number,
+    pivotX: number, pivotY: number,
     rad: number
 ): { x: number, y: number } {
     let cos = Math.cos(rad),
         sin = Math.sin(rad),
-        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+        nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX,
+        ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
 
     return { x: nx, y: ny };
 }

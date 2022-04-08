@@ -7,6 +7,12 @@ export class Layer {
     getIntersectingEntities(x: number, y: number): Entity[] { 
         return this.entities.filter(entity => entity.isIntersecting(x, y));
     }
+
+    duplicate(): Layer {
+        let layer = new Layer();
+        layer.entities = this.entities.map(entity => entity.duplicate());
+        return layer;
+    }
     
     destroy(): void {
         this.entities.forEach(entity => entity.destroy());

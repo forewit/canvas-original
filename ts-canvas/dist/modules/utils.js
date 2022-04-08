@@ -44,8 +44,8 @@ export function generate_ID() {
  * Rotates a point (x, y) around a center point (cx, cy)
  * a number of radians (rad)
  */
-export function rotatePoint(cx, cy, x, y, rad) {
-    let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - cx)) + (sin * (y - cy)) + cx, ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+export function rotatePoint(x, y, pivotX, pivotY, rad) {
+    let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
     return { x: nx, y: ny };
 }
 /**
