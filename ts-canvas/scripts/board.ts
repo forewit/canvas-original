@@ -1,11 +1,13 @@
-import { Point, Rect } from "./types.js";
 import { Layer } from "./layer.js";
 
 export class Board {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
-    rect: Rect;
-    origin: Point = { x: 0, y: 0 };
+    top: number = 0;
+    left: number = 0;
+    width: number = 0;
+    height: number = 0;
+    origin = { x: 0, y: 0 };
     scale = window.devicePixelRatio;
     isUpdated = true;
     layers: Layer[] = [];
@@ -22,19 +24,17 @@ export class Board {
     private resize(): void {
         console.log("resizing board...");
 
-        // get canvas element size
-        let bounds = this.canvas.getBoundingClientRect();
-        this.rect = {
-            left: bounds.left,
-            top: bounds.top,
-            width: bounds.width * window.devicePixelRatio,
-            height: bounds.height * window.devicePixelRatio
-        };
+        // get element size
+        let rect = this.canvas.getBoundingClientRect();
+        this.top = rect.top;
+        this.left = rect.left;
+        this.width = rect.width;
+        this.height = rect.height;
 
         // reset canvas transforms
         this.ctx.resetTransform();
-        this.canvas.width = this.rect.width;
-        this.canvas.height = this.rect.height;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
     }
 
     // TODO: addLayer(layer: Layer)
@@ -47,10 +47,10 @@ export class Board {
         this.isUpdated = true;
     }
 
-    zoomOnPoint(point: Point, zoomFactor: number): void {
+    zoomOnPoint(x: number, y: number, zoomFactor: number): void {
         // calculate the distance from the viewable origin
-        let offsetX = point.x - this.origin.x,
-            offsetY = point.y - this.origin.y;
+        let offsetX = x - this.origin.x,
+            offsetY = y - this.origin.y;
 
         // move the origin by scaling the offset
         this.origin.x += offsetX - offsetX / zoomFactor;
@@ -71,7 +71,7 @@ export class Board {
         // clear canvas
         this.ctx.clearRect(
             this.origin.x, this.origin.y,
-            this.rect.width / this.scale, this.rect.height / this.scale
+            this.width / this.scale, this.height / this.scale
         );
 
         // ------TEMPORARY----------

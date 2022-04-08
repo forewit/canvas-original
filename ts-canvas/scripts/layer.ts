@@ -1,14 +1,19 @@
-import { Point } from "./types.js";
 import { Entity } from "./entity.js";
+import { Board } from "./board.js";
 
 export class Layer {
-    entities: Entity[] = [];
+    entities: Entity[];
 
-    bringForward(entity: Entity): void {}
-    sendBackward(entity: Entity): void {}
-    addEntity(entity: Entity): void {}
-    destroyEntity(entity: Entity): void {}
-    getFirstIntersection(point: Point): Entity | null { return null; }
-    render(): void {}
-    destroy(): void {}
+    getIntersectingEntities(x: number, y: number): Entity[] { 
+        return this.entities.filter(entity => entity.isIntersecting(x, y));
+    }
+    
+    destroy(): void {
+        this.entities.forEach(entity => entity.destroy());
+        this.entities = [];
+    }
+    
+    render(board: Board): void {
+        this.entities.forEach(entity => entity.render(board));
+    }
 }

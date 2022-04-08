@@ -24,4 +24,14 @@
 
 ### Entity
 - setLayer()
-- 
+- translate()
+- rotate()
+- scale()
+- destroy()
+- render()
+
+### Layer
+- entities: Entity[]
+- getFirstIntersectingEntity()
+- render()
+- destroy()

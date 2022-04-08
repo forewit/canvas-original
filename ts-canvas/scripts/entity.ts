@@ -1,23 +1,13 @@
-import { Rect } from "./types.js";
-import * as utils from "../modules/utils.js";
+import { Board } from "./board.js";
+import { pointInRotatedRectangle } from "../modules/utils.js";
 
 export class Entity {
-    rect: Rect = {
-        top: 0,
-        left: 0,
-        width: 0,
-        height: 0,
-        angle: 0
-    }
-    _x = 0;
-    _y = 0;
-    _w = 0;
-    _h = 0;
-    _angle = 0; // radians
-    isUpdated = true;
-
-    private halfw = 0;
-    private halfh = 0;
+    private _x = 0;
+    private _y = 0;
+    private _w = 0;
+    private _h = 0;
+    private _angle = 0; // radians
+    protected isUpdated = true;
 
     get x(): number { return this._x; }
     get y(): number { return this._y; }
@@ -25,13 +15,17 @@ export class Entity {
     get h(): number { return this._h; }
     get angle(): number { return this._angle; }
 
-    set x(value: number) { this._x = value; this.isUpdated = true; }
-    set y(value: number) { this._y = value; this.isUpdated = true; }
-    set w(value: number) { this._w = value; this.halfw = value / 2; this.isUpdated = true; }
-    set h(value: number) { this._h = value; this.halfh = value / 2; this.isUpdated = true; }
-    set angle(value: number) { this._angle = value % (Math.PI * 2); this.isUpdated = true; }
+    set x(x: number) { this._x = x; this.isUpdated = true; }
+    set y(y: number) { this._y = y; this.isUpdated = true; }
+    set w(w: number) { this._w = w; this.isUpdated = true; }
+    set h(h: number) { this._h = h; this.isUpdated = true; }
+    set angle(angle: number) { this._angle = angle % (2 * Math.PI); this.isUpdated = true; }
 
-    intersects(x: number, y: number): boolean { return false; }
-    render(): void { };
-    destroy(): void { };
+    isIntersecting(x: number, y: number): boolean {
+        // assuming pivot is in the center 
+        return pointInRotatedRectangle(x, y, this.x, this.y, this.w/2, this.h/2, this.w, this.h, this.angle);
+    }
+    duplicate(): Entity { console.error("Entity.duplicate() not implemented."); return null; }
+    render(board: Board): void { console.error("Entity.render() not implemented.") };
+    destroy(): void { console.error("Entity.destroy() not implemented.") }
 }
