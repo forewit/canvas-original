@@ -37,9 +37,6 @@ export class Board {
         this.canvas.height = this.height;
     }
 
-    // TODO: addLayer(layer: Layer)
-    // TODO: destroyLayer(layer: Layer)
-
     translate(dx: number, dy: number): void {
         this.origin.x -= dx;
         this.origin.y -= dy;
@@ -82,7 +79,9 @@ export class Board {
         // -------------------------
 
         // render layers
-        // TODO: render layers in order
+        for (let layer of this.layers) {
+            layer.render(this);
+        }
 
         // restore canvas transforms
         this.ctx.restore();

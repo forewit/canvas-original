@@ -40,34 +40,27 @@ export const throttle = (fn, wait, options) => {
 export function generate_ID() {
     return '_' + Math.random().toString(36).substring(2, 9);
 }
-/**
- * Rotates a point (x, y) around a center point (cx, cy)
- * a number of radians (rad)
- */
+//Rotates a point (x, y) around a pivot in radians
 export function rotatePoint(x, y, pivotX, pivotY, rad) {
     let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
     return { x: nx, y: ny };
 }
-/**
- *
- *
- * @param {number} x
- * @param {number} y
- * @param {number} rectX rect left edge
- * @param {number} rectY rect top edge
- * @param {number} w rect width
- * @param {number} h rect height
- * @returns {boolean}
- */
-export function pointInRectangle(x, y, rectX, rectY, w, h) {
-    return x >= rectX && x <= rectX + w &&
-        y >= rectY && y <= rectY + h;
+/*
+A rectangle is defined by it's center, width, and height, and angle in radians
+        w
+┌─────────────────┐
+│                 │
+│       *(x, y)   | h
+│                 |
+└─────────────────┘
+*/
+export function pointInRectangle(x, y, centerX, centerY, w, h) {
+    return (x >= centerX - w / 2 && x <= centerX + w / 2) &&
+        (y >= centerY - h / 2 && y <= centerY + h / 2);
 }
-// credit: https://yal.cc/rot-rect-vs-circle-intersection/
-export function pointInRotatedRectangle(x, y, rectX, rectY, pivotOffsetX, pivotOffsetY, w, h, angle) {
-    let relX = x - rectX, relY = y - rectY, cos = Math.cos(-angle), sin = Math.sin(-angle), localX = cos * relX - sin * relY, localY = sin * relX + cos * relY;
-    return localX >= -pivotOffsetX && localX <= w - pivotOffsetX &&
-        localY >= -pivotOffsetY && localY <= h - pivotOffsetY;
+export function pointInRotatedRectangle(x, y, centerX, centerY, w, h, rad) {
+    let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
+    return pointInRectangle(rotatedPoint.x, rotatedPoint.y, centerX, centerY, w, h);
 }
 export function log(...args) {
     let msg = [], css = '', last = args[args.length - 1] || {}, options = {};
@@ -122,4 +115,13 @@ export function setNotchCssProperties() {
     else if (window.orientation == -90) {
         document.documentElement.style.setProperty('--notch-right', '1');
     }
+}
+// promise to load an image from a url
+export function loadImage(url) {
+    return new Promise((resolve, reject) => {
+        let img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+        img.src = url;
+    });
 }

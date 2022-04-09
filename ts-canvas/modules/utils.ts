@@ -153,3 +153,13 @@ export function setNotchCssProperties(): void {
         document.documentElement.style.setProperty('--notch-right', '1');
     }
 }
+
+// promise to load an image from a url
+export function loadImage(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+        let img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+        img.src = url;
+    });
+}

@@ -27,8 +27,6 @@ export class Board {
         this.canvas.width = this.width;
         this.canvas.height = this.height;
     }
-    // TODO: addLayer(layer: Layer)
-    // TODO: destroyLayer(layer: Layer)
     translate(dx, dy) {
         this.origin.x -= dx;
         this.origin.y -= dy;
@@ -58,7 +56,9 @@ export class Board {
         this.ctx.stroke();
         // -------------------------
         // render layers
-        // TODO: render layers in order
+        for (let layer of this.layers) {
+            layer.render(this);
+        }
         // restore canvas transforms
         this.ctx.restore();
         // reset updated flag

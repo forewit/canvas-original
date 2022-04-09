@@ -1,6 +1,9 @@
 export class Layer {
+    constructor() {
+        this.entities = [];
+    }
     getIntersectingEntities(x, y) {
-        return this.entities.filter(entity => entity.isIntersecting(x, y));
+        return this.entities.filter(entity => entity.isIntersectingPoint(x, y));
     }
     duplicate() {
         let layer = new Layer();
