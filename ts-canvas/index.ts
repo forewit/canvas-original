@@ -3,7 +3,7 @@ import { Board } from './scripts/board.js';
 import { Sprite } from './scripts/sprite.js';
 import { Layer } from './scripts/layer.js';
 
-utils.log("Hello World!", {olor: "green", bold: true});
+utils.log("Hello World! 👋", { bold: true });
 
 
 
@@ -14,50 +14,36 @@ utils.setNotchCssProperties();
 // create objects for the game
 let board = new Board(<HTMLCanvasElement>document.getElementById("board"));
 let layer = new Layer();
-let fireball = new Sprite("images/fireball.png");
+let fireball = new Sprite("images/fireball.png", 200, 100, 128, 128)
 
 // configure the game
 fireball.setFrame(0, 0, 512, 512);
-fireball.x = 100;
-fireball.y = 100;
-fireball.w = 100;
-fireball.h = 100;
+fireball.animate(6, 2);
 layer.entities.push(fireball);
 board.layers.push(layer);
 
-// ********** render loop ************
-let fpsInterval: number,
-    startTime: number,
-    then: number,
-    elapsed: number,
-    now: number;
+// start the game
+let start = performance.now(),
+    previous = start,
+    ticks = 0,
+    FPS = 0;
 
-function startAnimating(fps: number) {
-    fpsInterval = 1000 / fps;
-    then = Date.now();
-    startTime = then;
-    animate();
-}
+board.play(() => {
+    // do stuff
+    fireball.angle += 0.002;
 
-function animate() {
-    requestAnimationFrame(animate);
-    now = Date.now();
-    elapsed = now - then;
+    // ******* FPS COUNTER *********
+    let now = performance.now(),
+        delta = now - previous;
 
-    if (elapsed > fpsInterval) {
-        then = now - (elapsed % fpsInterval);
-
-        // do something
-        board.render();
-        fireball.nextFrame(0, 3072);
+    if (delta >= 1000) {
+        previous = now;
+        FPS = ticks;
+        ticks = 0;
     }
-}
+    ticks++;
 
-startAnimating(10);
-// ************************************
-
-
-
-utils.log("Goodbye 👋", {olor: "green", bold: true});
-
+    if (delta >= 200) document.getElementById("fps").innerHTML = FPS.toString();
+    // *****************************
+});
 

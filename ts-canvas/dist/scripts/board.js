@@ -7,6 +7,7 @@ export class Board {
         this.origin = { x: 0, y: 0 };
         this.scale = window.devicePixelRatio;
         this.isUpdated = true;
+        this.isPlaying = false;
         this.layers = [];
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -15,32 +16,16 @@ export class Board {
         this.resize();
     }
     resize() {
-        console.log("resizing board...");
-        // get element size
+        // update the board size
         let rect = this.canvas.getBoundingClientRect();
         this.top = rect.top;
         this.left = rect.left;
         this.width = rect.width;
         this.height = rect.height;
-        // reset canvas transforms
+        // set canvas properties and transform
         this.ctx.resetTransform();
         this.canvas.width = this.width;
         this.canvas.height = this.height;
-    }
-    translate(dx, dy) {
-        this.origin.x -= dx;
-        this.origin.y -= dy;
-        this.isUpdated = true;
-    }
-    zoomOnPoint(x, y, zoomFactor) {
-        // calculate the distance from the viewable origin
-        let offsetX = x - this.origin.x, offsetY = y - this.origin.y;
-        // move the origin by scaling the offset
-        this.origin.x += offsetX - offsetX / zoomFactor;
-        this.origin.y += offsetY - offsetY / zoomFactor;
-        // apply the new scale to the canvas
-        this.scale *= zoomFactor;
-        this.isUpdated = true;
     }
     render() {
         // save and apply canvas transforms
@@ -63,5 +48,41 @@ export class Board {
         this.ctx.restore();
         // reset updated flag
         this.isUpdated = false;
+    }
+    translate(dx, dy) {
+        this.origin.x -= dx;
+        this.origin.y -= dy;
+        this.isUpdated = true;
+    }
+    zoomOnPoint(x, y, zoomFactor) {
+        // calculate the distance from the viewable origin
+        let offsetX = x - this.origin.x, offsetY = y - this.origin.y;
+        // move the origin by scaling the offset
+        this.origin.x += offsetX - offsetX / zoomFactor;
+        this.origin.y += offsetY - offsetY / zoomFactor;
+        // apply the new scale to the canvas
+        this.scale *= zoomFactor;
+        this.isUpdated = true;
+    }
+    play(tempFn) {
+        if (this.isPlaying)
+            return;
+        this.isPlaying = true;
+        let me = this;
+        function loop() {
+            if (me.isPlaying) {
+                // ------TEMPORARY----------
+                tempFn();
+                // -------------------------
+                // render the board
+                me.render();
+                requestAnimationFrame(loop);
+            }
+        }
+        requestAnimationFrame(loop);
+    }
+    stop() {
+        // stop the animation loop
+        this.isPlaying = false;
     }
 }

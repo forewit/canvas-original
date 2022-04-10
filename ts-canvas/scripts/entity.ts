@@ -11,11 +11,11 @@ export class Entity {
     │                 |
     └─────────────────┘
     */
-    private _x = 0;
-    private _y = 0; 
-    private _w = 0;
-    private _h = 0;
-    private _angle = 0; // radians
+    private _x: number;
+    private _y: number;
+    private _w: number;
+    private _h: number;
+    private _angle: number; // radians
     protected isUpdated = true;
 
     get x(): number { return this._x; }
@@ -29,6 +29,14 @@ export class Entity {
     set w(w: number) { this._w = w; this.isUpdated = true; }
     set h(h: number) { this._h = h; this.isUpdated = true; }
     set angle(angle: number) { this._angle = angle % (2 * Math.PI); this.isUpdated = true; }
+
+    constructor(x: number, y: number, w: number, h: number, angle?: number) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.angle = angle || 0;
+    }
 
     isIntersectingPoint(x: number, y: number): boolean {
         return pointInRotatedRectangle(x, y, this.x, this.y, this.w, this.h, this.angle);

@@ -10,6 +10,7 @@ export class Board {
     origin = { x: 0, y: 0 };
     scale = window.devicePixelRatio;
     isUpdated = true;
+    isPlaying = false;
     layers: Layer[] = [];
 
     constructor(canvas: HTMLCanvasElement) {
@@ -22,44 +23,20 @@ export class Board {
     }
 
     private resize(): void {
-        console.log("resizing board...");
-
-        // get element size
+        // update the board size
         let rect = this.canvas.getBoundingClientRect();
         this.top = rect.top;
         this.left = rect.left;
         this.width = rect.width;
         this.height = rect.height;
 
-        // reset canvas transforms
+        // set canvas properties and transform
         this.ctx.resetTransform();
         this.canvas.width = this.width;
         this.canvas.height = this.height;
     }
 
-    translate(dx: number, dy: number): void {
-        this.origin.x -= dx;
-        this.origin.y -= dy;
-
-        this.isUpdated = true;
-    }
-
-    zoomOnPoint(x: number, y: number, zoomFactor: number): void {
-        // calculate the distance from the viewable origin
-        let offsetX = x - this.origin.x,
-            offsetY = y - this.origin.y;
-
-        // move the origin by scaling the offset
-        this.origin.x += offsetX - offsetX / zoomFactor;
-        this.origin.y += offsetY - offsetY / zoomFactor;
-
-        // apply the new scale to the canvas
-        this.scale *= zoomFactor;
-
-        this.isUpdated = true;
-    }
-
-    render(): void {
+    private render(): void {
         // save and apply canvas transforms
         this.ctx.save();
         this.ctx.scale(this.scale, this.scale);
@@ -88,5 +65,53 @@ export class Board {
 
         // reset updated flag
         this.isUpdated = false;
+    }
+
+    translate(dx: number, dy: number): void {
+        this.origin.x -= dx;
+        this.origin.y -= dy;
+
+        this.isUpdated = true;
+    }
+
+    zoomOnPoint(x: number, y: number, zoomFactor: number): void {
+        // calculate the distance from the viewable origin
+        let offsetX = x - this.origin.x,
+            offsetY = y - this.origin.y;
+
+        // move the origin by scaling the offset
+        this.origin.x += offsetX - offsetX / zoomFactor;
+        this.origin.y += offsetY - offsetY / zoomFactor;
+
+        // apply the new scale to the canvas
+        this.scale *= zoomFactor;
+
+        this.isUpdated = true;
+    }
+
+    play(tempFn: () => any): void {
+        if (this.isPlaying) return;
+
+        this.isPlaying = true;
+        let me = this;
+
+        function loop(): void {
+            if (me.isPlaying) {
+                // ------TEMPORARY----------
+                tempFn();
+                // -------------------------
+
+                // render the board
+                me.render();
+                requestAnimationFrame(loop);
+            }
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    stop(): void {
+        // stop the animation loop
+        this.isPlaying = false;
     }
 }

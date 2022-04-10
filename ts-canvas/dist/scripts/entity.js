@@ -1,21 +1,12 @@
 import { pointInRotatedRectangle } from "../modules/utils.js";
 export class Entity {
-    constructor() {
-        /*
-        A rectangle is defined by it's center, width, and height, and angle in radians
-                 w
-        ┌─────────────────┐
-        │                 │
-        │       *(x, y)   | h
-        │                 |
-        └─────────────────┘
-        */
-        this._x = 0;
-        this._y = 0;
-        this._w = 0;
-        this._h = 0;
-        this._angle = 0; // radians
+    constructor(x, y, w, h, angle) {
         this.isUpdated = true;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.angle = angle || 0;
     }
     get x() { return this._x; }
     get y() { return this._y; }
