@@ -28,7 +28,7 @@ export class Board {
         this.canvas.width = this.width;
         this.canvas.height = this.height;
         // logging
-        console.log("resized board...");
+        console.log("Resized board...");
     }
     render() {
         // save and apply canvas transforms

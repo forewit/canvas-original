@@ -2,7 +2,7 @@ import * as utils from './modules/utils.js';
 import { Board } from './scripts/board.js';
 import { Sprite } from './scripts/sprite.js';
 import { Layer } from './scripts/layer.js';
-import { interact } from './scripts/interact.js';
+import * as interact from './scripts/interact.js';
 utils.log("Hello World! 👋", { bold: true });
 // update notch on orientation change
 window.addEventListener('orientationchange', utils.setNotchCssProperties);
@@ -11,14 +11,12 @@ utils.setNotchCssProperties();
 let board = new Board(document.getElementById("board"));
 let layer = new Layer();
 let fireball = new Sprite("images/fireball.png", 100, 100, 128, 128);
-let turtleshell = new Sprite("images/turtleshell_right.png", 200, 100, 128, 128);
-let snake = new Sprite("images/snake_right.png", 400, 100, 128, 128);
+let snake = new Sprite("images/snake_right.png", 300, 100, 128, 128);
 // animate sprites
 fireball.animate(512, 512, -1, 15, { x: 0, y: 0 }, { x: 512, y: 0 }, { x: 1024, y: 0 }, { x: 1536, y: 0 }, { x: 2048, y: 0 }, { x: 2560, y: 0 });
-turtleshell.animate(128, 128, -1, 15, { x: 0, y: 0 }, { x: 128, y: 0 }, { x: 256, y: 0 }, { x: 384, y: 0 }, { x: 0, y: 128 }, { x: 128, y: 128 }, { x: 256, y: 128 }, { x: 384, y: 128 }, { x: 0, y: 256 }, { x: 128, y: 256 }, { x: 256, y: 256 }, { x: 384, y: 256 }, { x: 0, y: 384 }, { x: 128, y: 384 }, { x: 256, y: 384 }, { x: 384, y: 384 });
+snake.animate(128, 128, -1, 15, { x: 0, y: 0 }, { x: 128, y: 0 }, { x: 256, y: 0 }, { x: 384, y: 0 }, { x: 0, y: 128 }, { x: 128, y: 128 }, { x: 256, y: 128 }, { x: 384, y: 128 }, { x: 0, y: 256 }, { x: 128, y: 256 }, { x: 256, y: 256 }, { x: 384, y: 256 }, { x: 0, y: 384 }, { x: 128, y: 384 }, { x: 256, y: 384 }, { x: 384, y: 384 });
 // add sprites to layer
 layer.entities.push(fireball);
-layer.entities.push(turtleshell);
 layer.entities.push(snake);
 board.layers.push(layer);
 // start the game
@@ -37,4 +35,4 @@ board.play(() => {
         document.getElementById("fps").innerHTML = FPS.toString();
     // *****************************
 });
-interact(board);
+interact.bind(board);

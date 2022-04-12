@@ -37,7 +37,7 @@ export class Board {
         this.canvas.height = this.height;
 
         // logging
-        console.log("resized board...");
+        console.log("Resized board...");
     }
 
     private render(): void {
