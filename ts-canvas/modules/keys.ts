@@ -61,7 +61,7 @@ export function unbind(shortcuts?: String): void {
     // split shortcut string into array of shortcuts
     let splitShortcuts: string[] = shortcuts.split(SHORTCUT_SEPARATOR);
     
-    // remove keybindings for each shortcut
+    // remove keybindings for each shortcut given
     splitShortcuts.forEach(s => {
         let keys: string[] = s.split(SPLIT_KEY);
         let id = keys.pop();
