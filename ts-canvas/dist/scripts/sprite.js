@@ -11,8 +11,8 @@ export class Sprite extends Entity {
         this.frameW = 0;
         this.frameH = 0;
         this.frameSet = [];
-        this.isAnimating = false;
-        this.looping = false;
+        this.count = 0;
+        this.repeat = 0;
         this.frameIndex = 0;
         this.start = 0;
         this.previous = 0;
@@ -22,35 +22,28 @@ export class Sprite extends Entity {
             this.isLoaded = true;
         });
     }
-    animate(frameW, frameH, looping, ...frames) {
+    // repeat = -1 for infinite looping
+    // repeat = 0 for no looping
+    animate(frameW, frameH, repeat, ...frames) {
         this.frameW = frameW;
         this.frameH = frameH;
-        this.looping = looping;
+        this.count = 0;
+        this.repeat = repeat;
         this.frameSet = frames;
         this.frameIndex = 0;
-        this.isAnimating = true;
         this.start = performance.now();
         this.previous = this.start;
     }
-    setFrame(x, y, w, h) {
-        this.frameX = x;
-        this.frameY = y;
-        this.frameW = w;
-        this.frameH = h;
-        this.isAnimating = false;
-    }
     duplicate() {
         let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
-        if (this.isAnimating)
-            sprite.animate(this.frameW, this.frameH, this.looping, ...this.frameSet);
+        sprite.animate(this.frameW, this.frameH, this.repeat, ...this.frameSet);
         return sprite;
     }
     destroy() { this.image = null; }
     render(board) {
         if (!this.isLoaded)
             return;
-        // update frame
-        if (this.isAnimating) {
+        if (this.repeat == -1 || this.count < this.repeat) {
             // get time since last frame
             let now = performance.now();
             let delta = now - this.previous;
@@ -60,10 +53,10 @@ export class Sprite extends Entity {
                 this.frameIndex = (this.frameIndex + 1) % this.frameSet.length;
                 this.frameX = this.frameSet[this.frameIndex].x;
                 this.frameY = this.frameSet[this.frameIndex].y;
+                if (this.frameIndex == this.frameSet.length - 1)
+                    this.count++;
+                console.log(this.count);
             }
-            // stop if we've reached the end and we're not looping
-            if (!this.looping && this.frameIndex == this.frameSet.length - 1)
-                this.isAnimating = false;
         }
         // draw current frame
         let ctx = board.ctx;
