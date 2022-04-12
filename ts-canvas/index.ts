@@ -17,8 +17,14 @@ let layer = new Layer();
 let fireball = new Sprite("images/fireball.png", 200, 100, 128, 128)
 
 // configure the game
-fireball.setFrame(0, 0, 512, 512);
-fireball.animate(6, 2);
+fireball.animate(512, 512, true,
+    { x: 0, y: 0, delay: 100 },
+    { x: 512, y: 0, delay: 200 },
+    { x: 1024, y: 0, delay: 300 },
+    { x: 1536, y: 0, delay: 400 },
+    { x: 2048, y: 0, delay: 500 },
+    { x: 2560, y: 0, delay: 600 },
+);
 layer.entities.push(fireball);
 board.layers.push(layer);
 

@@ -1,18 +1,19 @@
 import { Entity } from "./entity.js";
 import { loadImage } from "../modules/utils.js";
+;
 export class Sprite extends Entity {
     constructor(url, x, y, w, h, angle) {
         super(x, y, w, h, angle);
-        this.frameW = 0; // width of a single frame
-        this.frameH = 0; // height of a single frame
-        this.frameX = 0; // x position of the current frame
-        this.frameY = 0; // y position of the current frame
         this.image = null;
         this.isLoaded = false;
+        this.frameX = 0;
+        this.frameY = 0;
+        this.frameW = 0;
+        this.frameH = 0;
+        this.frameSet = [];
         this.isAnimating = false;
-        this.animationLastFrameX = 0; // this is set when an animation is played
-        // used for animation loop
-        this.interval = 1000 / Sprite.DEFAULT_FPS;
+        this.looping = false;
+        this.frameIndex = 0;
         this.start = 0;
         this.previous = 0;
         // load image
@@ -21,42 +22,48 @@ export class Sprite extends Entity {
             this.isLoaded = true;
         });
     }
-    // set the frame horizontally and vertically
-    setFrame(frameX, frameY, frameW, frameH) {
-        this.frameX = frameX;
-        this.frameY = frameY;
+    animate(frameW, frameH, looping, ...frames) {
         this.frameW = frameW;
         this.frameH = frameH;
-        this.isAnimating = false;
-    }
-    animate(numberOfFrames, fps) {
-        // only animate if a frame has been set
-        if (this.isAnimating) {
-            console.error("Sprite.animate() called while already animating.");
-            return;
-        }
-        this.animationLastFrameX = this.frameX + numberOfFrames * this.frameW;
-        this.interval = 1000 / (fps || Sprite.DEFAULT_FPS);
+        this.looping = looping;
+        this.frameSet = frames;
+        this.frameIndex = 0;
+        this.isAnimating = true;
         this.start = performance.now();
         this.previous = this.start;
-        this.isAnimating = true;
+    }
+    setFrame(x, y, w, h) {
+        this.frameX = x;
+        this.frameY = y;
+        this.frameW = w;
+        this.frameH = h;
+        this.isAnimating = false;
     }
     duplicate() {
         let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
-        sprite.setFrame(this.frameX, this.frameY, this.frameW, this.frameH);
+        if (this.isAnimating)
+            sprite.animate(this.frameW, this.frameH, this.looping, ...this.frameSet);
         return sprite;
     }
     destroy() { this.image = null; }
     render(board) {
         if (!this.isLoaded)
             return;
-        // goto next frame if animating
+        // update frame
         if (this.isAnimating) {
+            // get time since last frame
             let now = performance.now();
-            if (now - this.previous >= this.interval) {
-                this.frameX = (this.frameX + this.frameW) % this.animationLastFrameX;
+            let delta = now - this.previous;
+            // if enough time has passed, go to next frame
+            if (delta >= this.frameSet[this.frameIndex].delay) {
                 this.previous = now;
+                this.frameIndex = (this.frameIndex + 1) % this.frameSet.length;
+                this.frameX = this.frameSet[this.frameIndex].x;
+                this.frameY = this.frameSet[this.frameIndex].y;
             }
+            // stop if we've reached the end and we're not looping
+            if (!this.looping && this.frameIndex == this.frameSet.length - 1)
+                this.isAnimating = false;
         }
         // draw current frame
         let ctx = board.ctx;
@@ -67,4 +74,3 @@ export class Sprite extends Entity {
         ctx.restore();
     }
 }
-Sprite.DEFAULT_FPS = 30;
