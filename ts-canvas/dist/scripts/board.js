@@ -9,11 +9,12 @@ export class Board {
         this.isUpdated = true;
         this.isPlaying = false;
         this.layers = [];
+        this.resizeObserver = new ResizeObserver(() => { this.resize(); });
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         // add resize listener
-        window.addEventListener("resize", () => { this.resize(); });
-        this.resize();
+        this.resizeObserver.observe(this.canvas);
+        //this.resize();
     }
     resize() {
         // update the board size
@@ -26,6 +27,8 @@ export class Board {
         this.ctx.resetTransform();
         this.canvas.width = this.width;
         this.canvas.height = this.height;
+        // logging
+        console.log("resized board...");
     }
     render() {
         // save and apply canvas transforms
@@ -79,8 +82,14 @@ export class Board {
         }
         requestAnimationFrame(loop);
     }
-    stop() {
+    pause() {
         // stop the animation loop
         this.isPlaying = false;
+    }
+    destroy() {
+        // destroy all layers
+        for (let layer of this.layers) {
+            layer.destroy();
+        }
     }
 }

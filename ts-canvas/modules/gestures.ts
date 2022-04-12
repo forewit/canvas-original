@@ -469,7 +469,7 @@ const touchendHandler = (e: TouchEvent) => {
     touch.isLongpressed = false;
 }
 
-export function track(elm: Element): void {
+export function bind(elm: Element): void {
     // return if element is already tracked
     for (let item of trackedElms) { 
         if (item === elm) return;
@@ -486,10 +486,11 @@ export function track(elm: Element): void {
     elm.addEventListener('wheel', wheelHandler, { passive: false });
 }
 
-export function untrack(elm: Element): void {
+export function unbind(elm?: Element): void {
     for (let i = 0; i < trackedElms.length; i++) {
-        if (trackedElms[i] === elm) {
-            // stop tracking element
+        // if element is not specified, remove all tracked elements
+        if (!elm || trackedElms[i] === elm) {
+            // remove event listeners
             elm.removeEventListener('touchstart', touchstartHandler);
             elm.removeEventListener('mousedown', mousedownHandler);
             elm.removeEventListener('contextmenu', contextmenuHandler);
@@ -501,13 +502,4 @@ export function untrack(elm: Element): void {
             return;
         }
     }
-}
-
-export function untrackAll (): void {
-    // untrack each element
-    trackedElms.forEach(elm => untrack(elm));
-}
-
-export function getTrackedElms (): Element[] {
-    return [...trackedElms]; // don't return a reference to the original array
 }

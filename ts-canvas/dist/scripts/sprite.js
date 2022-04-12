@@ -24,6 +24,8 @@ export class Sprite extends Entity {
     // repeat = -1 for infinite looping
     // repeat = 0 for no looping
     animate(frameW, frameH, repeat, fps, ...frames) {
+        if (frames.length == 0)
+            return;
         this.frameW = frameW;
         this.frameH = frameH;
         this.repeat = repeat;
@@ -34,18 +36,20 @@ export class Sprite extends Entity {
     }
     duplicate() {
         let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
-        sprite.animate(this.frameW, this.frameH, this.repeat, 1000 / this.interval, ...this.frames);
+        if (this.frames.length > 0)
+            sprite.animate(this.frameW, this.frameH, this.repeat, 1000 / this.interval, ...this.frames);
         return sprite;
     }
     destroy() { this.image = null; }
     render(board) {
-        if (!this.isLoaded)
+        if (!this.isLoaded || this.frames.length == 0)
             return;
         if (this.repeat != 0) {
             let now = performance.now();
             // if enough time has passed, go to next frame
             if (now - this.previous > this.interval) {
-                this.frameIndex = (this.frameIndex + 1) % this.frames.length;
+                if (++this.frameIndex >= this.frames.length)
+                    this.frameIndex = 0;
                 this.frameX = this.frames[this.frameIndex].x;
                 this.frameY = this.frames[this.frameIndex].y;
                 this.previous = now;

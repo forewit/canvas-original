@@ -2,6 +2,7 @@ import * as utils from './modules/utils.js';
 import { Board } from './scripts/board.js';
 import { Sprite } from './scripts/sprite.js';
 import { Layer } from './scripts/layer.js';
+import { interact } from './scripts/interact.js';
 
 utils.log("Hello World! 👋", { bold: true });
 
@@ -46,26 +47,6 @@ turtleshell.animate(128, 128, -1, 15,
     { x: 384, y: 384 },
 );
 
-snake.animate(128, 128, 4, 15,
-    { x: 0, y: 0 },
-    { x: 128, y: 0 },
-    { x: 256, y: 0 },
-    { x: 384, y: 0 },
-    { x: 0, y: 128 },
-    { x: 128, y: 128 },
-    { x: 256, y: 128 },
-    { x: 384, y: 128 },
-    { x: 0, y: 256 },
-    { x: 128, y: 256 },
-    { x: 256, y: 256 },
-    { x: 384, y: 256 },
-    { x: 0, y: 384 },
-    { x: 128, y: 384 },
-    { x: 256, y: 384 },
-    { x: 384, y: 384 },
-);
-
-
 // add sprites to layer
 layer.entities.push(fireball);
 layer.entities.push(turtleshell);
@@ -95,4 +76,6 @@ board.play(() => {
     if (delta >= 200) document.getElementById("fps").innerHTML = FPS.toString();
     // *****************************
 });
+
+interact(board);
 

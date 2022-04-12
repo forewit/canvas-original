@@ -12,14 +12,15 @@ export class Board {
     isUpdated = true;
     isPlaying = false;
     layers: Layer[] = [];
+    resizeObserver = new ResizeObserver(() => { this.resize(); });
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
 
         // add resize listener
-        window.addEventListener("resize", () => { this.resize() });
-        this.resize();
+        this.resizeObserver.observe(this.canvas);
+        //this.resize();
     }
 
     private resize(): void {
@@ -34,6 +35,9 @@ export class Board {
         this.ctx.resetTransform();
         this.canvas.width = this.width;
         this.canvas.height = this.height;
+
+        // logging
+        console.log("resized board...");
     }
 
     private render(): void {
@@ -107,8 +111,16 @@ export class Board {
         requestAnimationFrame(loop);
     }
 
-    stop(): void {
+    pause(): void {
         // stop the animation loop
         this.isPlaying = false;
+    }
+
+    destroy(): void {
+        // destroy all layers
+        for (let layer of this.layers) {
+            layer.destroy();
+        }
+
     }
 }

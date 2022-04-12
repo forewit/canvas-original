@@ -19,9 +19,6 @@
 # API
 
 ### Board 
-- addLayer()
-- destroyLayer()
-
 ### Entity
 - setLayer()
 - translate()
