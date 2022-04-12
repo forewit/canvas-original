@@ -64,20 +64,18 @@ export class Board {
         this.scale *= zoomFactor;
         this.isUpdated = true;
     }
-    play(tempFn) {
+    play(callback) {
         if (this.isPlaying)
             return;
         this.isPlaying = true;
         let me = this;
         function loop() {
-            if (me.isPlaying) {
-                // ------TEMPORARY----------
-                tempFn();
-                // -------------------------
-                // render the board
-                me.render();
-                requestAnimationFrame(loop);
-            }
+            if (!me.isPlaying)
+                return;
+            callback();
+            // render the board
+            me.render();
+            requestAnimationFrame(loop);
         }
         requestAnimationFrame(loop);
     }

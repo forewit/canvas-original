@@ -89,22 +89,19 @@ export class Board {
         this.isUpdated = true;
     }
 
-    play(tempFn: () => any): void {
+    play(callback: Function): void {
         if (this.isPlaying) return;
 
         this.isPlaying = true;
         let me = this;
 
         function loop(): void {
-            if (me.isPlaying) {
-                // ------TEMPORARY----------
-                tempFn();
-                // -------------------------
+            if (!me.isPlaying) return;
+            callback();
 
-                // render the board
-                me.render();
-                requestAnimationFrame(loop);
-            }
+            // render the board
+            me.render();
+            requestAnimationFrame(loop);
         }
 
         requestAnimationFrame(loop);

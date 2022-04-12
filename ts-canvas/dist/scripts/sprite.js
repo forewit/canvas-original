@@ -10,11 +10,10 @@ export class Sprite extends Entity {
         this.frameY = 0;
         this.frameW = 0;
         this.frameH = 0;
-        this.frameSet = [];
-        this.count = 0;
-        this.repeat = 0;
+        this.frames = [];
         this.frameIndex = 0;
-        this.start = 0;
+        this.repeat = 0;
+        this.interval = 0;
         this.previous = 0;
         // load image
         loadImage(url).then(image => {
@@ -24,38 +23,34 @@ export class Sprite extends Entity {
     }
     // repeat = -1 for infinite looping
     // repeat = 0 for no looping
-    animate(frameW, frameH, repeat, ...frames) {
+    animate(frameW, frameH, repeat, fps, ...frames) {
         this.frameW = frameW;
         this.frameH = frameH;
-        this.count = 0;
         this.repeat = repeat;
-        this.frameSet = frames;
+        this.frames = frames;
         this.frameIndex = 0;
-        this.start = performance.now();
-        this.previous = this.start;
+        this.interval = 1000 / fps;
+        this.previous = performance.now();
     }
     duplicate() {
         let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
-        sprite.animate(this.frameW, this.frameH, this.repeat, ...this.frameSet);
+        sprite.animate(this.frameW, this.frameH, this.repeat, 1000 / this.interval, ...this.frames);
         return sprite;
     }
     destroy() { this.image = null; }
     render(board) {
         if (!this.isLoaded)
             return;
-        if (this.repeat == -1 || this.count < this.repeat) {
-            // get time since last frame
+        if (this.repeat != 0) {
             let now = performance.now();
-            let delta = now - this.previous;
             // if enough time has passed, go to next frame
-            if (delta >= this.frameSet[this.frameIndex].delay) {
+            if (now - this.previous > this.interval) {
+                this.frameIndex = (this.frameIndex + 1) % this.frames.length;
+                this.frameX = this.frames[this.frameIndex].x;
+                this.frameY = this.frames[this.frameIndex].y;
                 this.previous = now;
-                this.frameIndex = (this.frameIndex + 1) % this.frameSet.length;
-                this.frameX = this.frameSet[this.frameIndex].x;
-                this.frameY = this.frameSet[this.frameIndex].y;
-                if (this.frameIndex == this.frameSet.length - 1)
-                    this.count++;
-                console.log(this.count);
+                if (this.frameIndex == this.frames.length - 1)
+                    this.repeat--;
             }
         }
         // draw current frame
