@@ -17,6 +17,7 @@ const ZOOM_INTENSITY = 0.2,
 // state management
 let trackedBoard: Board = null,
     selected: Entity[],
+    handles = new Handles(0, 0, 0, 0),
     isPanning: boolean,
     isResizing: boolean,
     isMoving: boolean,
@@ -92,6 +93,12 @@ const triageGestures = (e: CustomEvent) => {
 
     // triage gestures by name
     switch (e.detail.name) {
+        case "click":
+        case "tap":
+            if (!keys.down["Shift"]) clearSelection();
+            select(x, y);
+            break;
+
         case "left-click-drag-start":
         case "middle-click-drag-start":
         case "touch-drag-start":
@@ -109,7 +116,7 @@ const triageGestures = (e: CustomEvent) => {
             trackedBoard.zoomOnPoint(x, y, zoom);
             pan(dx, dy);
             break;
-        
+
         case "wheel":
             trackedBoard.zoomOnPoint(x, y, wheelToZoomFactor(event));
             break;
@@ -123,6 +130,58 @@ const triageGestures = (e: CustomEvent) => {
     }
 }
 
+const select = (x: number, y: number): Entity => {
+    // check active layer for intersections
+    let layer = trackedBoard.layers[trackedBoard.activeLayerIndex],
+        entity = layer.getIntersectingEntities(x, y)[0];
+
+    // return if no entity was found
+    if (!entity) return null;
+
+    // add to selection if not already selected
+    if (selected.indexOf(entity) === -1) selected.push(entity);
+}
+
+const clearSelection = () => {
+    selected = [];
+}
+
+const selectionBounds = (): { x: number, y: number, w: number, h: number } => {
+    if (selected.length === 0) return null;
+
+    let boundingLeft = selected[0].x,
+        boundingRight = selected[0].x,
+        boundingTop = selected[0].y,
+        boundingBottom = selected[0].y;
+
+    for (let entity of selected) {
+        let angle = entity.angle % (Math.PI);
+        if (angle > Math.PI / 2) angle = Math.PI - angle;
+
+        let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2,
+            halfH = (Math.sin(angle) * entity.w + Math.cos(angle) * entity.h) / 2;
+
+        let left = entity.x - halfW,
+            right = entity.x + halfW,
+            top = entity.y - halfH,
+            bottom = entity.y + halfH;
+
+        boundingLeft = Math.min(boundingLeft, left);
+        boundingRight = Math.max(boundingRight, right);
+        boundingTop = Math.min(boundingTop, top);
+        boundingBottom = Math.max(boundingBottom, bottom);
+    }
+
+    let width = boundingRight - boundingLeft,
+        height = boundingBottom - boundingTop;
+
+    return {
+        x: boundingLeft + width / 2,
+        y: boundingTop + height / 2,
+        w: width,
+        h: height
+    }
+}
 
 const wheelToZoomFactor = (e: WheelEvent): number => {
     // normalize wheel direction

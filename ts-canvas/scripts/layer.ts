@@ -4,22 +4,44 @@ import { Board } from "./board.js";
 export class Layer {
     entities: Entity[] = [];
 
-    getIntersectingEntities(x: number, y: number): Entity[] { 
+    private _board: Board;
+
+    get board(): Board { return this._board; }
+    set board(board: Board) {
+        // check if layer is already in this board
+        if (this.board === board) return;
+
+        // remove layer from old board
+        if (this.board) this.board.layers.splice(this.board.layers.indexOf(this), 1);
+
+        // add layer to new board
+        if (board) board.layers.push(this);
+        this._board = board;
+    }
+
+    getIntersectingEntities(x: number, y: number): Entity[] {
         return this.entities.filter(entity => entity.isIntersectingPoint(x, y));
     }
 
     duplicate(): Layer {
+        // create new layer
         let layer = new Layer();
-        layer.entities = this.entities.map(entity => entity.duplicate());
+
+        // duplicate entities and set their layer to the new layer
+        for (let entity of this.entities) {
+            entity.duplicate().layer = layer;
+        }
+
+        // return new layer
         return layer;
     }
-    
+
     destroy(): void {
-        this.entities.forEach(entity => entity.destroy());
-        this.entities = [];
+        for (let entity of this.entities) entity.destroy();
+        this.board = null;    
     }
-    
+
     render(board: Board): void {
-        this.entities.forEach(entity => entity.render(board));
+        for (let entity of this.entities) entity.render(board);
     }
 }

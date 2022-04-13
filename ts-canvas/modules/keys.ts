@@ -20,8 +20,9 @@ interface Keybinding {
 };
 
 let keybindings: Keybinding = {},
-    down: { [keycode: number]: boolean } = {},
     listening = false;
+
+export let down: { [keycode: number]: boolean } = {};
 
 export function getKeybindings(): Keybinding { return keybindings; }
 

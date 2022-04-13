@@ -7,6 +7,7 @@ export class Board {
         this.isUpdated = true;
         this.isPlaying = false;
         this.layers = [];
+        this.activeLayerIndex = 0;
         this.resizeObserver = new ResizeObserver(() => { this.resize(); });
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");

@@ -10,6 +10,7 @@ export class Board {
     isUpdated = true;
     isPlaying = false;
     layers: Layer[] = [];
+    activeLayerIndex: number = 0;
     resizeObserver = new ResizeObserver(() => { this.resize(); });
 
     constructor(canvas: HTMLCanvasElement) {

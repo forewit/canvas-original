@@ -41,6 +41,7 @@ export class Sprite extends Entity {
         this.previous = performance.now();
     }
 
+    // override 
     duplicate(): Entity {
         let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
         if (this.frames.length > 0) 
@@ -48,8 +49,14 @@ export class Sprite extends Entity {
         return sprite;
     }
 
-    destroy(): void { this.image = null; }
+    // override
+    destroy(): void { 
+        super.destroy();
+        this.image = null;
+        this.frames = [];
+    }
 
+    // override
     render(board: Board): void {
         if (!this.isLoaded || this.frames.length == 0) return;
 

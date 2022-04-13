@@ -1,12 +1,13 @@
 import * as gestures from "../modules/gestures.js";
 import * as keys from "../modules/keys.js";
+import { Handles } from "./handles.js";
 // NOTE: board interactions overide all keybindings
 // constants
 const ZOOM_INTENSITY = 0.2, INERTIAL_FRICTION = 0.8, // 0 = infinite friction, 1 = no friction
 INERTIAL_MEMORY = 0.2, // 0 = infinite memory, 1 = no memory
 EPSILON = 0.001; // replacement for 0 to prevent divide-by-zero errors
 // state management
-let trackedBoard = null, selected, isPanning, isResizing, isMoving, vx, vy;
+let trackedBoard = null, selected, handles = new Handles(0, 0, 0, 0), isPanning, isResizing, isMoving, vx, vy;
 export function bind(board) {
     // reset state
     unbind();
@@ -58,6 +59,12 @@ const triageGestures = (e) => {
     let x = (e.detail.x - trackedBoard.left) * scaleFactor + trackedBoard.origin.x, y = (e.detail.y - trackedBoard.top) * scaleFactor + trackedBoard.origin.y, dx = (e.detail.dx) ? e.detail.dx * scaleFactor : 0, dy = (e.detail.dy) ? e.detail.dy * scaleFactor : 0, zoom = e.detail.zoom || 1, event = e.detail.event || null;
     // triage gestures by name
     switch (e.detail.name) {
+        case "click":
+        case "tap":
+            if (!keys.down["Shift"])
+                clearSelection();
+            select(x, y);
+            break;
         case "left-click-drag-start":
         case "middle-click-drag-start":
         case "touch-drag-start":
@@ -83,6 +90,42 @@ const triageGestures = (e) => {
             endPanning();
             break;
     }
+};
+const select = (x, y) => {
+    // check active layer for intersections
+    let layer = trackedBoard.layers[trackedBoard.activeLayerIndex], entity = layer.getIntersectingEntities(x, y)[0];
+    // return if no entity was found
+    if (!entity)
+        return null;
+    // add to selection if not already selected
+    if (selected.indexOf(entity) === -1)
+        selected.push(entity);
+};
+const clearSelection = () => {
+    selected = [];
+};
+const selectionBounds = () => {
+    if (selected.length === 0)
+        return null;
+    let boundingLeft = selected[0].x, boundingRight = selected[0].x, boundingTop = selected[0].y, boundingBottom = selected[0].y;
+    for (let entity of selected) {
+        let angle = entity.angle % (Math.PI);
+        if (angle > Math.PI / 2)
+            angle = Math.PI - angle;
+        let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2, halfH = (Math.sin(angle) * entity.w + Math.cos(angle) * entity.h) / 2;
+        let left = entity.x - halfW, right = entity.x + halfW, top = entity.y - halfH, bottom = entity.y + halfH;
+        boundingLeft = Math.min(boundingLeft, left);
+        boundingRight = Math.max(boundingRight, right);
+        boundingTop = Math.min(boundingTop, top);
+        boundingBottom = Math.max(boundingBottom, bottom);
+    }
+    let width = boundingRight - boundingLeft, height = boundingBottom - boundingTop;
+    return {
+        x: boundingLeft + width / 2,
+        y: boundingTop + height / 2,
+        w: width,
+        h: height
+    };
 };
 const wheelToZoomFactor = (e) => {
     // normalize wheel direction

@@ -47,9 +47,11 @@ snake.animate(128, 128, -1, 15,
 );
 
 // add sprites to layer
-layer.entities.push(fireball);
-layer.entities.push(snake);
-board.layers.push(layer);
+fireball.layer = layer;
+snake.layer = layer;
+layer.board = board;
+
+snake.destroy();
 
 // start the game
 let start = performance.now(),
@@ -76,3 +78,4 @@ board.play(() => {
 });
 
 interact.bind(board);
+globalThis.board = board;

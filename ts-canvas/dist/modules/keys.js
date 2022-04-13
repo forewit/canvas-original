@@ -15,7 +15,8 @@ keybindings = [{
 const SHORTCUT_SEPARATOR = ", ";
 const SPLIT_KEY = "+";
 ;
-let keybindings = {}, down = {}, listening = false;
+let keybindings = {}, listening = false;
+export let down = {};
 export function getKeybindings() { return keybindings; }
 export function bind(shortcuts, fn) {
     // resume window event listeners

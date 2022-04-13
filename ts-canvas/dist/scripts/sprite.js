@@ -34,13 +34,20 @@ export class Sprite extends Entity {
         this.interval = 1000 / fps;
         this.previous = performance.now();
     }
+    // override 
     duplicate() {
         let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
         if (this.frames.length > 0)
             sprite.animate(this.frameW, this.frameH, this.repeat, 1000 / this.interval, ...this.frames);
         return sprite;
     }
-    destroy() { this.image = null; }
+    // override
+    destroy() {
+        super.destroy();
+        this.image = null;
+        this.frames = [];
+    }
+    // override
     render(board) {
         if (!this.isLoaded || this.frames.length == 0)
             return;
