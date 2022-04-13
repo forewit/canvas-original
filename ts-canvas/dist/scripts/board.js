@@ -2,8 +2,6 @@ export class Board {
     constructor(canvas) {
         this.top = 0;
         this.left = 0;
-        this.width = 0;
-        this.height = 0;
         this.origin = { x: 0, y: 0 };
         this.scale = window.devicePixelRatio;
         this.isUpdated = true;
@@ -14,19 +12,16 @@ export class Board {
         this.ctx = canvas.getContext("2d");
         // add resize listener
         this.resizeObserver.observe(this.canvas);
-        //this.resize();
     }
     resize() {
         // update the board size
         let rect = this.canvas.getBoundingClientRect();
         this.top = rect.top;
         this.left = rect.left;
-        this.width = rect.width;
-        this.height = rect.height;
         // set canvas properties and transform
         this.ctx.resetTransform();
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
+        this.canvas.width = rect.width * window.devicePixelRatio;
+        this.canvas.height = rect.height * window.devicePixelRatio;
         // logging
         console.log("Resized board...");
     }
@@ -36,7 +31,9 @@ export class Board {
         this.ctx.scale(this.scale, this.scale);
         this.ctx.translate(-this.origin.x, -this.origin.y);
         // clear canvas
-        this.ctx.clearRect(this.origin.x, this.origin.y, this.width / this.scale, this.height / this.scale);
+        // -----TEMPORARY: remove buffer in production
+        let buffer = 10 / this.scale;
+        this.ctx.clearRect(this.origin.x + buffer, this.origin.y + buffer, (this.canvas.width / this.scale) - 2 * buffer, (this.canvas.height / this.scale) - 2 * buffer);
         // ------TEMPORARY----------
         this.ctx.beginPath();
         this.ctx.ellipse(0, 0, 10, 10, 0, 0, 6.28); // draw corner

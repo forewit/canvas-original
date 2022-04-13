@@ -78,7 +78,6 @@ interface Gesture {
     name: string,
     x: number,
     y: number,
-    type: string,
     event?: Event,
     dx?: number,
     dy?: number,
@@ -132,22 +131,21 @@ const blurHandler = (e: Event) => {
         mouse.isMoving = false;
         switch (mouse.button) {
             case 0:
-                dispatchGesture(mouse.activeElement, {name: "left-click-drag-end", x: mouse.lastX, y: mouse.lastY, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "left-click-drag-end", x: mouse.lastX, y: mouse.lastY });
                 break;
             case 1:
-                dispatchGesture(mouse.activeElement, {name: "middle-click-drag-end", x: mouse.lastX, y: mouse.lastY, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "middle-click-drag-end", x: mouse.lastX, y: mouse.lastY });
                 break;
             case 2:
-                dispatchGesture(mouse.activeElement, {name: "right-click-drag-end", x: mouse.lastX, y: mouse.lastY, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "right-click-drag-end", x: mouse.lastX, y: mouse.lastY });
                 break;
         }
     }
 }
 
 const wheelHandler = (e: WheelEvent) => {
-    dispatchGesture(e.target as Element, {name: "wheel", x: e.clientX, y: e.clientY, event: e, type:"mouse"});
-
-    // prevent wheel scrolling
+    dispatchGesture(e.target as Element, {name: "wheel", x: e.clientX, y: e.clientY, event: e });
+    // prevent page scrolling
     e.preventDefault();
     e.stopPropagation();
 }
@@ -176,13 +174,13 @@ const mousedownHandler = (e: MouseEvent) => {
     if (mouse.button === 0) {
         window.setTimeout(() => {
             if (Date.now() - mouse.lastMouseupTime >= LONG_CLICK_DELAY && !mouse.isMoving) {
-                // comment this out to trigger clicks after long clicks
+                // uncomment this to trigger clicks after long clicks
                 //window.removeEventListener("mousemove", mousemoveHandler);
                 //window.removeEventListener("mouseup", mouseupHandler);
                 //-----------------------------------------------------
 
                 mouse.isLongclick = true;
-                dispatchGesture(mouse.activeElement, {name: "longclick", x: e.clientX, y: e.clientY, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "longclick", x: e.clientX, y: e.clientY });
             }
         }, LONG_CLICK_DELAY)
     }
@@ -192,27 +190,25 @@ const mousedownHandler = (e: MouseEvent) => {
     e.stopPropagation();
 }
 
-const mousemoveHandler = (e: MouseEvent) => {
+const mousemoveHandler = (e: MouseEvent) => {  
+    // e.movementX and e.movementY do not seem to be accurate 
     let dx = e.clientX - mouse.lastX,
         dy = e.clientY - mouse.lastY;
-    
-    // return if no movement
-    if (dx === 0 && dy === 0) return;
-
+            
     // mouse-drag-start detection
     if (!mouse.isMoving) {
         if (mouse.isLongclick) {
-            dispatchGesture(mouse.activeElement, {name: "longclick-drag-start", x: e.clientX, y: e.clientY, type:"mouse"});
+            dispatchGesture(mouse.activeElement, {name: "longclick-drag-start", x: e.clientX, y: e.clientY });
         } else {
             switch (mouse.button) {
                 case 0:
-                    dispatchGesture(mouse.activeElement, {name: "left-click-drag-start", x: e.clientX, y: e.clientY, type:"mouse"});
+                    dispatchGesture(mouse.activeElement, {name: "left-click-drag-start", x: e.clientX, y: e.clientY });
                     break;
                 case 1:
-                    dispatchGesture(mouse.activeElement, {name: "middle-click-drag-start", x: e.clientX, y: e.clientY, type:"mouse"});
+                    dispatchGesture(mouse.activeElement, {name: "middle-click-drag-start", x: e.clientX, y: e.clientY });
                     break;
                 case 2:
-                    dispatchGesture(mouse.activeElement, {name: "right-click-drag-start", x: e.clientX, y: e.clientY, type:"mouse"});
+                    dispatchGesture(mouse.activeElement, {name: "right-click-drag-start", x: e.clientX, y: e.clientY });
                     break;
             }
         }
@@ -225,17 +221,17 @@ const mousemoveHandler = (e: MouseEvent) => {
 
     // mouse-dragging detection
     if (mouse.isLongclick) {
-        dispatchGesture(mouse.activeElement, {name: "longclick-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy, type:"mouse"});
+        dispatchGesture(mouse.activeElement, {name: "longclick-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
     } else {
         switch (mouse.button) {
             case 0:
-                dispatchGesture(mouse.activeElement, {name: "left-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "left-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
                 break;
             case 1:
-                dispatchGesture(mouse.activeElement, {name: "middle-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "middle-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
                 break;
             case 2:
-                dispatchGesture(mouse.activeElement, {name: "right-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "right-click-dragging", x: e.clientX, y: e.clientY, dx: dx, dy: dy });
                 break;
         }
     }
@@ -252,17 +248,17 @@ const mouseupHandler = (e: MouseEvent) => {
     if (mouse.isMoving) {
         // mouse-drag-end detection
         if (mouse.isLongclick) {
-            dispatchGesture(mouse.activeElement, {name: "longclick-drag-end", x: mouse.lastX, y: mouse.lastY, type:"mouse"});
+            dispatchGesture(mouse.activeElement, {name: "longclick-drag-end", x: mouse.lastX, y: mouse.lastY });
         } else {
             switch (mouse.button) {
                 case 0:
-                    dispatchGesture(mouse.activeElement, {name: "left-click-drag-end", x: mouse.lastX, y: mouse.lastY, type:"mouse"});
+                    dispatchGesture(mouse.activeElement, {name: "left-click-drag-end", x: mouse.lastX, y: mouse.lastY });
                     break;
                 case 1:
-                    dispatchGesture(mouse.activeElement, {name: "middle-click-drag-end", x: mouse.lastX, y: mouse.lastY, type:"mouse"});
+                    dispatchGesture(mouse.activeElement, {name: "middle-click-drag-end", x: mouse.lastX, y: mouse.lastY });
                     break;
                 case 2:
-                    dispatchGesture(mouse.activeElement, {name: "right-click-drag-end", x: mouse.lastX, y: mouse.lastY, type:"mouse"});
+                    dispatchGesture(mouse.activeElement, {name: "right-click-drag-end", x: mouse.lastX, y: mouse.lastY });
                     break;
             }
         }
@@ -271,20 +267,20 @@ const mouseupHandler = (e: MouseEvent) => {
     } else if (!mouse.isLongclick) {
         // right-click detection
         if (e.button === 2) {
-            dispatchGesture(mouse.activeElement, {name: "right-click", x: e.clientX, y: e.clientY, type:"mouse"});
+            dispatchGesture(mouse.activeElement, {name: "right-click", x: e.clientX, y: e.clientY });
         } else if (e.button === 1) {
-            dispatchGesture(mouse.activeElement, {name: "middle-click", x: e.clientX, y: e.clientY, type:"mouse"});
+            dispatchGesture(mouse.activeElement, {name: "middle-click", x: e.clientX, y: e.clientY });
         } else {
             // left-click detection
             if (mouse.consecutiveClicks === 0) {
-                dispatchGesture(mouse.activeElement, {name: "left-click", x: e.clientX, y: e.clientY, type:"mouse"});
+                dispatchGesture(mouse.activeElement, {name: "left-click", x: e.clientX, y: e.clientY });
             }
 
             // double-click detection
             mouse.consecutiveClicks++;
             window.setTimeout(() => {
                 if (mouse.consecutiveClicks > 1) {
-                    dispatchGesture(mouse.activeElement, {name: "double-click", x: e.clientX, y: e.clientY, type:"mouse"});
+                    dispatchGesture(mouse.activeElement, {name: "double-click", x: e.clientX, y: e.clientY });
                 }
                 mouse.consecutiveClicks = 0;
             }, DOUBLE_CLICK_DELAY);
@@ -338,7 +334,7 @@ const touchstartHandler = (e: TouchEvent) => {
             touch.hypotenuse = null;
             touch.isLongpressed = true;
 
-            dispatchGesture(touch.activeElement, {name: "longpress", x: touch.x, y: touch.y, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "longpress", x: touch.x, y: touch.y });
         }
     }, LONG_PRESS_DELAY);
 }
@@ -363,9 +359,9 @@ const touchmoveHandler = (e: TouchEvent) => {
 
         // touch-dragging detection
         if (touch.isLongpressed) {
-            dispatchGesture(touch.activeElement, {name: "longpress-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "longpress-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
         } else {
-            dispatchGesture(touch.activeElement, {name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
         }
         return;
     } else if (!touch.isLongpressed && (touch.isPinching || e.touches.length > 1)) {
@@ -392,7 +388,7 @@ const touchmoveHandler = (e: TouchEvent) => {
             touch.hypotenuse = hypo1;
             touch.lastCenterX = center.x;
             touch.lastCenterY = center.y;
-            dispatchGesture(touch.activeElement, {name: "pinch-start", x: center.x, y: center.y, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "pinch-start", x: center.x, y: center.y });
         }
 
         // pinching detection
@@ -400,7 +396,7 @@ const touchmoveHandler = (e: TouchEvent) => {
         let zoom = hypo1 / touch.hypotenuse;
         let dx = center.x - touch.lastCenterX,
             dy = center.y - touch.lastCenterY;
-        dispatchGesture(touch.activeElement, {name: "pinching", x: center.x, y: center.y, zoom: zoom, dx: dx, dy: dy, type:"touch"});
+        dispatchGesture(touch.activeElement, {name: "pinching", x: center.x, y: center.y, zoom: zoom, dx: dx, dy: dy });
         touch.hypotenuse = hypo1;
         touch.lastCenterX = center.x;
         touch.lastCenterY = center.y;
@@ -409,23 +405,23 @@ const touchmoveHandler = (e: TouchEvent) => {
         // longpress-dragging detection
         touch.isDragging = true;
         if (touch.isLongpressed) {
-            dispatchGesture(touch.activeElement, {name: "longpress-drag-start", x: touch.x, y: touch.y, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "longpress-drag-start", x: touch.x, y: touch.y });
             
             // update touch
             touch.x = e.touches[0].clientX;
             touch.y = e.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
 
-            dispatchGesture(touch.activeElement, {name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
         } else {
-            dispatchGesture(touch.activeElement, {name: "touch-drag-start", x: touch.x, y: touch.y, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "touch-drag-start", x: touch.x, y: touch.y });
 
             // update touch
             touch.x = e.touches[0].clientX;
             touch.y = e.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
 
-            dispatchGesture(touch.activeElement, {name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
         }
     }
 }
@@ -446,22 +442,22 @@ const touchendHandler = (e: TouchEvent) => {
     if (touch.isDragging) {
         touch.isDragging = false;
         if (touch.isLongpressed) {
-            dispatchGesture(touch.activeElement, {name: "longpress-drag-end", x: touch.x, y: touch.y, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "longpress-drag-end", x: touch.x, y: touch.y });
         } else {
-            dispatchGesture(touch.activeElement, {name: "touch-drag-end", x: touch.x, y: touch.y, type:"touch"});
+            dispatchGesture(touch.activeElement, {name: "touch-drag-end", x: touch.x, y: touch.y });
         }
     } else if (touch.isPinching) {
         touch.isPinching = false;
         touch.hypotenuse = null;
-        dispatchGesture(touch.activeElement, {name: "pinch-end", x: touch.lastCenterX, y: touch.lastCenterY, type:"touch"});
+        dispatchGesture(touch.activeElement, {name: "pinch-end", x: touch.lastCenterX, y: touch.lastCenterY });
     } else if (!touch.isLongpressed) {
         // tap detection
-        if (touch.consecutiveTaps === 0) dispatchGesture(touch.activeElement, {name: "tap", x: touch.x, y: touch.y, type:"touch"});
+        if (touch.consecutiveTaps === 0) dispatchGesture(touch.activeElement, {name: "tap", x: touch.x, y: touch.y });
 
         // double-tap detection
         touch.consecutiveTaps++;
         window.setTimeout(() => {
-            if (touch.consecutiveTaps > 1) dispatchGesture(touch.activeElement, {name: "double-tap", x: touch.x, y: touch.y, type:"touch"});
+            if (touch.consecutiveTaps > 1) dispatchGesture(touch.activeElement, {name: "double-tap", x: touch.x, y: touch.y });
             touch.consecutiveTaps = 0;
         }, DOUBLE_TAP_DELAY);
     }

@@ -5,8 +5,6 @@ export class Board {
     ctx: CanvasRenderingContext2D;
     top: number = 0;
     left: number = 0;
-    width: number = 0;
-    height: number = 0;
     origin = { x: 0, y: 0 };
     scale = window.devicePixelRatio;
     isUpdated = true;
@@ -20,7 +18,6 @@ export class Board {
 
         // add resize listener
         this.resizeObserver.observe(this.canvas);
-        //this.resize();
     }
 
     private resize(): void {
@@ -28,13 +25,11 @@ export class Board {
         let rect = this.canvas.getBoundingClientRect();
         this.top = rect.top;
         this.left = rect.left;
-        this.width = rect.width;
-        this.height = rect.height;
 
         // set canvas properties and transform
         this.ctx.resetTransform();
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
+        this.canvas.width = rect.width * window.devicePixelRatio;
+        this.canvas.height = rect.height * window.devicePixelRatio;
 
         // logging
         console.log("Resized board...");
@@ -47,9 +42,11 @@ export class Board {
         this.ctx.translate(-this.origin.x, -this.origin.y);
 
         // clear canvas
+        // -----TEMPORARY: remove buffer in production
+        let buffer = 10 / this.scale;
         this.ctx.clearRect(
-            this.origin.x, this.origin.y,
-            this.width / this.scale, this.height / this.scale
+            this.origin.x + buffer, this.origin.y + buffer,
+            (this.canvas.width / this.scale) - 2*buffer, (this.canvas.height / this.scale) - 2*buffer
         );
 
         // ------TEMPORARY----------
