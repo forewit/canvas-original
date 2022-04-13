@@ -5,6 +5,7 @@ import * as keys from "../modules/keys.js";
 import { Handles } from "./handles.js";
 import { Entity } from "./entity.js";
 import { Board } from "./board.js";
+import { Layer } from "./layer.js";
 
 // NOTE: board interactions overide all keybindings
 
@@ -16,7 +17,7 @@ const ZOOM_INTENSITY = 0.2,
 
 // state management
 let trackedBoard: Board = null,
-    selected: Entity[],
+    selected: Entity[] = [],
     handles = new Handles(0, 0, 0, 0),
     isPanning: boolean,
     isResizing: boolean,
@@ -24,7 +25,11 @@ let trackedBoard: Board = null,
     vx: number,
     vy: number;
 
-export function bind(board: Board): void {
+// ------- TEMPORARY -------
+globalThis.selected = selected;
+// -------------------------
+
+export function bind(board: Board,): void {
     // reset state
     unbind();
 
@@ -93,7 +98,7 @@ const triageGestures = (e: CustomEvent) => {
 
     // triage gestures by name
     switch (e.detail.name) {
-        case "click":
+        case "left-click":
         case "tap":
             if (!keys.down["Shift"]) clearSelection();
             select(x, y);
@@ -139,7 +144,7 @@ const select = (x: number, y: number): Entity => {
     if (!entity) return null;
 
     // add to selection if not already selected
-    if (selected.indexOf(entity) === -1) selected.push(entity);
+    selected.push(entity);
 }
 
 const clearSelection = () => {

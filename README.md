@@ -15,20 +15,4 @@
 - skip render loop if nothing is happening
 
 
-
-# API
-
-### Board 
-### Entity
-- setLayer()
-- translate()
-- rotate()
-- scale()
-- destroy()
-- render()
-
-### Layer
-- entities: Entity[]
-- getFirstIntersectingEntity()
-- render()
-- destroy()
+TODO: need to add setters for Layer.endities and Board.layers

@@ -67,6 +67,7 @@ export class Sprite extends Entity {
         // draw current frame
         let ctx = board.ctx;
         ctx.save();
+        ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         ctx.drawImage(this.image, this.frameX, this.frameY, this.frameW, this.frameH, -this.w / 2, -this.h / 2, this.w, this.h);

@@ -1,47 +1,60 @@
 import { Entity } from "./entity.js";
 import { Board } from "./board.js";
+import { generate_ID } from "../modules/utils.js";
 
 export class Layer {
-    entities: Entity[] = [];
+    readonly ID: string = generate_ID();
+    entities: { [id: string]: Entity } = {};
 
-    private _board: Board;
+    add(...entities: Entity[]): void {
+        for (let e of entities) {
+            // add entities to this layer
+            this.entities[e.ID] = e;
 
-    get board(): Board { return this._board; }
-    set board(board: Board) {
-        // check if layer is already in this board
-        if (this.board === board) return;
+            // set layerID for each entity
+            e.layerID = this.ID;
+        }
 
-        // remove layer from old board
-        if (this.board) this.board.layers.splice(this.board.layers.indexOf(this), 1);
+        for (let e of entities) e.layerID = this.ID;
+    }
 
-        // add layer to new board
-        if (board) board.layers.push(this);
-        this._board = board;
+    remove(...entities: Entity[]): void {
+        for (let e of entities) {
+            // remove entities from this layer
+            delete this.entities[e.ID];
+
+            // remove layerID from each entity
+            e.layerID = null;
+        }
     }
 
     getIntersectingEntities(x: number, y: number): Entity[] {
-        return this.entities.filter(entity => entity.isIntersectingPoint(x, y));
+        let intersectingEntities: Entity[] = [];
+
+        for (let ID in this.entities) {
+            let e = this.entities[ID];
+            if (e.isIntersectingPoint(x, y)) intersectingEntities.push(e);
+        }
+
+        return intersectingEntities;
     }
 
     duplicate(): Layer {
         // create new layer
         let layer = new Layer();
 
-        // duplicate entities and set their layer to the new layer
-        for (let entity of this.entities) {
-            entity.duplicate().layer = layer;
-        }
+        // duplicate entities to the new layer
+        for (let ID in this.entities) layer.add(this.entities[ID].duplicate());
 
         // return new layer
         return layer;
     }
 
     destroy(): void {
-        for (let entity of this.entities) entity.destroy();
-        this.board = null;    
+        for (let ID in this.entities) this.entities[ID].destroy();
     }
 
     render(board: Board): void {
-        for (let entity of this.entities) entity.render(board);
+        for (let ID in this.entities) this.entities[ID].render(board);
     }
 }

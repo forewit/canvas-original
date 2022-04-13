@@ -16,7 +16,9 @@ utils.setNotchCssProperties();
 let board = new Board(<HTMLCanvasElement>document.getElementById("board"));
 let layer = new Layer();
 let fireball = new Sprite("images/fireball.png", 100, 100, 128, 128);
-let snake = new Sprite("images/snake_right.png", 300, 100, 128, 128);
+let snake = new Sprite("images/snake_right.png", 150, 150, 128, 128);
+
+snake.opacity = 0.5;
 
 // animate sprites
 fireball.animate(512, 512, -1, 15,
@@ -47,11 +49,8 @@ snake.animate(128, 128, -1, 15,
 );
 
 // add sprites to layer
-fireball.layer = layer;
-snake.layer = layer;
-layer.board = board;
-
-snake.destroy();
+layer.add(fireball, snake);
+board.layers.push(layer);
 
 // start the game
 let start = performance.now(),

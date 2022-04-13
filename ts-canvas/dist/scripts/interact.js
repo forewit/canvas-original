@@ -7,7 +7,10 @@ const ZOOM_INTENSITY = 0.2, INERTIAL_FRICTION = 0.8, // 0 = infinite friction, 1
 INERTIAL_MEMORY = 0.2, // 0 = infinite memory, 1 = no memory
 EPSILON = 0.001; // replacement for 0 to prevent divide-by-zero errors
 // state management
-let trackedBoard = null, selected, handles = new Handles(0, 0, 0, 0), isPanning, isResizing, isMoving, vx, vy;
+let trackedBoard = null, selected = [], handles = new Handles(0, 0, 0, 0), isPanning, isResizing, isMoving, vx, vy;
+// ------- TEMPORARY -------
+globalThis.selected = selected;
+// -------------------------
 export function bind(board) {
     // reset state
     unbind();
@@ -59,7 +62,7 @@ const triageGestures = (e) => {
     let x = (e.detail.x - trackedBoard.left) * scaleFactor + trackedBoard.origin.x, y = (e.detail.y - trackedBoard.top) * scaleFactor + trackedBoard.origin.y, dx = (e.detail.dx) ? e.detail.dx * scaleFactor : 0, dy = (e.detail.dy) ? e.detail.dy * scaleFactor : 0, zoom = e.detail.zoom || 1, event = e.detail.event || null;
     // triage gestures by name
     switch (e.detail.name) {
-        case "click":
+        case "left-click":
         case "tap":
             if (!keys.down["Shift"])
                 clearSelection();
@@ -98,8 +101,7 @@ const select = (x, y) => {
     if (!entity)
         return null;
     // add to selection if not already selected
-    if (selected.indexOf(entity) === -1)
-        selected.push(entity);
+    selected.push(entity);
 };
 const clearSelection = () => {
     selected = [];

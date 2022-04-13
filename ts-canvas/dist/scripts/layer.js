@@ -1,40 +1,51 @@
+import { generate_ID } from "../modules/utils.js";
 export class Layer {
     constructor() {
-        this.entities = [];
+        this.ID = generate_ID();
+        this.entities = {};
     }
-    get board() { return this._board; }
-    set board(board) {
-        // check if layer is already in this board
-        if (this.board === board)
-            return;
-        // remove layer from old board
-        if (this.board)
-            this.board.layers.splice(this.board.layers.indexOf(this), 1);
-        // add layer to new board
-        if (board)
-            board.layers.push(this);
-        this._board = board;
+    add(...entities) {
+        for (let e of entities) {
+            // add entities to this layer
+            this.entities[e.ID] = e;
+            // set layerID for each entity
+            e.layerID = this.ID;
+        }
+        for (let e of entities)
+            e.layerID = this.ID;
+    }
+    remove(...entities) {
+        for (let e of entities) {
+            // remove entities from this layer
+            delete this.entities[e.ID];
+            // remove layerID from each entity
+            e.layerID = null;
+        }
     }
     getIntersectingEntities(x, y) {
-        return this.entities.filter(entity => entity.isIntersectingPoint(x, y));
+        let intersectingEntities = [];
+        for (let ID in this.entities) {
+            let e = this.entities[ID];
+            if (e.isIntersectingPoint(x, y))
+                intersectingEntities.push(e);
+        }
+        return intersectingEntities;
     }
     duplicate() {
         // create new layer
         let layer = new Layer();
-        // duplicate entities and set their layer to the new layer
-        for (let entity of this.entities) {
-            entity.duplicate().layer = layer;
-        }
+        // duplicate entities to the new layer
+        for (let ID in this.entities)
+            layer.add(this.entities[ID].duplicate());
         // return new layer
         return layer;
     }
     destroy() {
-        for (let entity of this.entities)
-            entity.destroy();
-        this.board = null;
+        for (let ID in this.entities)
+            this.entities[ID].destroy();
     }
     render(board) {
-        for (let entity of this.entities)
-            entity.render(board);
+        for (let ID in this.entities)
+            this.entities[ID].render(board);
     }
 }
