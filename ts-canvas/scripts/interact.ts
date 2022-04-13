@@ -2,6 +2,7 @@ import * as utils from "../modules/utils.js";
 import * as gestures from "../modules/gestures.js";
 import * as keys from "../modules/keys.js";
 
+import { Handles } from "./handles.js";
 import { Entity } from "./entity.js";
 import { Board } from "./board.js";
 
@@ -111,6 +112,7 @@ const triageGestures = (e: CustomEvent) => {
         
         case "wheel":
             trackedBoard.zoomOnPoint(x, y, wheelToZoomFactor(event));
+            break;
 
         case "left-click-drag-end":
         case "middle-click-drag-end":

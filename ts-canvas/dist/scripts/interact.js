@@ -75,6 +75,7 @@ const triageGestures = (e) => {
             break;
         case "wheel":
             trackedBoard.zoomOnPoint(x, y, wheelToZoomFactor(event));
+            break;
         case "left-click-drag-end":
         case "middle-click-drag-end":
         case "touch-drag-end":
