@@ -2,7 +2,6 @@ import * as utils from './modules/utils.js';
 import { Board } from './scripts/board.js';
 import { Sprite } from './scripts/sprite.js';
 import { Layer } from './scripts/layer.js';
-import * as interact from './scripts/interact.js';
 
 utils.log("Hello World! 👋", { bold: true });
 
@@ -75,5 +74,3 @@ board.play(() => {
     if (delta >= 200) document.getElementById("fps").innerHTML = FPS.toString();
     // *****************************
 });
-
-globalThis.board = board;

@@ -34,4 +34,3 @@ board.play(() => {
         document.getElementById("fps").innerHTML = FPS.toString();
     // *****************************
 });
-globalThis.board = board;

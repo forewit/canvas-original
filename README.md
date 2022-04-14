@@ -16,3 +16,18 @@
 
 
 TODO: revert board.layers and layer.entities to arrays (so they can be rendered in order)
+
+Board:
+* add layer
+* destroy layer
+
+* add entity > to active layer
+* destroy entity > on active layer
+
+* enable tool
+    - on active layer
+    - disable previous tool
+* disable tool
+
+* set active layer
+    - renable tool
