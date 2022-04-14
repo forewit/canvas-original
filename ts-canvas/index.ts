@@ -76,5 +76,4 @@ board.play(() => {
     // *****************************
 });
 
-interact.enable(board);
 globalThis.board = board;

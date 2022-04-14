@@ -2,7 +2,6 @@ import * as utils from './modules/utils.js';
 import { Board } from './scripts/board.js';
 import { Sprite } from './scripts/sprite.js';
 import { Layer } from './scripts/layer.js';
-import * as interact from './scripts/interact.js';
 utils.log("Hello World! 👋", { bold: true });
 // update notch on orientation change
 window.addEventListener('orientationchange', utils.setNotchCssProperties);
@@ -35,5 +34,4 @@ board.play(() => {
         document.getElementById("fps").innerHTML = FPS.toString();
     // *****************************
 });
-interact.enable(board);
 globalThis.board = board;
