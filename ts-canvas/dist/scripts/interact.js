@@ -1,31 +1,33 @@
 import * as gestures from "../modules/gestures.js";
 import * as keys from "../modules/keys.js";
-import { Handles } from "./handles.js";
 // NOTE: board interactions overide all keybindings
 // constants
 const ZOOM_INTENSITY = 0.2, INERTIAL_FRICTION = 0.8, // 0 = infinite friction, 1 = no friction
 INERTIAL_MEMORY = 0.2, // 0 = infinite memory, 1 = no memory
 EPSILON = 0.001; // replacement for 0 to prevent divide-by-zero errors
 // state management
-let trackedBoard = null, selected = [], handles = new Handles(0, 0, 0, 0), isPanning, isResizing, isMoving, vx, vy;
+let activeBoard = null, activeLayer = null, selected = [], isPanning = false, isResizing = false, isMoving = false, vx = 0, vy = 0;
 // ------- TEMPORARY -------
 globalThis.selected = selected;
 // -------------------------
-export function bind(board) {
+export function enable(board) {
     // reset state
-    unbind();
-    // set tracked board
-    trackedBoard = board;
-    // setup keybindings
+    disable();
+    // set active board and layer
+    activeBoard = board;
+    activeLayer = activeBoard.layers[0] || null;
+    // setup keybindings and gestures
     setupKeybindings();
-    // bind gestures to an element and add event handler
-    gestures.bind(trackedBoard.canvas);
-    trackedBoard.canvas.addEventListener("gesture", triageGestures);
-    // logging
+    gestures.enable(activeBoard.canvas);
+    gestures.enable(activeBoard.canvas);
+    activeBoard.canvas.addEventListener("gesture", triageGestures);
+    // ---------- TEMPORARY ----------
     console.log("Interacting with board...");
+    // ------------------------------
 }
-export function unbind() {
+export function disable() {
     // reset state
+    activeLayer = null;
     selected = [];
     isPanning = false;
     isResizing = false;
@@ -34,11 +36,11 @@ export function unbind() {
     vy = 0;
     // remove keybindings
     keys.unbind();
-    if (trackedBoard) {
+    if (activeBoard) {
         // unbind gestures and remove event handler
-        gestures.unbind(trackedBoard.canvas);
-        trackedBoard.canvas.removeEventListener("gesture", triageGestures);
-        trackedBoard = null;
+        gestures.disable(activeBoard.canvas);
+        activeBoard.canvas.removeEventListener("gesture", triageGestures);
+        activeBoard = null;
         // logging
         console.log("Stopped interacting with board...");
     }
@@ -57,9 +59,11 @@ const setupKeybindings = () => {
     });
 };
 const triageGestures = (e) => {
+    if (!activeLayer || !activeBoard)
+        return;
     // convert window coordinates to board coordinates
-    let scaleFactor = window.devicePixelRatio / trackedBoard.scale;
-    let x = (e.detail.x - trackedBoard.left) * scaleFactor + trackedBoard.origin.x, y = (e.detail.y - trackedBoard.top) * scaleFactor + trackedBoard.origin.y, dx = (e.detail.dx) ? e.detail.dx * scaleFactor : 0, dy = (e.detail.dy) ? e.detail.dy * scaleFactor : 0, zoom = e.detail.zoom || 1, event = e.detail.event || null;
+    let scaleFactor = window.devicePixelRatio / activeBoard.scale;
+    let x = (e.detail.x - activeBoard.left) * scaleFactor + activeBoard.origin.x, y = (e.detail.y - activeBoard.top) * scaleFactor + activeBoard.origin.y, dx = (e.detail.dx) ? e.detail.dx * scaleFactor : 0, dy = (e.detail.dy) ? e.detail.dy * scaleFactor : 0, zoom = e.detail.zoom || 1, event = e.detail.event || null;
     // triage gestures by name
     switch (e.detail.name) {
         case "left-click":
@@ -80,11 +84,11 @@ const triageGestures = (e) => {
             pan(dx, dy);
             break;
         case "pinching":
-            trackedBoard.zoomOnPoint(x, y, zoom);
+            activeBoard.zoomOnPoint(x, y, zoom);
             pan(dx, dy);
             break;
         case "wheel":
-            trackedBoard.zoomOnPoint(x, y, wheelToZoomFactor(event));
+            activeBoard.zoomOnPoint(x, y, wheelToZoomFactor(event));
             break;
         case "left-click-drag-end":
         case "middle-click-drag-end":
@@ -96,12 +100,12 @@ const triageGestures = (e) => {
 };
 const select = (x, y) => {
     // check active layer for intersections
-    let layer = trackedBoard.layers[trackedBoard.activeLayerIndex], entity = layer.getIntersectingEntities(x, y)[0];
-    // return if no entity was found
-    if (!entity)
-        return null;
-    // add to selection if not already selected
-    selected.push(entity);
+    let entity = activeLayer.firstIntersection(x, y);
+    // select intersected entity if not already selected
+    if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
+        selected.push(entity);
+    }
+    console.log("Selected:", selected);
 };
 const clearSelection = () => {
     selected = [];
@@ -141,7 +145,7 @@ const startPanning = () => {
     vy = 0;
 };
 const pan = (dx, dy) => {
-    trackedBoard.translate(dx, dy);
+    activeBoard.translate(dx, dy);
     // update velocity
     vx = dx * INERTIAL_MEMORY + vx * (1 - INERTIAL_MEMORY);
     vy = dy * INERTIAL_MEMORY + vy * (1 - INERTIAL_MEMORY);
@@ -154,7 +158,7 @@ const endPanning = () => {
         if (isPanning || (Math.abs(vx) < EPSILON && Math.abs(vy) < EPSILON))
             return;
         // move board and update velocity
-        trackedBoard.translate(vx, vy);
+        activeBoard.translate(vx, vy);
         vx *= INERTIAL_FRICTION;
         vy *= INERTIAL_FRICTION;
         requestAnimationFrame(inertia);

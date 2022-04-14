@@ -46,7 +46,7 @@ const LONG_PRESS_DELAY = 500;
 const DOUBLE_TAP_DELAY = 300; // reduce to 100 to remove double taps
 const LONG_CLICK_DELAY = 500;
 const DOUBLE_CLICK_DELAY = 300; // reduce to 100 to remove double clicks
-let trackedElms = [], mouse = {
+let activeElms = [], mouse = {
     isMoving: false,
     isLongclick: false,
     button: 0,
@@ -390,34 +390,34 @@ const touchendHandler = (e) => {
     }
     touch.isLongpressed = false;
 };
-export function bind(elm) {
-    // return if element is already tracked
-    for (let item of trackedElms) {
-        if (item === elm)
-            return;
+export function enable(...elms) {
+    for (let elm of elms) {
+        // skip if element is already tracked
+        if (activeElms.findIndex(e => e === elm) !== -1)
+            continue;
+        // add window event listeners if this is the first element being tracked
+        if (activeElms.length == 0)
+            window.addEventListener('blur', blurHandler);
+        // start tracking element
+        activeElms.push(elm);
+        elm.addEventListener('touchstart', touchstartHandler, { passive: false });
+        elm.addEventListener('mousedown', mousedownHandler, { passive: false });
+        elm.addEventListener('contextmenu', contextmenuHandler, { passive: false });
+        elm.addEventListener('wheel', wheelHandler, { passive: false });
     }
-    // add window event listeners if this is the first element being tracked
-    if (trackedElms.length == 0)
-        window.addEventListener('blur', blurHandler);
-    // start tracking element
-    trackedElms.push(elm);
-    elm.addEventListener('touchstart', touchstartHandler, { passive: false });
-    elm.addEventListener('mousedown', mousedownHandler, { passive: false });
-    elm.addEventListener('contextmenu', contextmenuHandler, { passive: false });
-    elm.addEventListener('wheel', wheelHandler, { passive: false });
 }
-export function unbind(elm) {
-    for (let i = 0; i < trackedElms.length; i++) {
+export function disable(elm) {
+    for (let i = 0; i < activeElms.length; i++) {
         // if element is not specified, remove all tracked elements
-        if (!elm || trackedElms[i] === elm) {
+        if (!elm || activeElms[i] === elm) {
             // remove event listeners
             elm.removeEventListener('touchstart', touchstartHandler);
             elm.removeEventListener('mousedown', mousedownHandler);
             elm.removeEventListener('contextmenu', contextmenuHandler);
             elm.removeEventListener('wheel', wheelHandler);
-            trackedElms.splice(i, 1);
+            activeElms.splice(i, 1);
             // if no more elements are being tracked, remove window event listeners
-            if (trackedElms.length == 0)
+            if (activeElms.length == 0)
                 window.removeEventListener('blur', blurHandler);
             return;
         }

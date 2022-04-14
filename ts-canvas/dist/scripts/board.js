@@ -1,14 +1,12 @@
 export class Board {
     constructor(canvas) {
+        this.resizeObserver = new ResizeObserver(() => { this.resize(); });
+        this.isPlaying = false;
+        this.layers = [];
         this.top = 0;
         this.left = 0;
         this.origin = { x: 0, y: 0 };
         this.scale = window.devicePixelRatio;
-        this.isUpdated = true;
-        this.isPlaying = false;
-        this.layers = {};
-        this.activeLayerIndex = 0;
-        this.resizeObserver = new ResizeObserver(() => { this.resize(); });
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         // add resize listener
@@ -42,35 +40,37 @@ export class Board {
         this.ctx.stroke();
         // -------------------------
         // render layers
-        for (let ID in this.layers)
-            this.layers[ID].render(this);
+        for (let l of this.layers)
+            l.render(this);
         // restore canvas transforms
         this.ctx.restore();
-        // reset updated flag
-        this.isUpdated = false;
     }
     add(...layers) {
-        for (let layer of layers)
-            this.layers[layer.ID] = layer;
+        for (let layer of layers) {
+            // check for duplicates
+            if (this.layers.findIndex(l => l.ID === layer.ID) === -1) {
+                this.layers.push(layer);
+            }
+        }
     }
     destroy(...layers) {
-        // remove all layers if no layers are specified
+        // remove all layers if none are specified
         if (layers.length === 0) {
-            for (let ID in this.layers)
-                this.layers[ID].destroy();
-            this.layers = {};
+            for (let l of this.layers)
+                l.destroy();
+            this.layers = [];
             return;
         }
         // remove specified layers
         for (let layer of layers) {
-            layer.destroy();
-            delete this.layers[layer.ID];
+            let index = this.layers.findIndex(l => l.ID === layer.ID);
+            if (index != -1)
+                this.layers.splice(index, 1);
         }
     }
     translate(dx, dy) {
         this.origin.x -= dx;
         this.origin.y -= dy;
-        this.isUpdated = true;
     }
     zoomOnPoint(x, y, zoomFactor) {
         // calculate the distance from the viewable origin
@@ -80,7 +80,6 @@ export class Board {
         this.origin.y += offsetY - offsetY / zoomFactor;
         // apply the new scale to the canvas
         this.scale *= zoomFactor;
-        this.isUpdated = true;
     }
     play(callback) {
         if (this.isPlaying)

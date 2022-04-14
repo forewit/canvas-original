@@ -15,4 +15,4 @@
 - skip render loop if nothing is happening
 
 
-TODO: need to add setters for Layer.endities and Board.layers
+TODO: revert board.layers and layer.entities to arrays (so they can be rendered in order)

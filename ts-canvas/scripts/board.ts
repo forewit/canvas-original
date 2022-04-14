@@ -1,17 +1,16 @@
 import { Layer } from "./layer.js";
 
 export class Board {
+    private resizeObserver = new ResizeObserver(() => { this.resize(); });
+    private isPlaying = false;
+
+    layers: Layer[] = [];
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     top: number = 0;
     left: number = 0;
     origin = { x: 0, y: 0 };
     scale = window.devicePixelRatio;
-    isUpdated = true;
-    isPlaying = false;
-    layers: { [key: string]: Layer } = {};
-    activeLayerIndex: number = 0;
-    resizeObserver = new ResizeObserver(() => { this.resize(); });
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -58,39 +57,39 @@ export class Board {
         // -------------------------
 
         // render layers
-        for (let ID in this.layers) this.layers[ID].render(this);
+        for (let l of this.layers) l.render(this);
 
         // restore canvas transforms
         this.ctx.restore();
-
-        // reset updated flag
-        this.isUpdated = false;
     }
 
     add(...layers: Layer[]): void {
-        for (let layer of layers) this.layers[layer.ID] = layer;
+        for (let layer of layers) {
+            // check for duplicates
+            if (this.layers.findIndex(l => l.ID === layer.ID) === -1) {
+                this.layers.push(layer);
+            }
+        }
     }
 
     destroy(...layers: Layer[]): void {
-        // remove all layers if no layers are specified
+        // remove all layers if none are specified
         if (layers.length === 0) {
-            for (let ID in this.layers) this.layers[ID].destroy();
-            this.layers = {};
+            for (let l of this.layers) l.destroy();
+            this.layers = [];
             return;
         }
 
         // remove specified layers
         for (let layer of layers) {
-            layer.destroy();
-            delete this.layers[layer.ID];
-        }
+            let index = this.layers.findIndex(l => l.ID === layer.ID);
+            if (index != -1) this.layers.splice(index, 1);
+        }      
     }
 
     translate(dx: number, dy: number): void {
         this.origin.x -= dx;
         this.origin.y -= dy;
-
-        this.isUpdated = true;
     }
 
     zoomOnPoint(x: number, y: number, zoomFactor: number): void {
@@ -104,8 +103,6 @@ export class Board {
 
         // apply the new scale to the canvas
         this.scale *= zoomFactor;
-
-        this.isUpdated = true;
     }
 
     play(callback: Function): void {
