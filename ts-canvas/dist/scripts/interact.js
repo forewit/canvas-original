@@ -19,7 +19,6 @@ export function enable(board) {
     // setup keybindings and gestures
     setupKeybindings();
     gestures.enable(activeBoard.canvas);
-    gestures.enable(activeBoard.canvas);
     activeBoard.canvas.addEventListener("gesture", triageGestures);
     // ---------- TEMPORARY ----------
     console.log("Interacting with board...");

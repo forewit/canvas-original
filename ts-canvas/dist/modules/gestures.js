@@ -406,20 +406,30 @@ export function enable(...elms) {
         elm.addEventListener('wheel', wheelHandler, { passive: false });
     }
 }
-export function disable(elm) {
-    for (let i = 0; i < activeElms.length; i++) {
-        // if element is not specified, remove all tracked elements
-        if (!elm || activeElms[i] === elm) {
-            // remove event listeners
-            elm.removeEventListener('touchstart', touchstartHandler);
-            elm.removeEventListener('mousedown', mousedownHandler);
-            elm.removeEventListener('contextmenu', contextmenuHandler);
-            elm.removeEventListener('wheel', wheelHandler);
-            activeElms.splice(i, 1);
-            // if no more elements are being tracked, remove window event listeners
-            if (activeElms.length == 0)
-                window.removeEventListener('blur', blurHandler);
-            return;
+export function disable(...elms) {
+    const clearEventListeners = (elm) => {
+        elm.removeEventListener('touchstart', touchstartHandler);
+        elm.removeEventListener('mousedown', mousedownHandler);
+        elm.removeEventListener('contextmenu', contextmenuHandler);
+        elm.removeEventListener('wheel', wheelHandler);
+    };
+    // if no elements were specified, disable all active elements
+    if (elms.length == 0) {
+        for (let elm of activeElms)
+            clearEventListeners(elm);
+        activeElms = [];
+    }
+    // otherwise, disable specified elements
+    else {
+        for (let elm of elms) {
+            let index = activeElms.findIndex(e => e === elm);
+            if (index !== -1) {
+                clearEventListeners(elm);
+                activeElms.splice(index, 1);
+            }
         }
     }
+    // if no more elements are enabled, remove window event listeners
+    if (activeElms.length == 0)
+        window.removeEventListener('blur', blurHandler);
 }

@@ -482,20 +482,30 @@ export function enable(...elms: Element[]): void {
     }
 }
 
-export function disable(elm?: Element): void {
-    for (let i = 0; i < activeElms.length; i++) {
-        // if element is not specified, remove all tracked elements
-        if (!elm || activeElms[i] === elm) {
-            // remove event listeners
-            elm.removeEventListener('touchstart', touchstartHandler);
-            elm.removeEventListener('mousedown', mousedownHandler);
-            elm.removeEventListener('contextmenu', contextmenuHandler);
-            elm.removeEventListener('wheel', wheelHandler);
-            activeElms.splice(i, 1);
+export function disable(...elms: Element[]): void {
+    const clearEventListeners = (elm: Element): void => {
+        elm.removeEventListener('touchstart', touchstartHandler);
+        elm.removeEventListener('mousedown', mousedownHandler);
+        elm.removeEventListener('contextmenu', contextmenuHandler);
+        elm.removeEventListener('wheel', wheelHandler);
+    }
 
-            // if no more elements are being tracked, remove window event listeners
-            if (activeElms.length == 0) window.removeEventListener('blur', blurHandler);
-            return;
+    // if no elements were specified, disable all active elements
+    if (elms.length == 0) {
+        for (let elm of activeElms) clearEventListeners(elm);
+        activeElms = [];
+    } 
+    // otherwise, disable specified elements
+    else {
+        for (let elm of elms) {
+            let index = activeElms.findIndex(e => e === elm);
+            if (index !== -1) {
+                clearEventListeners(elm);
+                activeElms.splice(index, 1);
+            }
         }
     }
+
+    // if no more elements are enabled, remove window event listeners
+    if (activeElms.length == 0) window.removeEventListener('blur', blurHandler);
 }

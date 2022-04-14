@@ -40,7 +40,6 @@ export function enable(board: Board,): void {
     // setup keybindings and gestures
     setupKeybindings();
     gestures.enable(activeBoard.canvas);
-    gestures.enable(activeBoard.canvas);
 
     activeBoard.canvas.addEventListener("gesture", triageGestures);
 
