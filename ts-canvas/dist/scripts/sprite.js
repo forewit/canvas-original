@@ -43,7 +43,6 @@ export class Sprite extends Entity {
     }
     // override
     destroy() {
-        super.destroy();
         this.image = null;
         this.frames = [];
     }

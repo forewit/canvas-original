@@ -50,7 +50,7 @@ snake.animate(128, 128, -1, 15,
 
 // add sprites to layer
 layer.add(fireball, snake);
-board.layers.push(layer);
+board.add(layer);
 
 // start the game
 let start = performance.now(),

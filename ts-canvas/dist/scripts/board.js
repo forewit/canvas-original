@@ -6,7 +6,7 @@ export class Board {
         this.scale = window.devicePixelRatio;
         this.isUpdated = true;
         this.isPlaying = false;
-        this.layers = [];
+        this.layers = {};
         this.activeLayerIndex = 0;
         this.resizeObserver = new ResizeObserver(() => { this.resize(); });
         this.canvas = canvas;
@@ -42,13 +42,30 @@ export class Board {
         this.ctx.stroke();
         // -------------------------
         // render layers
-        for (let layer of this.layers) {
-            layer.render(this);
-        }
+        for (let ID in this.layers)
+            this.layers[ID].render(this);
         // restore canvas transforms
         this.ctx.restore();
         // reset updated flag
         this.isUpdated = false;
+    }
+    add(...layers) {
+        for (let layer of layers)
+            this.layers[layer.ID] = layer;
+    }
+    destroy(...layers) {
+        // remove all layers if no layers are specified
+        if (layers.length === 0) {
+            for (let ID in this.layers)
+                this.layers[ID].destroy();
+            this.layers = {};
+            return;
+        }
+        // remove specified layers
+        for (let layer of layers) {
+            layer.destroy();
+            delete this.layers[layer.ID];
+        }
     }
     translate(dx, dy) {
         this.origin.x -= dx;
@@ -83,11 +100,5 @@ export class Board {
     pause() {
         // stop the animation loop
         this.isPlaying = false;
-    }
-    destroy() {
-        // destroy all layers
-        for (let layer of this.layers) {
-            layer.destroy();
-        }
     }
 }

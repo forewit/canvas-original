@@ -4,27 +4,25 @@ import { generate_ID } from "../modules/utils.js";
 
 export class Layer {
     readonly ID: string = generate_ID();
-    entities: { [id: string]: Entity } = {};
+
+    private entities: { [id: string]: Entity } = {};
 
     add(...entities: Entity[]): void {
-        for (let e of entities) {
-            // add entities to this layer
-            this.entities[e.ID] = e;
-
-            // set layerID for each entity
-            e.layerID = this.ID;
-        }
-
-        for (let e of entities) e.layerID = this.ID;
+        for (let e of entities) this.entities[e.ID] = e;
     }
 
-    remove(...entities: Entity[]): void {
-        for (let e of entities) {
-            // remove entities from this layer
-            delete this.entities[e.ID];
+    destroy(...entities: Entity[]): void {
+        // remove all entities if no entities are specified
+        if (entities.length === 0) {
+            for (let ID in this.entities) this.entities[ID].destroy();
+            this.entities = {};
+            return;
+        }
 
-            // remove layerID from each entity
-            e.layerID = null;
+        // remove specified entities
+        for (let e of entities) {
+            e.destroy();
+            delete this.entities[e.ID];
         }
     }
 
@@ -48,10 +46,6 @@ export class Layer {
 
         // return new layer
         return layer;
-    }
-
-    destroy(): void {
-        for (let ID in this.entities) this.entities[ID].destroy();
     }
 
     render(board: Board): void {

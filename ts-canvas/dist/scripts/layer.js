@@ -5,21 +5,21 @@ export class Layer {
         this.entities = {};
     }
     add(...entities) {
-        for (let e of entities) {
-            // add entities to this layer
-            this.entities[e.ID] = e;
-            // set layerID for each entity
-            e.layerID = this.ID;
-        }
         for (let e of entities)
-            e.layerID = this.ID;
+            this.entities[e.ID] = e;
     }
-    remove(...entities) {
+    destroy(...entities) {
+        // remove all entities if no entities are specified
+        if (entities.length === 0) {
+            for (let ID in this.entities)
+                this.entities[ID].destroy();
+            this.entities = {};
+            return;
+        }
+        // remove specified entities
         for (let e of entities) {
-            // remove entities from this layer
+            e.destroy();
             delete this.entities[e.ID];
-            // remove layerID from each entity
-            e.layerID = null;
         }
     }
     getIntersectingEntities(x, y) {
@@ -39,10 +39,6 @@ export class Layer {
             layer.add(this.entities[ID].duplicate());
         // return new layer
         return layer;
-    }
-    destroy() {
-        for (let ID in this.entities)
-            this.entities[ID].destroy();
     }
     render(board) {
         for (let ID in this.entities)

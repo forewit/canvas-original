@@ -13,9 +13,8 @@ export class Entity {
     └─────────────────┘
     */
    readonly ID: string = generate_ID();
-   
+
    opacity: number = 1;
-   layerID: string = null;
 
     private _x: number;
     private _y: number;

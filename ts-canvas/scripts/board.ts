@@ -9,7 +9,7 @@ export class Board {
     scale = window.devicePixelRatio;
     isUpdated = true;
     isPlaying = false;
-    layers: Layer[] = [];
+    layers: { [key: string]: Layer } = {};
     activeLayerIndex: number = 0;
     resizeObserver = new ResizeObserver(() => { this.resize(); });
 
@@ -47,7 +47,7 @@ export class Board {
         let buffer = 10 / this.scale;
         this.ctx.clearRect(
             this.origin.x + buffer, this.origin.y + buffer,
-            (this.canvas.width / this.scale) - 2*buffer, (this.canvas.height / this.scale) - 2*buffer
+            (this.canvas.width / this.scale) - 2 * buffer, (this.canvas.height / this.scale) - 2 * buffer
         );
 
         // ------TEMPORARY----------
@@ -58,15 +58,32 @@ export class Board {
         // -------------------------
 
         // render layers
-        for (let layer of this.layers) {
-            layer.render(this);
-        }
+        for (let ID in this.layers) this.layers[ID].render(this);
 
         // restore canvas transforms
         this.ctx.restore();
 
         // reset updated flag
         this.isUpdated = false;
+    }
+
+    add(...layers: Layer[]): void {
+        for (let layer of layers) this.layers[layer.ID] = layer;
+    }
+
+    destroy(...layers: Layer[]): void {
+        // remove all layers if no layers are specified
+        if (layers.length === 0) {
+            for (let ID in this.layers) this.layers[ID].destroy();
+            this.layers = {};
+            return;
+        }
+
+        // remove specified layers
+        for (let layer of layers) {
+            layer.destroy();
+            delete this.layers[layer.ID];
+        }
     }
 
     translate(dx: number, dy: number): void {
@@ -105,20 +122,11 @@ export class Board {
             me.render();
             requestAnimationFrame(loop);
         }
-
         requestAnimationFrame(loop);
     }
 
     pause(): void {
         // stop the animation loop
         this.isPlaying = false;
-    }
-
-    destroy(): void {
-        // destroy all layers
-        for (let layer of this.layers) {
-            layer.destroy();
-        }
-
     }
 }

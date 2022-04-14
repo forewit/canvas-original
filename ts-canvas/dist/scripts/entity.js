@@ -12,7 +12,6 @@ export class Entity {
         */
         this.ID = generate_ID();
         this.opacity = 1;
-        this.layerID = null;
         this.isUpdated = true;
         this.x = x;
         this.y = y;
