@@ -1,11 +1,13 @@
 import { Entity } from "./entity.js";
 import { Layer } from "./layer.js";
+import { selectTool } from "./selectTool.js";
 export class Board {
     constructor(canvas) {
         this.resizeObserver = new ResizeObserver(() => { this.resize(); });
         this.isPlaying = false;
         this.layers = [];
         this.activeLayer = null;
+        this.activeTool = null;
         this.top = 0;
         this.left = 0;
         this.origin = { x: 0, y: 0 };
@@ -48,20 +50,66 @@ export class Board {
         // restore canvas transforms
         this.ctx.restore();
     }
+    tool(name) {
+        // disable the current tool
+        if (this.activeTool)
+            this.activeTool.disable();
+        // if no name is specified, remove the current tool
+        if (!name) {
+            this.activeTool = null;
+            return;
+        }
+        // return if the tool is already active
+        if (this.activeTool && this.activeTool.name === name) {
+            console.warn(`\"${name}\" tool is already active.`);
+            return;
+        }
+        // enable the new tool
+        switch (name) {
+            case "select":
+                this.activeTool = selectTool;
+                break;
+            default:
+                console.warn(`Tool \"${name}\" does not exist.`);
+                break;
+        }
+        // if a new tool was chosen, enable it
+        if (this.activeTool)
+            this.activeTool.enable(this, this.activeLayer);
+    }
     add(...objects) {
         for (let object of objects) {
             // add layer(s)
             if (object instanceof Layer) {
+                // check for duplicate layers
+                if (this.layers.findIndex(layer => layer.ID === object.ID) > -1) {
+                    console.warn(`Layer with ID ${object.ID} already exists.`);
+                    continue;
+                }
                 this.layers.push(object);
+                if (this.layers.length === 1)
+                    this.activeLayer = object;
             }
             // add entity(s) to active layer
             else if (object instanceof Entity) {
+                // layer takes care of duplicate entities
                 if (this.activeLayer)
                     this.activeLayer.add(object);
+                else
+                    console.warn("No active layer to add entity to!");
             }
         }
     }
     destroy(...objects) {
+        // if no objects are specified, destroy all
+        if (objects.length === 0) {
+            for (let layer of this.layers)
+                layer.destroy();
+            this.layers = [];
+            this.activeLayer = null;
+            return;
+        }
+        // otherwise, destroy the specified layers and entities
         for (let object of objects) {
             // remove layer(s)
             if (object instanceof Layer) {

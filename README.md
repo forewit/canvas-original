@@ -31,3 +31,10 @@ Board:
 
 * set active layer
     - renable tool
+
+
+
+    tool()
+    - disables previous tool
+    - sets a new tool if given
+    - if no tool is given, removes the active tool

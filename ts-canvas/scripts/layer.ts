@@ -10,9 +10,11 @@ export class Layer {
     add(...entities: Entity[]): void {
         for (let entity of entities) {
             // check for duplicates
-            if (this.entities.findIndex(e => e.ID === entity.ID) == -1) {
-                this.entities.push(entity);
+            if (this.entities.findIndex(e => e.ID === entity.ID) > -1) {
+                console.warn(`Entity with ID ${entity.ID} already exists in layer ${this.ID}.`);
+                continue;
             }
+            this.entities.push(entity);
         }
     }
 

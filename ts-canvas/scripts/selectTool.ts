@@ -1,4 +1,4 @@
-import { Board } from "./board.js";
+import { Board, Tool } from "./board.js";
 import { Layer } from "./layer.js";
 import { Entity } from "./entity.js";
 
@@ -20,14 +20,20 @@ let activeBoard: Board = null,
     vy = 0;
 
 const enable = (board: Board, layer: Layer): void => {
-    // disable previous tool
-
+    // reset state
     activeBoard = board;
     activeLayer = layer;
+    selected = [];
+    isPanning = false;
+    vx = 0;
+    vy = 0;
 
     // add gesture event listeners
     gestures.enable(board.canvas);
     board.canvas.addEventListener("gesture", gestureHandler);
+
+    // setup keybindings
+    setupKeybindings();
 }
 
 const disable = (): void => {
@@ -36,15 +42,13 @@ const disable = (): void => {
         gestures.disable(activeBoard.canvas);
         activeBoard.canvas.removeEventListener("gesture", gestureHandler);
     }
-
-    activeBoard = null;
-    activeLayer = null;
-    selected = [];
-    isPanning = false;
-    vx = 0;
-    vy = 0;
 }
 
+export const selectTool: Tool = {
+    name: "select",
+    enable,
+    disable
+}
 
 const setupKeybindings = () => {
     // Prevent reloading the page
@@ -88,12 +92,12 @@ const gestureHandler = (e: CustomEvent): void => {
             break;
 
         case "pinching":
-            activeBoard.zoomOnPoint(x, y, zoom);
+            activeBoard.zoom(x, y, zoom);
             pan(dx, dy);
             break;
 
         case "wheel":
-            activeBoard.zoomOnPoint(x, y, wheelToZoomFactor(event));
+            activeBoard.zoom(x, y, wheelToZoomFactor(event));
             break;
 
         case "left-click-drag-end":
@@ -174,7 +178,7 @@ const pan = (dx: number, dy: number) => {
         vy = 0;
     }
 
-    activeBoard.translate(dx, dy);
+    activeBoard.pan(dx, dy);
 
     // update velocity
     vx = dx * INERTIAL_MEMORY + vx * (1 - INERTIAL_MEMORY);
@@ -190,7 +194,7 @@ const endPanning = () => {
         if (isPanning || (Math.abs(vx) < EPSILON && Math.abs(vy) < EPSILON)) return;
 
         // move board and update velocity
-        activeBoard.translate(vx, vy);
+        activeBoard.pan(vx, vy);
         vx *= INERTIAL_FRICTION;
         vy *= INERTIAL_FRICTION;
         requestAnimationFrame(inertia);
