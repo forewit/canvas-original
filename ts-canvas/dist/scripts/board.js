@@ -1,8 +1,11 @@
+import { Entity } from "./entity.js";
+import { Layer } from "./layer.js";
 export class Board {
     constructor(canvas) {
         this.resizeObserver = new ResizeObserver(() => { this.resize(); });
         this.isPlaying = false;
         this.layers = [];
+        this.activeLayer = null;
         this.top = 0;
         this.left = 0;
         this.origin = { x: 0, y: 0 };
@@ -40,39 +43,44 @@ export class Board {
         this.ctx.stroke();
         // -------------------------
         // render layers
-        for (let l of this.layers)
-            l.render(this);
+        for (let layer of this.layers)
+            layer.render(this);
         // restore canvas transforms
         this.ctx.restore();
     }
-    add(...layers) {
-        for (let layer of layers) {
-            // check for duplicates
-            if (this.layers.findIndex(l => l.ID === layer.ID) === -1) {
-                this.layers.push(layer);
+    add(...objects) {
+        for (let object of objects) {
+            // add layer(s)
+            if (object instanceof Layer) {
+                this.layers.push(object);
+            }
+            // add entity(s) to active layer
+            else if (object instanceof Entity) {
+                if (this.activeLayer)
+                    this.activeLayer.add(object);
             }
         }
     }
-    destroy(...layers) {
-        // remove all layers if none are specified
-        if (layers.length === 0) {
-            for (let l of this.layers)
-                l.destroy();
-            this.layers = [];
-            return;
-        }
-        // remove specified layers
-        for (let layer of layers) {
-            let index = this.layers.findIndex(l => l.ID === layer.ID);
-            if (index != -1)
-                this.layers.splice(index, 1);
+    destroy(...objects) {
+        for (let object of objects) {
+            // remove layer(s)
+            if (object instanceof Layer) {
+                let index = this.layers.indexOf(object);
+                if (index > -1)
+                    this.layers.splice(index, 1);
+            }
+            // remove entity(s) from active layer
+            else if (object instanceof Entity) {
+                if (this.activeLayer)
+                    this.activeLayer.destroy(object);
+            }
         }
     }
-    translate(dx, dy) {
+    pan(dx, dy) {
         this.origin.x -= dx;
         this.origin.y -= dy;
     }
-    zoomOnPoint(x, y, zoomFactor) {
+    zoom(x, y, zoomFactor) {
         // calculate the distance from the viewable origin
         let offsetX = x - this.origin.x, offsetY = y - this.origin.y;
         // move the origin by scaling the offset
@@ -99,5 +107,6 @@ export class Board {
     pause() {
         // stop the animation loop
         this.isPlaying = false;
+        // TODO: maybe should remove active tool?
     }
 }
