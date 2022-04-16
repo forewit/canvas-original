@@ -77,8 +77,8 @@ export class Board {
         // disable the current tool
         if (this.activeTool) this.activeTool.disable();
 
-        // if no name is specified, remove the current tool
-        if (!name) {
+        // if no name is specified or the board is paused, remove the tool
+        if (!name || !this.isPlaying) {
             this.activeTool = null;
             return;
         }
@@ -140,13 +140,13 @@ export class Board {
             if (object instanceof Layer) {
                 let index = this.layers.indexOf(object);
                 if (index > -1) this.layers.splice(index, 1);
-            } 
-            
+            }
+
             // remove entity(s) from active layer
             else if (object instanceof Entity) {
                 if (this.activeLayer) this.activeLayer.destroy(object);
-            }   
-        }     
+            }
+        }
     }
 
     pan(dx: number, dy: number): void {
@@ -167,18 +167,18 @@ export class Board {
         this.scale *= zoomFactor;
     }
 
-    play(callback: Function): void {
+    play(): void {
         if (this.isPlaying) return;
-
         this.isPlaying = true;
         let me = this;
 
         function loop(): void {
             if (!me.isPlaying) return;
-            callback();
 
-            // render the board
+            // do something
             me.render();
+            updateFPS();
+
             requestAnimationFrame(loop);
         }
         requestAnimationFrame(loop);
@@ -188,6 +188,29 @@ export class Board {
         // stop the animation loop
         this.isPlaying = false;
 
-        // TODO: maybe should remove active tool?
+        // disable the active tool
+        this.tool();
     }
 }
+
+
+// ******* FPS COUNTER *********
+let start = performance.now(),
+    previous = start,
+    ticks = 0,
+    FPS = 0;
+
+const updateFPS = () => {
+    let now = performance.now(),
+        delta = now - previous;
+
+    if (delta >= 1000) {
+        previous = now;
+        FPS = ticks;
+        ticks = 0;
+    }
+    ticks++;
+
+    if (delta >= 200) document.getElementById("fps").innerHTML = FPS.toString();
+}
+// *****************************

@@ -54,8 +54,8 @@ export class Board {
         // disable the current tool
         if (this.activeTool)
             this.activeTool.disable();
-        // if no name is specified, remove the current tool
-        if (!name) {
+        // if no name is specified or the board is paused, remove the tool
+        if (!name || !this.isPlaying) {
             this.activeTool = null;
             return;
         }
@@ -137,7 +137,7 @@ export class Board {
         // apply the new scale to the canvas
         this.scale *= zoomFactor;
     }
-    play(callback) {
+    play() {
         if (this.isPlaying)
             return;
         this.isPlaying = true;
@@ -145,9 +145,9 @@ export class Board {
         function loop() {
             if (!me.isPlaying)
                 return;
-            callback();
-            // render the board
+            // do something
             me.render();
+            updateFPS();
             requestAnimationFrame(loop);
         }
         requestAnimationFrame(loop);
@@ -155,6 +155,21 @@ export class Board {
     pause() {
         // stop the animation loop
         this.isPlaying = false;
-        // TODO: maybe should remove active tool?
+        // disable the active tool
+        this.tool();
     }
 }
+// ******* FPS COUNTER *********
+let start = performance.now(), previous = start, ticks = 0, FPS = 0;
+const updateFPS = () => {
+    let now = performance.now(), delta = now - previous;
+    if (delta >= 1000) {
+        previous = now;
+        FPS = ticks;
+        ticks = 0;
+    }
+    ticks++;
+    if (delta >= 200)
+        document.getElementById("fps").innerHTML = FPS.toString();
+};
+// *****************************
