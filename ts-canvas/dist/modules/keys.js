@@ -17,7 +17,6 @@ const SPLIT_KEY = "+";
 ;
 let keybindings = {}, listening = false;
 export let down = {};
-export function getKeybindings() { return keybindings; }
 export function bind(shortcuts, fn) {
     // resume window event listeners
     if (!listening) {
