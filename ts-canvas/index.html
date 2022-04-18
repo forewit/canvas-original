@@ -8,7 +8,7 @@
     />
     <title>Modules</title>
     <link rel="stylesheet" href="./style.css" />
-    <link rel="icon" type="image/svg" href="./favicon.svg">
+    <link rel="icon" type="image/svg" href="./favicon.svg" />
   </head>
   <body>
     <!-- content -->
@@ -18,7 +18,12 @@
     <!-- CONTENT -->
     <div id="main-container" class="fullscreen no-select">
       <div id="grid-container">
-        <div id="toolbar"></div>
+        <div id="toolbar">
+          <div class="tool-button"></div>
+          <div class="tool-button">
+            <image class="tool-button-icon" src="./images/pen.svg" />
+          </div>
+        </div>
         <canvas id="board"></canvas>
       </div>
     </div>
