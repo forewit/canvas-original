@@ -24,8 +24,6 @@ let keybindings: Keybinding = {},
 
 export let down: { [keycode: number]: boolean } = {};
 
-export function getKeybindings(): Keybinding { return keybindings; }
-
 export function bind(shortcuts: string, fn: (e: KeyboardEvent) => any): void {
     // resume window event listeners
     if (!listening) {
