@@ -21,13 +21,7 @@ body {
   display: inline-block;
   bottom: 0;
   right: 0;
-  z-index: 10;
-}
-
-#log {
-  position: fixed;
-  top: 0;
-  right: 0;
+  margin: 0;
   z-index: 10;
 }
 
@@ -41,7 +35,6 @@ body {
   grid-template-rows: 1fr;
   grid-template-areas: "notch toolbar board";
 }
-
 @media only screen and (max-width: 600px) {
   #main-grid {
     grid-template-columns: 1fr;
@@ -52,7 +45,15 @@ body {
   }
 }
 
+#board {
+  grid-area: board;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
 #toolbar {
+  background: whitesmoke;
   grid-area: toolbar;
   box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
   z-index: 1000;
@@ -80,21 +81,15 @@ body {
 }
 .toolbar-item:hover,
 .toolbar-item.selected {
-  background: rgba(0,0,0,0.05)
+  background: rgba(0,0,0,0.05);
 }
 .toolbar-item:active {
-  background: rgba(0,0,0,0.1)
+  background: rgba(0,0,0,0.1);
 }
 .toolbar-item > img {
+  pointer-events: none;
   width: 100%;
   height: 100%;
-}
-
-#board {
-  grid-area: board;
-  position: absolute;
-  height: 100%;
-  width: 100%;
 }
 
 .fullscreen {
@@ -107,37 +102,9 @@ body {
 }
 
 .no-select {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
 .hidden {
   display: none;
 }
-
-.white-rounded {
-  margin: 20px;
-  padding: 8px;
-  background: white;
-  border-radius: 5px;
-  box-shadow: 4px 3px 9px 0px rgba(0, 0, 0, 0.3);
-}
-
-/* --- TEMPORARY --- */
-.note {
-  background: lightgrey; /* lightcoral */
-  padding: 10px;
-  cursor: default;
-  resize: none;
-  position: absolute;
-}
-
-.note:focus-within {
-  cursor: text;
-  resize: both;
-}
-/* ------------------ */
