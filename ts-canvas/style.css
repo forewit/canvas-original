@@ -14,7 +14,7 @@ body {
     --notch-left
     --notch-right
     --notch-top
-  */
+*/
 
 #fps {
   position: fixed;
@@ -55,7 +55,7 @@ body {
 #toolbar {
   background: whitesmoke;
   grid-area: toolbar;
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.2);
   z-index: 1000;
 
   display: grid;
