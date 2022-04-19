@@ -45,21 +45,21 @@ body {
 @media only screen and (max-width: 600px) {
   #main-grid {
     grid-template-columns: 1fr;
-    grid-template-rows: calc(env(safe-area-inset-top) * var(--notch-top)) auto 1fr;
+    grid-template-rows: 1fr auto;
     grid-template-areas:
-      "notch"
-      "toolbar"
-      "board";
+      "board"
+      "toolbar";
   }
 }
 
-#toolbar-grid {
+#toolbar {
   grid-area: toolbar;
-  box-shadow: inset 0px 0px 0px 5px coral;
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
   z-index: 1000;
 
   display: grid;
-  gap: 0px 0px;
+  padding: 5px;
+  gap: 5px;
   justify-content: center;
   align-content: center;
 
@@ -67,16 +67,23 @@ body {
   grid-auto-flow: row;
 }
 @media only screen and (max-width: 600px) {
-  #toolbar-grid {
+  #toolbar {
     grid-auto-columns: min-content;
     grid-auto-flow: column;
   }
 }
 .toolbar-item {
-  width: 40px;
-  height: 40px;
-  padding: 10px;
+  width: 35px;
+  height: 35px;
+  padding: 5px;
   cursor: pointer;
+}
+.toolbar-item:hover,
+.toolbar-item.selected {
+  background: rgba(0,0,0,0.05)
+}
+.toolbar-item:active {
+  background: rgba(0,0,0,0.1)
 }
 .toolbar-item > img {
   width: 100%;
@@ -85,8 +92,6 @@ body {
 
 #board {
   grid-area: board;
-  box-shadow: inset 0px 0px 0px 5px goldenrod;
-
   position: absolute;
   height: 100%;
   width: 100%;

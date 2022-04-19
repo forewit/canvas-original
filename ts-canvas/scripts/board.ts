@@ -53,7 +53,7 @@ export class Board {
 
         // clear canvas
         // -----TEMPORARY: remove buffer in production
-        let buffer = 10 / this.scale;
+        let buffer = 0 / this.scale;
         this.ctx.clearRect(
             this.origin.x + buffer, this.origin.y + buffer,
             (this.canvas.width / this.scale) - 2 * buffer, (this.canvas.height / this.scale) - 2 * buffer
