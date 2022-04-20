@@ -1,3 +1,4 @@
+import { Note } from "./note.js";
 import * as keys from "../modules/keys.js";
 import * as gestures from "../modules/gestures.js";
 // constants
@@ -85,6 +86,13 @@ const select = (x, y) => {
     // select intersected entity if not already selected
     if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
         selected.push(entity);
+    }
+    // break target focus
+    if (selected.length == 0)
+        document.activeElement.blur();
+    else if (entity instanceof Note) {
+        // focus on note if it is selected
+        entity.elm.focus();
     }
     console.log("Selected:", selected);
 };

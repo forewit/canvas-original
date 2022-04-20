@@ -108,3 +108,12 @@ body {
 .hidden {
   display: none;
 }
+
+/* --- TEMPORARY --- */
+.entity {
+  background: lightgrey; /* lightcoral */
+}
+.entity:hover {
+  background: rgba(0,0,0,0.1);
+}
+/* ------------------ */

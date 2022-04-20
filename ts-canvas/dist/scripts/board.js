@@ -137,7 +137,7 @@ export class Board {
         // apply the new scale to the canvas
         this.scale *= zoomFactor;
     }
-    play() {
+    play(fn) {
         if (this.isPlaying)
             return;
         this.isPlaying = true;
@@ -146,6 +146,7 @@ export class Board {
             if (!me.isPlaying)
                 return;
             // do something
+            fn();
             me.render();
             updateFPS();
             requestAnimationFrame(loop);

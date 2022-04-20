@@ -1,6 +1,7 @@
 import { Board, Tool } from "./board.js";
 import { Layer } from "./layer.js";
 import { Entity } from "./entity.js";
+import { Note } from "./note.js";
 
 import * as keys from "../modules/keys.js";
 import * as gestures from "../modules/gestures.js";
@@ -118,6 +119,13 @@ const select = (x: number, y: number): void => {
         selected.push(entity);
     }
 
+    // break target focus
+    if (selected.length == 0) (document.activeElement as HTMLElement).blur();
+    else if (entity instanceof Note) { 
+        // focus on note if it is selected
+        entity.elm.focus();
+    }
+    
     console.log("Selected:", selected);
 }
 

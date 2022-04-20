@@ -12,28 +12,23 @@ export class Entity {
     │                 |
     └─────────────────┘
     */
-   readonly ID: string = generate_ID();
+    readonly ID: string = generate_ID();
 
-   opacity: number = 1;
+    opacity: number = 1;
+    x: number;
+    y: number;
 
-    private _x: number;
-    private _y: number;
-    private _w: number;
-    private _h: number;
-    private _angle: number; // radians
-    protected isUpdated = true;
+    protected _w: number;
+    protected _h: number;
+    protected _angle: number; // radians
 
-    get x(): number { return this._x; }
-    get y(): number { return this._y; }
+    get angle(): number { return this._angle; }
     get w(): number { return this._w; }
     get h(): number { return this._h; }
-    get angle(): number { return this._angle; }
 
-    set x(x: number) { this._x = x; this.isUpdated = true; }
-    set y(y: number) { this._y = y; this.isUpdated = true; }
-    set w(w: number) { this._w = w; this.isUpdated = true; }
-    set h(h: number) { this._h = h; this.isUpdated = true; }
-    set angle(angle: number) { this._angle = angle % (2 * Math.PI); this.isUpdated = true; }
+    set angle(angle: number) { this._angle = angle % (2 * Math.PI) }
+    set w(w: number) { this._w = w; }
+    set h(h: number) { this._h = h; }
 
     constructor(x: number, y: number, w: number, h: number, angle?: number) {
         this.x = x;

@@ -167,7 +167,7 @@ export class Board {
         this.scale *= zoomFactor;
     }
 
-    play(): void {
+    play(fn: Function): void {
         if (this.isPlaying) return;
         this.isPlaying = true;
         let me = this;
@@ -176,6 +176,7 @@ export class Board {
             if (!me.isPlaying) return;
 
             // do something
+            fn();
             me.render();
             updateFPS();
 

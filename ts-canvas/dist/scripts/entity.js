@@ -12,23 +12,18 @@ export class Entity {
         */
         this.ID = generate_ID();
         this.opacity = 1;
-        this.isUpdated = true;
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
         this.angle = angle || 0;
     }
-    get x() { return this._x; }
-    get y() { return this._y; }
+    get angle() { return this._angle; }
     get w() { return this._w; }
     get h() { return this._h; }
-    get angle() { return this._angle; }
-    set x(x) { this._x = x; this.isUpdated = true; }
-    set y(y) { this._y = y; this.isUpdated = true; }
-    set w(w) { this._w = w; this.isUpdated = true; }
-    set h(h) { this._h = h; this.isUpdated = true; }
-    set angle(angle) { this._angle = angle % (2 * Math.PI); this.isUpdated = true; }
+    set angle(angle) { this._angle = angle % (2 * Math.PI); }
+    set w(w) { this._w = w; }
+    set h(h) { this._h = h; }
     isIntersectingPoint(x, y) {
         return pointInRotatedRectangle(x, y, this.x, this.y, this.w, this.h, this.angle);
     }
