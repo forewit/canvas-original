@@ -39,7 +39,7 @@ export class Note extends Entity {
         // Add elemnent to DOM
         if (!this.isLoaded) {
             this.isLoaded = true;
-            ctx.canvas.parentNode.appendChild(this.elm);
+            ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas);
         }
 
         // Apply transforms

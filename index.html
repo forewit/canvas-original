@@ -1,35 +1,35 @@
-<html>
-
-<head>
-	<title>fireball</title>
-	<meta charset="UTF-8" />
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name='viewport' content='width=device-width, user-scalable=0, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover'>
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=0, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
+    <title>Canvas</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" type="image/svg" href="./favicon.svg" />
+  </head>
+  <body>
+    <!-- content -->
+    <p id="fps">fps</p>
 
-	<link rel="stylesheet" href="./style/main.css">
-	<link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
+    <!-- CONTENT -->
+    <div id="main-container" class="fullscreen no-select">
+      <div id="main-grid">
+        <div id="toolbar">
+          <div class="toolbar-item">
+            <image class="tool-button-icon" src="./images/icons/highlighter.svg" />
+          </div>
+          <div class="toolbar-item selected">
+            <image class="tool-button-icon" src="./images/icons/layer.svg" />
+          </div>
+        </div>
+        <canvas id="board"></canvas>
+      </div>
+    </div>
 
-<body>
-	<p id="log" class="white-rounded">log</p>
-	<p id="fps" class="white-rounded">fps</p>
-
-	<!-- CONTENT -->
-	<div id="main-container" class="fullscreen no-select">
-		<div id="grid-container">
-			<div id="toolbar"></div>
-			<div id="board"></div>
-		</div>
-	</div>
-	
-	<!-- MODULES -->
-	<script src="scripts/modules/utils.js"></script>
-    <script src="scripts/modules/gestures.js"></script>
-	<script src="scripts/modules/keys.js"></script>
-	<script src="scripts/modules/files.js"></script>
-
-	<!-- Scripts -->
-	<script type="module" src="./scripts/app.js"></script>
-</body>
-
+    <!-- scripts -->
+    <script type="module" src="./dist/index.js"></script>
+  </body>
 </html>

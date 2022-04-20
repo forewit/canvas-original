@@ -12,7 +12,7 @@ let fireball = new Sprite("images/fireball.png", 100, 100, 128, 128);
 let snake = new Sprite("images/snake_right.png", 150, 150, 128, 128);
 let layer = new Layer();
 let board = new Board(document.getElementById("board"));
-let noteElm = document.createElement("div");
+let noteElm = document.createElement("textarea");
 noteElm.classList.add("entity");
 let note = new Note(noteElm, 0, 0, 100, 100);
 fireball.animate(512, 512, -1, 15, { x: 0, y: 0 }, { x: 512, y: 0 }, { x: 1024, y: 0 }, { x: 1536, y: 0 }, { x: 2048, y: 0 }, { x: 2560, y: 0 });

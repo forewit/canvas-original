@@ -16,7 +16,7 @@ let snake = new Sprite("images/snake_right.png", 150, 150, 128, 128);
 let layer = new Layer();
 let board = new Board(<HTMLCanvasElement>document.getElementById("board"));
 
-let noteElm = document.createElement("div");
+let noteElm = document.createElement("textarea");
 noteElm.classList.add("entity");
 let note = new Note(noteElm, 0, 0, 100, 100);
 
