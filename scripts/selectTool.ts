@@ -16,9 +16,23 @@ const ZOOM_INTENSITY = 0.2,
 let activeBoard: Board = null,
     activeLayer: Layer = null,
     selected: Entity[] = [],
+    selectionBounds: { left: number, top: number, w: number, h: number } = null,
     isPanning = false,
     vx = 0,
     vy = 0;
+
+// define handles entity
+let handles = new Entity(0, 0, 0, 0);
+handles.render = (board: Board) => {
+    if (!selectionBounds) return;
+
+    // draw selection box
+    board.ctx.save();
+    board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    board.ctx.lineWidth = 3;
+    board.ctx.strokeRect(selectionBounds.left, selectionBounds.top, selectionBounds.w, selectionBounds.h);
+    board.ctx.restore();
+}
 
 const enable = (board: Board, layer: Layer): void => {
     // reset state
@@ -30,11 +44,14 @@ const enable = (board: Board, layer: Layer): void => {
     vy = 0;
 
     // add gesture event listeners
-    gestures.enable(board.canvas);
-    board.canvas.addEventListener("gesture", gestureHandler);
+    gestures.enable(activeBoard.canvas);
+    activeBoard.canvas.addEventListener("gesture", gestureHandler);
 
     // setup keybindings
     setupKeybindings();
+
+    // add handles entity
+    activeBoard.add(handles);
 }
 
 const disable = (): void => {
@@ -42,6 +59,7 @@ const disable = (): void => {
     if (activeBoard) {
         gestures.disable(activeBoard.canvas);
         activeBoard.canvas.removeEventListener("gesture", gestureHandler);
+        activeBoard.destroy(handles);
     }
 }
 
@@ -117,6 +135,7 @@ const select = (x: number, y: number): void => {
     // select intersected entity if not already selected
     if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
         selected.push(entity);
+        selectionBounds = getBounds(selected);
     }
 
     // break target focus
@@ -129,20 +148,20 @@ const select = (x: number, y: number): void => {
     console.log("Selected:", selected);
 }
 
-
 const clearSelection = () => {
     selected = [];
+    selectionBounds = null;
 }
 
-const selectionBounds = (): { x: number, y: number, w: number, h: number } => {
-    if (selected.length === 0) return null;
+const getBounds = (entities: Entity[]): { left: number, top: number, w: number, h: number } => {
+    if (entities.length === 0) return null;
 
-    let boundingLeft = selected[0].x,
-        boundingRight = selected[0].x,
-        boundingTop = selected[0].y,
-        boundingBottom = selected[0].y;
+    let boundingLeft = entities[0].x,
+        boundingRight = entities[0].x,
+        boundingTop = entities[0].y,
+        boundingBottom = entities[0].y;
 
-    for (let entity of selected) {
+    for (let entity of entities) {
         let angle = entity.angle % (Math.PI);
         if (angle > Math.PI / 2) angle = Math.PI - angle;
 
@@ -164,8 +183,8 @@ const selectionBounds = (): { x: number, y: number, w: number, h: number } => {
         height = boundingBottom - boundingTop;
 
     return {
-        x: boundingLeft + width / 2,
-        y: boundingTop + height / 2,
+        left: boundingTop,
+        top: boundingLeft,
         w: width,
         h: height
     }

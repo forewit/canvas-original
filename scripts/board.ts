@@ -52,11 +52,9 @@ export class Board {
         this.ctx.translate(-this.origin.x, -this.origin.y);
 
         // clear canvas
-        // -----TEMPORARY: remove buffer in production
-        let buffer = 0 / this.scale;
         this.ctx.clearRect(
-            this.origin.x + buffer, this.origin.y + buffer,
-            (this.canvas.width / this.scale) - 2 * buffer, (this.canvas.height / this.scale) - 2 * buffer
+            this.origin.x, this.origin.y,
+            this.canvas.width / this.scale, this.canvas.height / this.scale
         );
 
         // ------TEMPORARY----------

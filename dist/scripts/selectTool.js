@@ -1,3 +1,4 @@
+import { Entity } from "./entity.js";
 import { Note } from "./note.js";
 import * as keys from "../modules/keys.js";
 import * as gestures from "../modules/gestures.js";
@@ -6,7 +7,19 @@ const ZOOM_INTENSITY = 0.2, INERTIAL_FRICTION = 0.8, // 0 = infinite friction, 1
 INERTIAL_MEMORY = 0.2, // 0 = infinite memory, 1 = no memory
 EPSILON = 0.001; // replacement for 0 to prevent divide-by-zero errors
 // state management
-let activeBoard = null, activeLayer = null, selected = [], isPanning = false, vx = 0, vy = 0;
+let activeBoard = null, activeLayer = null, selected = [], selectionBounds = null, isPanning = false, vx = 0, vy = 0;
+// define handles entity
+let handles = new Entity(0, 0, 0, 0);
+handles.render = (board) => {
+    if (!selectionBounds)
+        return;
+    // draw selection box
+    board.ctx.save();
+    board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    board.ctx.lineWidth = 3;
+    board.ctx.strokeRect(selectionBounds.left, selectionBounds.top, selectionBounds.w, selectionBounds.h);
+    board.ctx.restore();
+};
 const enable = (board, layer) => {
     // reset state
     activeBoard = board;
@@ -16,16 +29,19 @@ const enable = (board, layer) => {
     vx = 0;
     vy = 0;
     // add gesture event listeners
-    gestures.enable(board.canvas);
-    board.canvas.addEventListener("gesture", gestureHandler);
+    gestures.enable(activeBoard.canvas);
+    activeBoard.canvas.addEventListener("gesture", gestureHandler);
     // setup keybindings
     setupKeybindings();
+    // add handles entity
+    activeBoard.add(handles);
 };
 const disable = () => {
     // remove gesture event listeners
     if (activeBoard) {
         gestures.disable(activeBoard.canvas);
         activeBoard.canvas.removeEventListener("gesture", gestureHandler);
+        activeBoard.destroy(handles);
     }
 };
 export const selectTool = {
@@ -86,6 +102,7 @@ const select = (x, y) => {
     // select intersected entity if not already selected
     if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
         selected.push(entity);
+        selectionBounds = getBounds(selected);
     }
     // break target focus
     if (selected.length == 0)
@@ -98,12 +115,13 @@ const select = (x, y) => {
 };
 const clearSelection = () => {
     selected = [];
+    selectionBounds = null;
 };
-const selectionBounds = () => {
-    if (selected.length === 0)
+const getBounds = (entities) => {
+    if (entities.length === 0)
         return null;
-    let boundingLeft = selected[0].x, boundingRight = selected[0].x, boundingTop = selected[0].y, boundingBottom = selected[0].y;
-    for (let entity of selected) {
+    let boundingLeft = entities[0].x, boundingRight = entities[0].x, boundingTop = entities[0].y, boundingBottom = entities[0].y;
+    for (let entity of entities) {
         let angle = entity.angle % (Math.PI);
         if (angle > Math.PI / 2)
             angle = Math.PI - angle;
@@ -116,8 +134,8 @@ const selectionBounds = () => {
     }
     let width = boundingRight - boundingLeft, height = boundingBottom - boundingTop;
     return {
-        x: boundingLeft + width / 2,
-        y: boundingTop + height / 2,
+        left: boundingTop,
+        top: boundingLeft,
         w: width,
         h: height
     };

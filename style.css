@@ -10,7 +10,7 @@ body {
 }
 
 /*
-  These variables are set in JS and have a value of 0 or 1:
+Set in Utils.ts and have a value of 0 or 1:
     --notch-left
     --notch-right
     --notch-top
