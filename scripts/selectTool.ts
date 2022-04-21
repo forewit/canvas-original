@@ -10,27 +10,43 @@ import * as gestures from "../modules/gestures.js";
 const ZOOM_INTENSITY = 0.2,
     INERTIAL_FRICTION = 0.8, // 0 = infinite friction, 1 = no friction
     INERTIAL_MEMORY = 0.2, // 0 = infinite memory, 1 = no memory
-    EPSILON = 0.001; // replacement for 0 to prevent divide-by-zero errors
+    INERTIA_TIMEOUT = 30, // ms
+    EPSILON = 0.01; // replacement for 0 to prevent divide-by-zero errors
 
 // state management
 let activeBoard: Board = null,
     activeLayer: Layer = null,
     selected: Entity[] = [],
-    selectionBounds: { left: number, top: number, w: number, h: number } = null,
+    handleBounds: { left: number, top: number, w: number, h: number } = null,
+    selectBoxBounds: { left: number, top: number, w: number, h: number } = null,
     isPanning = false,
+    lastPanTime = 0,
     vx = 0,
     vy = 0;
 
 // define handles entity
 let handles = new Entity(0, 0, 0, 0);
 handles.render = (board: Board) => {
-    if (!selectionBounds) return;
+    if (!handleBounds) return;
 
     // draw selection box
     board.ctx.save();
     board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
     board.ctx.lineWidth = 3;
-    board.ctx.strokeRect(selectionBounds.left, selectionBounds.top, selectionBounds.w, selectionBounds.h);
+    board.ctx.strokeRect(handleBounds.left, handleBounds.top, handleBounds.w, handleBounds.h);
+    board.ctx.restore();
+}
+
+// define selectBox entity
+let selectBox = new Entity(0, 0, 0, 0);
+selectBox.render = (board: Board) => {
+    if (!selectBoxBounds) return;
+
+    // draw selection box
+    board.ctx.save();
+    board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    board.ctx.lineWidth = 3;
+    board.ctx.strokeRect(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
     board.ctx.restore();
 }
 
@@ -50,16 +66,23 @@ const enable = (board: Board, layer: Layer): void => {
     // setup keybindings
     setupKeybindings();
 
-    // add handles entity
+    // add UI entities
     activeBoard.add(handles);
+    activeBoard.add(selectBox);
 }
 
 const disable = (): void => {
-    // remove gesture event listeners
     if (activeBoard) {
+        // remove gesture event listeners
         gestures.disable(activeBoard.canvas);
         activeBoard.canvas.removeEventListener("gesture", gestureHandler);
+
+        // remove keybindings
+        keys.unbind("Control+r, Control+R, Meta+r, Meta+R, Control+a, Control+A, Meta+a, Meta+A");
+
+        // remove UI entities
         activeBoard.destroy(handles);
+        activeBoard.destroy(selectBox);
     }
 }
 
@@ -104,9 +127,18 @@ const gestureHandler = (e: CustomEvent): void => {
             select(x, y);
             break;
 
-        case "left-click-dragging":
+        case "longclick":
+            activeBoard.canvas.style.cursor = "grabbing";
+            break;
+        
+        case "longclick-release":
+            activeBoard.canvas.style.cursor = "";
+            break;
+
+        case "longclick-dragging":
         case "touch-dragging":
         case "middle-click-dragging":
+            activeBoard.canvas.style.cursor = "grabbing";
             pan(dx, dy);
             break;
 
@@ -119,13 +151,43 @@ const gestureHandler = (e: CustomEvent): void => {
             activeBoard.zoom(x, y, wheelToZoomFactor(event));
             break;
 
-        case "left-click-drag-end":
+        case "longclick-drag-end":
         case "middle-click-drag-end":
         case "touch-drag-end":
         case "pinch-end":
+            activeBoard.canvas.style.cursor = "";
             endPanning();
             break;
+
+        case "longpress-dragging":
+        case "left-click-dragging":
+        case "right-click-dragging":
+            drawSelectBox(x, y);
+            break;
+
+        case "longpress-drag-end":
+        case "left-click-drag-end":
+        case "right-click-drag-end":
+            endSelectBox(x, y);
+            break;
     }
+}
+
+const drawSelectBox = (x: number, y: number): void => {
+    if (!selectBoxBounds) selectBoxBounds = { left: x, top: y, w: 0, h: 0 };
+
+    // update selection box bounds
+    selectBoxBounds.w = x - selectBoxBounds.left;
+    selectBoxBounds.h = y - selectBoxBounds.top;
+}
+const endSelectBox = (x: number, y: number): void => {
+    if (!selectBoxBounds) return;
+
+    // select all entities in selection box
+    // TODO
+
+    // reset selection box bounds
+    selectBoxBounds = null;
 }
 
 const select = (x: number, y: number): void => {
@@ -135,7 +197,7 @@ const select = (x: number, y: number): void => {
     // select intersected entity if not already selected
     if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
         selected.push(entity);
-        selectionBounds = getBounds(selected);
+        handleBounds = getBounds(selected);
     }
 
     // break target focus
@@ -150,7 +212,7 @@ const select = (x: number, y: number): void => {
 
 const clearSelection = () => {
     selected = [];
-    selectionBounds = null;
+    handleBounds = null;
 }
 
 const getBounds = (entities: Entity[]): { left: number, top: number, w: number, h: number } => {
@@ -204,18 +266,22 @@ const pan = (dx: number, dy: number) => {
         vx = 0;
         vy = 0;
     }
-
     activeBoard.pan(dx, dy);
 
     // update velocity
     vx = dx * INERTIAL_MEMORY + vx * (1 - INERTIAL_MEMORY);
     vy = dy * INERTIAL_MEMORY + vy * (1 - INERTIAL_MEMORY);
+    lastPanTime = performance.now();
 }
 
 const endPanning = () => {
     isPanning = false;
-    requestAnimationFrame(inertia);
 
+    // drop inertia if too much time has passed
+    let elapsed = performance.now() - lastPanTime;
+    if (elapsed > INERTIA_TIMEOUT) return;
+
+    requestAnimationFrame(inertia);
     function inertia() {
         // stop inertia if new pan starts or velocity is low
         if (isPanning || (Math.abs(vx) < EPSILON && Math.abs(vy) < EPSILON)) return;

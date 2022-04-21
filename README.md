@@ -1,8 +1,9 @@
 # RPCanvas
 ### TODO
-- [ ] draw selection bounding box -- IN PROGRESS
+- [X] draw selection bounding box
 - [ ] resizing entities
-- [ ] drag-n-drop select box
+- [X] drag-n-drop select box
+- [X] fix inertia bug (keeps inertia when stopped)
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
 - [X] fix issue with zoom / transform scale() with iOS and firefox

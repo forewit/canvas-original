@@ -6,6 +6,7 @@
  * right-click
  * double-click
  * longclick
+ * longclick-release
  *
  * left-click-drag-start
  * left-click-dragging
@@ -232,6 +233,7 @@ const mouseupHandler = (e) => {
             }, DOUBLE_CLICK_DELAY);
         }
     }
+    dispatchGesture(mouse.activeElement, { name: "longclick-release", x: e.pageX, y: e.pageY });
     mouse.isLongclick = false;
 };
 const touchstartHandler = (e) => {

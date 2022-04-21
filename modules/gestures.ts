@@ -6,6 +6,7 @@
  * right-click
  * double-click
  * longclick
+ * longclick-release
  * 
  * left-click-drag-start
  * left-click-dragging
@@ -287,6 +288,7 @@ const mouseupHandler = (e: MouseEvent) => {
         }
     }
 
+    dispatchGesture(mouse.activeElement, { name: "longclick-release", x: e.pageX, y: e.pageY });
     mouse.isLongclick = false;
 }
 
