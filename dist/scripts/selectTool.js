@@ -120,46 +120,68 @@ const gestureHandler = (e) => {
             activeBoard.canvas.style.cursor = "";
             endPanning();
             break;
+        case "longclick-drag-start":
+        case "left-click-drag-start":
+        case "right-click-drag-start":
+            if (!keys.down["Shift"])
+                clearSelection();
+            startSelectBox(x, y);
+            break;
         case "longpress-dragging":
         case "left-click-dragging":
         case "right-click-dragging":
-            drawSelectBox(x, y);
+            updateSelectBox(x, y, dx, dy);
             break;
         case "longpress-drag-end":
         case "left-click-drag-end":
         case "right-click-drag-end":
-            endSelectBox(x, y);
+            endSelectBox();
             break;
     }
 };
-const drawSelectBox = (x, y) => {
-    if (!selectBoxBounds)
-        selectBoxBounds = { left: x, top: y, right: x, bottom: y, w: 0, h: 0 };
-    // update selectBoxBounds
-    if (x < selectBoxBounds.left) {
-        selectBoxBounds.left = x;
-        selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
-    }
-    else if (x > selectBoxBounds.right) {
-        selectBoxBounds.right = x;
-        selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
-    }
-    else {
-        selectBoxBounds.w = x - selectBoxBounds.left;
-    }
-    if (y < selectBoxBounds.top) {
-        selectBoxBounds.top = y;
-        selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
-    }
-    else if (y > selectBoxBounds.bottom) {
-        selectBoxBounds.bottom = y;
-        selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
-    }
-    else {
-        selectBoxBounds.h = y - selectBoxBounds.top;
-    }
+const startSelectBox = (x, y) => {
+    selectBoxBounds = { left: x, top: y, right: x, bottom: y, w: 0, h: 0 };
 };
-const endSelectBox = (x, y) => {
+const updateSelectBox = (x, y, dx, dy) => {
+    if (!selectBoxBounds)
+        return;
+    if (dx > 0) {
+        // moving right while inside the selection box
+        if (x < selectBoxBounds.right)
+            selectBoxBounds.left += dx;
+        // moving right while outside the selection box
+        else
+            selectBoxBounds.right += dx;
+    }
+    else {
+        // moving left while inside the selection box
+        if (x > selectBoxBounds.left)
+            selectBoxBounds.right += dx;
+        // moving left while outside the selection box
+        else
+            selectBoxBounds.left += dx;
+    }
+    if (dy > 0) {
+        // moving down while inside the selection box
+        if (y < selectBoxBounds.bottom)
+            selectBoxBounds.top += dy;
+        // moving down while outside the selection box
+        else
+            selectBoxBounds.bottom += dy;
+    }
+    else {
+        // moving up while inside the selection box
+        if (y > selectBoxBounds.top)
+            selectBoxBounds.bottom += dy;
+        // moving up while outside the selection box
+        else
+            selectBoxBounds.top += dy;
+    }
+    // update width and height
+    selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
+    selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+};
+const endSelectBox = () => {
     if (!selectBoxBounds)
         return;
     // select all entities in selection box

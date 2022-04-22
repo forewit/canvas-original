@@ -7,6 +7,7 @@
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
 - [X] fix issue with zoom / transform scale() with iOS and firefox
+- [ ] add render option to entities so they can draw an outline
 
 ### [Optimizations](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
 - [ ] draw inactive layers offscreen
