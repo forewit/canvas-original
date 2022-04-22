@@ -40,27 +40,6 @@ export const throttle = (fn, wait, options) => {
 export function generate_ID() {
     return '_' + Math.random().toString(36).substring(2, 9);
 }
-//Rotates a point (x, y) around a pivot in radians
-export function rotatePoint(x, y, pivotX, pivotY, rad) {
-    if (!rad)
-        return { x: x, y: y };
-    let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
-    return { x: nx, y: ny };
-}
-/*
-A rectangle is defined by it's center, width, and height, and angle in radians
-        w
-┌─────────────────┐
-│                 │
-│       *(x, y)   | h
-│                 |
-└─────────────────┘
-*/
-export function pointInRect(x, y, centerX, centerY, w, h, rad) {
-    let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
-    return (rotatedPoint.x >= centerX - w / 2 && rotatedPoint.x <= centerX + w / 2) &&
-        (rotatedPoint.y >= centerY - h / 2 && rotatedPoint.y <= centerY + h / 2);
-}
 export function log(...args) {
     let msg = [], css = '', last = args[args.length - 1] || {}, options = {};
     // check if options have been provided
@@ -194,4 +173,15 @@ export class Rect {
         this._y = bottom - this._h / 2;
         this._top = bottom - this._h;
     }
+}
+export function rotatePoint(x, y, pivotX, pivotY, rad) {
+    if (!rad)
+        return { x: x, y: y };
+    let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
+    return { x: nx, y: ny };
+}
+export function pointInRect(x, y, rect, rad) {
+    let rotatedPoint = rotatePoint(x, y, rect.x, rect.y, rad);
+    return (rotatedPoint.x >= rect.x - rect.w / 2 && rotatedPoint.x <= rect.x + rect.w / 2) &&
+        (rotatedPoint.y >= rect.y - rect.h / 2 && rotatedPoint.y <= rect.y + rect.h / 2);
 }

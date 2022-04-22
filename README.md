@@ -4,7 +4,7 @@
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
 - [ ] move handles into it's own class so that it can dynamically change with the selection
-- [ ] add rectangle class
+- [ ] add rectangle class -- IN PROGRESS
 - [X] add outlines while drawing selection box
 - [X] draw selection bounding box
 - [X] drag-n-drop select box

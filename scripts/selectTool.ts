@@ -279,30 +279,30 @@ const getBounds = (entities: Entity[]): { left: number, top: number, w: number, 
     // allow a rotated bounding box if there is only one entity
     if (entities.length === 1) {
         return {
-            left: entities[0].x - entities[0].w / 2,
-            top: entities[0].y - entities[0].h / 2,
-            w: entities[0].w,
-            h: entities[0].h,
+            left: entities[0].rect.x - entities[0].rect.w / 2,
+            top: entities[0].rect.y - entities[0].rect.h / 2,
+            w: entities[0].rect.w,
+            h: entities[0].rect.h,
             rad: entities[0].rad
         }
     }
 
-    let boundingLeft = entities[0].x,
-        boundingRight = entities[0].x,
-        boundingTop = entities[0].y,
-        boundingBottom = entities[0].y;
+    let boundingLeft = entities[0].rect.x,
+        boundingRight = entities[0].rect.x,
+        boundingTop = entities[0].rect.y,
+        boundingBottom = entities[0].rect.y;
 
     for (let entity of entities) {
         let angle = entity.rad % (Math.PI);
         if (angle > Math.PI / 2) angle = Math.PI - angle;
 
-        let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2,
-            halfH = (Math.sin(angle) * entity.w + Math.cos(angle) * entity.h) / 2;
+        let halfW = (Math.sin(angle) * entity.rect.h + Math.cos(angle) * entity.rect.w) / 2,
+            halfH = (Math.sin(angle) * entity.rect.w + Math.cos(angle) * entity.rect.h) / 2;
 
-        let left = entity.x - halfW,
-            right = entity.x + halfW,
-            top = entity.y - halfH,
-            bottom = entity.y + halfH;
+        let left = entity.rect.x - halfW,
+            right = entity.rect.x + halfW,
+            top = entity.rect.y - halfH,
+            bottom = entity.rect.y + halfH;
 
         boundingLeft = Math.min(boundingLeft, left);
         boundingRight = Math.max(boundingRight, right);

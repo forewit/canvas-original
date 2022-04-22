@@ -1,4 +1,4 @@
-import { generate_ID, pointInRect } from "../modules/utils.js";
+import { generate_ID, pointInRect, Rect } from "../modules/utils.js";
 export class Layer {
     constructor() {
         this.ID = generate_ID();
@@ -37,7 +37,7 @@ export class Layer {
         return null;
     }
     rectIntersection(x, y, w, h) {
-        return this.entities.filter(e => pointInRect(e.x, e.y, x + w / 2, y + h / 2, w, h));
+        return this.entities.filter(e => pointInRect(e.rect.x, e.rect.y, new Rect(x + w / 2, y + h / 2, w, h)));
         ;
     }
     duplicate() {

@@ -20,6 +20,6 @@ snake.opacity = 0.5;
 snake.animate(128, 128, -1, 15, { x: 0, y: 0 }, { x: 128, y: 0 }, { x: 256, y: 0 }, { x: 384, y: 0 }, { x: 0, y: 128 }, { x: 128, y: 128 }, { x: 256, y: 128 }, { x: 384, y: 128 }, { x: 0, y: 256 }, { x: 128, y: 256 }, { x: 256, y: 256 }, { x: 384, y: 256 }, { x: 0, y: 384 }, { x: 128, y: 384 }, { x: 256, y: 384 }, { x: 384, y: 384 });
 board.add(layer, note, fireball);
 board.play(() => {
-    //note.rad += 0.01;
+    note.rad += 0.01;
 });
 board.tool("select");

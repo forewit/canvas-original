@@ -46,40 +46,6 @@ export function generate_ID(): string {
     return '_' + Math.random().toString(36).substring(2, 9);
 }
 
-//Rotates a point (x, y) around a pivot in radians
-export function rotatePoint(
-    x: number, y: number,
-    pivotX: number, pivotY: number,
-    rad: number
-): { x: number, y: number } {
-    if (!rad) return { x: x, y: y };
-    let cos = Math.cos(rad),
-        sin = Math.sin(rad),
-        nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX,
-        ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
-    return { x: nx, y: ny };
-}
-
-/*
-A rectangle is defined by it's center, width, and height, and angle in radians
-        w
-┌─────────────────┐
-│                 │
-│       *(x, y)   | h
-│                 |
-└─────────────────┘
-*/
-export function pointInRect(
-    x: number, y: number,
-    centerX: number, centerY: number,
-    w: number, h: number,
-    rad?: number
-): boolean {
-    let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
-    return (rotatedPoint.x >= centerX - w / 2 && rotatedPoint.x <= centerX + w / 2) &&
-        (rotatedPoint.y >= centerY - h / 2 && rotatedPoint.y <= centerY + h / 2);
-}
-
 // Function for creating formatted logs
 interface LogOptions {
     color?: string, 
@@ -237,4 +203,23 @@ export class Rect {
         this._top = y - h / 2;
         this._bottom = y + h / 2;
     }
+}
+
+export function rotatePoint(
+    x: number, y: number,
+    pivotX: number, pivotY: number,
+    rad: number
+): { x: number, y: number } {
+    if (!rad) return { x: x, y: y };
+    let cos = Math.cos(rad),
+        sin = Math.sin(rad),
+        nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX,
+        ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
+    return { x: nx, y: ny };
+}
+
+export function pointInRect( x: number, y: number, rect: Rect, rad?: number ): boolean {
+    let rotatedPoint = rotatePoint(x, y, rect.x, rect.y, rad);
+    return (rotatedPoint.x >= rect.x - rect.w / 2 && rotatedPoint.x <= rect.x + rect.w / 2) &&
+        (rotatedPoint.y >= rect.y - rect.h / 2 && rotatedPoint.y <= rect.y + rect.h / 2);
 }
