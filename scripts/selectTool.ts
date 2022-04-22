@@ -18,14 +18,14 @@ let activeBoard: Board = null,
     activeLayer: Layer = null,
     selected: Entity[] = [],
     handleBounds: { left: number, top: number, w: number, h: number } = null,
-    selectBoxBounds: { left: number, top: number, w: number, h: number } = null,
+    selectBoxBounds: { left: number, top: number, bottom: number, right: number, w: number, h: number } = null,
     isPanning = false,
     lastPanTime = 0,
     vx = 0,
     vy = 0;
 
 // define handles entity
-let handles = new Entity(0, 0, 0, 0);
+let handles = new Entity(9999, 0, 0, 0);
 handles.render = (board: Board) => {
     if (!handleBounds) return;
 
@@ -38,7 +38,7 @@ handles.render = (board: Board) => {
 }
 
 // define selectBox entity
-let selectBox = new Entity(0, 0, 0, 0);
+let selectBox = new Entity(9999, 0, 0, 0);
 selectBox.render = (board: Board) => {
     if (!selectBoxBounds) return;
 
@@ -124,7 +124,7 @@ const gestureHandler = (e: CustomEvent): void => {
         case "left-click":
         case "tap":
             if (!keys.down["Shift"]) clearSelection();
-            select(x, y);
+            selectPoint(x, y);
             break;
 
         case "longclick":
@@ -174,23 +174,46 @@ const gestureHandler = (e: CustomEvent): void => {
 }
 
 const drawSelectBox = (x: number, y: number): void => {
-    if (!selectBoxBounds) selectBoxBounds = { left: x, top: y, w: 0, h: 0 };
+    if (!selectBoxBounds) selectBoxBounds = { left: x, top: y, right: x, bottom: y, w: 0, h: 0 };
 
-    // update selection box bounds
-    selectBoxBounds.w = x - selectBoxBounds.left;
-    selectBoxBounds.h = y - selectBoxBounds.top;
+
+    // update selectBoxBounds
+    if (x < selectBoxBounds.left) {
+        selectBoxBounds.left = x;
+        selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
+    } else if (x > selectBoxBounds.right) {
+        selectBoxBounds.right = x;
+        selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
+    } else {
+        selectBoxBounds.w = x - selectBoxBounds.left;
+    } 
+
+    if (y < selectBoxBounds.top) {
+        selectBoxBounds.top = y;
+        selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+    } else if (y > selectBoxBounds.bottom) {
+        selectBoxBounds.bottom = y;
+        selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+    } else {
+        selectBoxBounds.h = y - selectBoxBounds.top;
+    }
 }
 const endSelectBox = (x: number, y: number): void => {
     if (!selectBoxBounds) return;
 
     // select all entities in selection box
-    // TODO
+    let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    for (let entity of entities) {
+        if (selected.findIndex(e => e.ID === entity.ID) > -1) continue;
+        selected.push(entity);
+    }
 
+    console.log(selected);
     // reset selection box bounds
     selectBoxBounds = null;
 }
 
-const select = (x: number, y: number): void => {
+const selectPoint = (x: number, y: number): void => {
     // check active layer for intersections
     let entity = activeLayer.firstIntersection(x, y);
 

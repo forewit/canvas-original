@@ -47,6 +47,7 @@ snake.animate(128, 128, -1, 15,
     { x: 256, y: 384 },
     { x: 384, y: 384 },
 );
+
 board.add(layer, note);
 board.play(() => {
     note.rad += 0.01;

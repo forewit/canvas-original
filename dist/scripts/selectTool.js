@@ -10,7 +10,7 @@ EPSILON = 0.01; // replacement for 0 to prevent divide-by-zero errors
 // state management
 let activeBoard = null, activeLayer = null, selected = [], handleBounds = null, selectBoxBounds = null, isPanning = false, lastPanTime = 0, vx = 0, vy = 0;
 // define handles entity
-let handles = new Entity(0, 0, 0, 0);
+let handles = new Entity(9999, 0, 0, 0);
 handles.render = (board) => {
     if (!handleBounds)
         return;
@@ -22,7 +22,7 @@ handles.render = (board) => {
     board.ctx.restore();
 };
 // define selectBox entity
-let selectBox = new Entity(0, 0, 0, 0);
+let selectBox = new Entity(9999, 0, 0, 0);
 selectBox.render = (board) => {
     if (!selectBoxBounds)
         return;
@@ -92,7 +92,7 @@ const gestureHandler = (e) => {
         case "tap":
             if (!keys.down["Shift"])
                 clearSelection();
-            select(x, y);
+            selectPoint(x, y);
             break;
         case "longclick":
             activeBoard.canvas.style.cursor = "grabbing";
@@ -134,20 +134,46 @@ const gestureHandler = (e) => {
 };
 const drawSelectBox = (x, y) => {
     if (!selectBoxBounds)
-        selectBoxBounds = { left: x, top: y, w: 0, h: 0 };
-    // update selection box bounds
-    selectBoxBounds.w = x - selectBoxBounds.left;
-    selectBoxBounds.h = y - selectBoxBounds.top;
+        selectBoxBounds = { left: x, top: y, right: x, bottom: y, w: 0, h: 0 };
+    // update selectBoxBounds
+    if (x < selectBoxBounds.left) {
+        selectBoxBounds.left = x;
+        selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
+    }
+    else if (x > selectBoxBounds.right) {
+        selectBoxBounds.right = x;
+        selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
+    }
+    else {
+        selectBoxBounds.w = x - selectBoxBounds.left;
+    }
+    if (y < selectBoxBounds.top) {
+        selectBoxBounds.top = y;
+        selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+    }
+    else if (y > selectBoxBounds.bottom) {
+        selectBoxBounds.bottom = y;
+        selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+    }
+    else {
+        selectBoxBounds.h = y - selectBoxBounds.top;
+    }
 };
 const endSelectBox = (x, y) => {
     if (!selectBoxBounds)
         return;
     // select all entities in selection box
-    // TODO
+    let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    for (let entity of entities) {
+        if (selected.findIndex(e => e.ID === entity.ID) > -1)
+            continue;
+        selected.push(entity);
+    }
+    console.log(selected);
     // reset selection box bounds
     selectBoxBounds = null;
 };
-const select = (x, y) => {
+const selectPoint = (x, y) => {
     // check active layer for intersections
     let entity = activeLayer.firstIntersection(x, y);
     // select intersected entity if not already selected
