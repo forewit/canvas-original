@@ -45,22 +45,15 @@ export function rotatePoint(x, y, pivotX, pivotY, rad) {
     let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
     return { x: nx, y: ny };
 }
-/*
-A rectangle is defined by it's center, width, and height, and angle in radians
-        w
-┌─────────────────┐
-│                 │
-│       *(x, y)   | h
-│                 |
-└─────────────────┘
-*/
-export function pointInRectangle(x, y, centerX, centerY, w, h) {
-    return (x >= centerX - w / 2 && x <= centerX + w / 2) &&
-        (y >= centerY - h / 2 && y <= centerY + h / 2);
-}
-export function pointInRotatedRectangle(x, y, centerX, centerY, w, h, rad) {
-    let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
-    return pointInRectangle(rotatedPoint.x, rotatedPoint.y, centerX, centerY, w, h);
+export function pointInRect(x, y, rect) {
+    let point = { x: x, y: y };
+    // rotate point around the center
+    if (rect.rad) {
+        point = rotatePoint(x, y, rect.x + rect.w / 2, rect.y + rect.h / 2, rect.rad);
+    }
+    // check if point is in rectangle
+    return point.x >= rect.x && point.x <= rect.x + rect.w &&
+        point.y >= rect.y && point.y <= rect.y + rect.h;
 }
 export function log(...args) {
     let msg = [], css = '', last = args[args.length - 1] || {}, options = {};
@@ -125,3 +118,11 @@ export function loadImage(url) {
         img.src = url;
     });
 }
+/*
+function IntersectRect(r1:Rectangle, r2:Rectangle):Boolean {
+    return !(r2.left > r1.right
+        || r2.right < r1.left
+        || r2.top > r1.bottom
+        || r2.bottom < r1.top);
+}
+*/ 

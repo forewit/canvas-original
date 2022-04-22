@@ -1,31 +1,35 @@
-import { pointInRotatedRectangle, generate_ID } from "../modules/utils.js";
+import { pointInRect, generate_ID } from "../modules/utils.js";
 export class Entity {
-    constructor(x, y, w, h, angle) {
+    constructor(rect) {
         /*
-        A rectangle is defined by it's center, width, and height, and angle in radians
-                 w
-        ┌─────────────────┐
-        │                 │
-        │       *(x, y)   | h
+        A rectangle is defined by it's corner, width, and height, and angle in radians.
+        Angle should rotate around the CENTER of the rectangle.
+                  w
+        *─────────────────┐
+        │ (x, y)          │
+        │                 | h
         │                 |
         └─────────────────┘
         */
         this.ID = generate_ID();
         this.opacity = 1;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.angle = angle || 0;
+        this.rect = rect || { x: 0, y: 0, w: 0, h: 0, rad: 0 };
+        if (this.rect.rad === undefined) {
+            this.rect.rad = 0;
+        }
     }
-    get angle() { return this._angle; }
-    get w() { return this._w; }
-    get h() { return this._h; }
-    set angle(angle) { this._angle = angle % (2 * Math.PI); }
-    set w(w) { this._w = w; }
-    set h(h) { this._h = h; }
+    get x() { return this.rect.x; }
+    get y() { return this.rect.y; }
+    get w() { return this.rect.w; }
+    get h() { return this.rect.h; }
+    get rad() { return this.rect.rad; }
+    set x(x) { this.rect.x = x; }
+    set y(y) { this.rect.y = y; }
+    set w(w) { this.rect.w = w; }
+    set h(h) { this.rect.h = h; }
+    set rad(rad) { this.rect.rad = rad % (2 * Math.PI); }
     isIntersectingPoint(x, y) {
-        return pointInRotatedRectangle(x, y, this.x, this.y, this.w, this.h, this.angle);
+        return pointInRect(x, y, this.rect);
     }
     destroy() { console.error("Entity.destroy() not implemented."); }
     duplicate() { console.error("Entity.duplicate() not implemented."); return null; }

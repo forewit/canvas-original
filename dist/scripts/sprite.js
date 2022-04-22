@@ -2,8 +2,8 @@ import { Entity } from "./entity.js";
 import { loadImage } from "../modules/utils.js";
 ;
 export class Sprite extends Entity {
-    constructor(url, x, y, w, h, angle) {
-        super(x, y, w, h, angle);
+    constructor(url, rect) {
+        super(rect);
         this.image = null;
         this.isLoaded = false;
         this.frameX = 0;
@@ -36,7 +36,7 @@ export class Sprite extends Entity {
     }
     // override 
     duplicate() {
-        let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
+        let sprite = new Sprite(this.image.src, this.rect);
         if (this.frames.length > 0)
             sprite.animate(this.frameW, this.frameH, this.repeat, 1000 / this.interval, ...this.frames);
         return sprite;
@@ -67,8 +67,8 @@ export class Sprite extends Entity {
         let ctx = board.ctx;
         ctx.save();
         ctx.globalAlpha = this.opacity;
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle);
+        ctx.translate(this.x + this.w / 2, this.y + this.h / 2);
+        ctx.rotate(this.rad);
         ctx.drawImage(this.image, this.frameX, this.frameY, this.frameW, this.frameH, -this.w / 2, -this.h / 2, this.w, this.h);
         ctx.restore();
     }

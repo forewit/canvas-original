@@ -2,6 +2,7 @@ import { Board, Tool } from "./board.js";
 import { Layer } from "./layer.js";
 import { Entity } from "./entity.js";
 import { Note } from "./note.js";
+import { Rect } from "../modules/utils.js";
 
 import * as keys from "../modules/keys.js";
 import * as gestures from "../modules/gestures.js";
@@ -17,15 +18,15 @@ const ZOOM_INTENSITY = 0.2,
 let activeBoard: Board = null,
     activeLayer: Layer = null,
     selected: Entity[] = [],
-    handleBounds: { left: number, top: number, w: number, h: number } = null,
-    selectBoxBounds: { left: number, top: number, w: number, h: number } = null,
+    handleBounds: Rect = null,
+    selectBoxBounds: Rect = null,
     isPanning = false,
     lastPanTime = 0,
     vx = 0,
     vy = 0;
 
 // define handles entity
-let handles = new Entity(0, 0, 0, 0);
+let handles = new Entity();
 handles.render = (board: Board) => {
     if (!handleBounds) return;
 
@@ -33,12 +34,12 @@ handles.render = (board: Board) => {
     board.ctx.save();
     board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
     board.ctx.lineWidth = 3;
-    board.ctx.strokeRect(handleBounds.left, handleBounds.top, handleBounds.w, handleBounds.h);
+    board.ctx.strokeRect(handleBounds.x, handleBounds.y, handleBounds.w, handleBounds.h);
     board.ctx.restore();
 }
 
 // define selectBox entity
-let selectBox = new Entity(0, 0, 0, 0);
+let selectBox = new Entity();
 selectBox.render = (board: Board) => {
     if (!selectBoxBounds) return;
 
@@ -46,7 +47,7 @@ selectBox.render = (board: Board) => {
     board.ctx.save();
     board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
     board.ctx.lineWidth = 3;
-    board.ctx.strokeRect(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    board.ctx.strokeRect(selectBoxBounds.x, selectBoxBounds.y, selectBoxBounds.w, selectBoxBounds.h);
     board.ctx.restore();
 }
 
@@ -130,7 +131,7 @@ const gestureHandler = (e: CustomEvent): void => {
         case "longclick":
             activeBoard.canvas.style.cursor = "grabbing";
             break;
-        
+
         case "longclick-release":
             activeBoard.canvas.style.cursor = "";
             break;
@@ -174,11 +175,11 @@ const gestureHandler = (e: CustomEvent): void => {
 }
 
 const drawSelectBox = (x: number, y: number): void => {
-    if (!selectBoxBounds) selectBoxBounds = { left: x, top: y, w: 0, h: 0 };
+    if (!selectBoxBounds) selectBoxBounds = { x: x, y: y, w: 0, h: 0 };
 
     // update selection box bounds
-    selectBoxBounds.w = x - selectBoxBounds.left;
-    selectBoxBounds.h = y - selectBoxBounds.top;
+    selectBoxBounds.w = x - selectBoxBounds.x;
+    selectBoxBounds.h = y - selectBoxBounds.y;
 }
 const endSelectBox = (x: number, y: number): void => {
     if (!selectBoxBounds) return;
@@ -202,11 +203,11 @@ const select = (x: number, y: number): void => {
 
     // break target focus
     if (selected.length == 0) (document.activeElement as HTMLElement).blur();
-    else if (entity instanceof Note) { 
+    else if (entity instanceof Note) {
         // focus on note if it is selected
         entity.elm.focus();
     }
-    
+
     console.log("Selected:", selected);
 }
 
@@ -215,41 +216,77 @@ const clearSelection = () => {
     handleBounds = null;
 }
 
-const getBounds = (entities: Entity[]): { left: number, top: number, w: number, h: number } => {
+const getBounds = (entities: Entity[]): { x: number, y: number, w: number, h: number } => {
     if (entities.length === 0) return null;
 
     let boundingLeft = entities[0].x,
-        boundingRight = entities[0].x,
+        boundingRight = entities[0].x + entities[0].w,
         boundingTop = entities[0].y,
-        boundingBottom = entities[0].y;
+        boundingBottom = entities[0].y + entities[0].h;
 
     for (let entity of entities) {
-        let angle = entity.angle % (Math.PI);
-        if (angle > Math.PI / 2) angle = Math.PI - angle;
+        if (entity.rad) {
+            let rad = entity.rad % (Math.PI);
+            if (rad > Math.PI / 2) rad = Math.PI - rad;
 
-        let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2,
-            halfH = (Math.sin(angle) * entity.w + Math.cos(angle) * entity.h) / 2;
+            let left = entity.x - Math.sin(rad) * entity.h,
+                right = entity.x + Math.cos(rad) * entity.w,
+                top = entity.y - Math.sin(rad) * entity.w / 2,
+                bottom = entity.y + Math.cos(rad) * entity.h / 2;
 
-        let left = entity.x - halfW,
-            right = entity.x + halfW,
-            top = entity.y - halfH,
-            bottom = entity.y + halfH;
-
-        boundingLeft = Math.min(boundingLeft, left);
-        boundingRight = Math.max(boundingRight, right);
-        boundingTop = Math.min(boundingTop, top);
-        boundingBottom = Math.max(boundingBottom, bottom);
+            boundingLeft = Math.min(boundingLeft, left);
+            boundingRight = Math.max(boundingRight, right);
+            boundingTop = Math.min(boundingTop, top);
+            boundingBottom = Math.max(boundingBottom, bottom);
+        } else {
+            boundingLeft = Math.min(boundingLeft, entity.x);
+            boundingRight = Math.max(boundingRight, entity.x + entity.w);
+            boundingTop = Math.min(boundingTop, entity.y);
+            boundingBottom = Math.max(boundingBottom, entity.y + entity.h);
+        }
     }
-
-    let width = boundingRight - boundingLeft,
-        height = boundingBottom - boundingTop;
 
     return {
-        left: boundingTop,
-        top: boundingLeft,
-        w: width,
-        h: height
+        x: boundingLeft,
+        y: boundingTop,
+        w: boundingRight - boundingLeft,
+        h: boundingBottom - boundingTop
     }
+
+    /*
+        let boundingLeft = entities[0].x,
+            boundingRight = entities[0].x,
+            boundingTop = entities[0].y,
+            boundingBottom = entities[0].y;
+    
+        for (let entity of entities) {
+            let angle = entity.rad % (Math.PI);
+            if (angle > Math.PI / 2) angle = Math.PI - angle;
+    
+            let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2,
+                halfH = (Math.sin(angle) * entity.w + Math.cos(angle) * entity.h) / 2;
+    
+            let left = entity.x - halfW,
+                right = entity.x + halfW,
+                top = entity.y - halfH,
+                bottom = entity.y + halfH;
+    
+            boundingLeft = Math.min(boundingLeft, left);
+            boundingRight = Math.max(boundingRight, right);
+            boundingTop = Math.min(boundingTop, top);
+            boundingBottom = Math.max(boundingBottom, bottom);
+        }
+    
+        let width = boundingRight - boundingLeft,
+            height = boundingBottom - boundingTop;
+    
+        return {
+            left: boundingTop,
+            top: boundingLeft,
+            w: width,
+            h: height
+        }
+    */
 }
 
 const wheelToZoomFactor = (e: WheelEvent): number => {

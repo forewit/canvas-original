@@ -61,38 +61,42 @@ export function rotatePoint(
 }
 
 /*
-A rectangle is defined by it's center, width, and height, and angle in radians
-        w
-┌─────────────────┐
-│                 │
-│       *(x, y)   | h
+A rectangle is defined by it's corner, width, and height, and angle in radians.
+Angle should rotate around the CENTER of the rectangle.
+          w
+*─────────────────┐
+│ (x, y)          │
+│                 | h
 │                 |
 └─────────────────┘
 */
-export function pointInRectangle(
-    x: number, y: number,
-    centerX: number, centerY: number,
-    w: number, h: number
-): boolean {
-    return (x >= centerX - w / 2 && x <= centerX + w / 2) &&
-        (y >= centerY - h / 2 && y <= centerY + h / 2);
+export interface Rect {
+    x: number, // left
+    y: number, // top
+    w: number,
+    h: number,
+    rad?: number // angle in radians (rotates around center)
 }
 
-export function pointInRotatedRectangle(
-    x: number, y: number,
-    centerX: number, centerY: number,
-    w: number, h: number,
-    rad: number
-): boolean {
-    let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
-    return pointInRectangle(rotatedPoint.x, rotatedPoint.y, centerX, centerY, w, h);
+export function pointInRect(x: number, y: number, rect: Rect): boolean {
+    let point = { x: x, y: y };
+
+    // rotate point around the center
+    if (rect.rad) {
+        point = rotatePoint(x, y, rect.x + rect.w / 2, rect.y + rect.h / 2, rect.rad);
+    }
+
+    // check if point is in rectangle
+    return point.x >= rect.x && point.x <= rect.x + rect.w &&
+        point.y >= rect.y && point.y <= rect.y + rect.h;
 }
+
 
 // Function for creating formatted logs
 interface LogOptions {
-    color?: string, 
-    background?: string, 
-    bold?: boolean, 
+    color?: string,
+    background?: string,
+    bold?: boolean,
     stringify?: boolean, // print objects as JSON
 }
 
@@ -163,3 +167,12 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
         img.src = url;
     });
 }
+
+/*
+function IntersectRect(r1:Rectangle, r2:Rectangle):Boolean {
+    return !(r2.left > r1.right
+        || r2.right < r1.left
+        || r2.top > r1.bottom
+        || r2.bottom < r1.top);
+}
+*/
