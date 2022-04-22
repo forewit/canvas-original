@@ -50,6 +50,6 @@ snake.animate(128, 128, -1, 15,
 
 board.add(layer, note, fireball);
 board.play(() => {
-    note.rad += 0.01;
+    note.rect.rad += 0.01;
 });
 board.tool("select");

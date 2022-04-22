@@ -113,21 +113,26 @@ A rectangle is defined by it's center, width, and height
 └─────────────────┘
 */
 export class Rect {
-    constructor(x, y, w, h) {
-        this._x = x;
-        this._y = y;
+    constructor(x, y, w, h, rad) {
+        this.rad = rad || 0;
         this._w = w;
         this._h = h;
-        this._left = x - w / 2;
-        this._right = x + w / 2;
-        this._top = y - h / 2;
-        this._bottom = y + h / 2;
+        this._halfw = w / 2;
+        this._halfh = h / 2;
+        this._x = x;
+        this._y = y;
+        this._left = x - this._halfw;
+        this._right = x + this.halfw;
+        this._top = y - this._halfh;
+        this._bottom = y + this._halfh;
     }
     // getters
-    get x() { return this._x; }
-    get y() { return this._y; }
     get w() { return this._w; }
     get h() { return this._h; }
+    get halfw() { return this._halfw; }
+    get halfh() { return this._halfh; }
+    get x() { return this._x; }
+    get y() { return this._y; }
     get left() { return this._left; }
     get right() { return this._right; }
     get top() { return this._top; }
@@ -135,42 +140,44 @@ export class Rect {
     // setters
     set x(x) {
         this._x = x;
-        this._left = x - this._w / 2;
-        this._right = x + this._w / 2;
+        this._left = x - this._halfw;
+        this._right = x + this._halfw;
     }
     set y(y) {
         this._y = y;
-        this._top = y - this._h / 2;
-        this._bottom = y + this._h / 2;
+        this._top = y - this._halfh;
+        this._bottom = y + this._halfh;
     }
     set w(w) {
         this._w = w;
-        this._left = this._x - w / 2;
-        this._right = this._x + w / 2;
+        this._halfw = w / 2;
+        this._left = this._x - this._halfw;
+        this._right = this._x + this._halfw;
     }
     set h(h) {
         this._h = h;
-        this._top = this._y - h / 2;
-        this._bottom = this._y + h / 2;
+        this._halfh = h / 2;
+        this._top = this._y - this._halfh;
+        this._bottom = this._y + this._halfh;
     }
     set left(left) {
         this._left = left;
-        this._x = left + this._w / 2;
+        this._x = left + this._halfw;
         this._right = left + this._w;
     }
     set right(right) {
         this._right = right;
-        this._x = right - this._w / 2;
+        this._x = right - this._halfw;
         this._left = right - this._w;
     }
     set top(top) {
         this._top = top;
-        this._y = top + this._h / 2;
+        this._y = top + this._halfh;
         this._bottom = top + this._h;
     }
     set bottom(bottom) {
         this._bottom = bottom;
-        this._y = bottom - this._h / 2;
+        this._y = bottom - this._halfh;
         this._top = bottom - this._h;
     }
 }
@@ -180,8 +187,9 @@ export function rotatePoint(x, y, pivotX, pivotY, rad) {
     let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
     return { x: nx, y: ny };
 }
-export function pointInRect(x, y, rect, rad) {
-    let rotatedPoint = rotatePoint(x, y, rect.x, rect.y, rad);
+export function pointInRect(x, y, rect) {
+    // rotate point around the rect's center
+    let rotatedPoint = rotatePoint(x, y, rect.x, rect.y, rect.rad);
     return (rotatedPoint.x >= rect.x - rect.w / 2 && rotatedPoint.x <= rect.x + rect.w / 2) &&
         (rotatedPoint.y >= rect.y - rect.h / 2 && rotatedPoint.y <= rect.y + rect.h / 2);
 }

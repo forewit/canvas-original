@@ -2,6 +2,7 @@ import { Board, Tool } from "./board.js";
 import { Layer } from "./layer.js";
 import { Entity } from "./entity.js";
 import { Note } from "./note.js";
+import { Rect } from "../modules/utils.js";
 
 import * as keys from "../modules/keys.js";
 import * as gestures from "../modules/gestures.js";
@@ -17,40 +18,39 @@ const ZOOM_INTENSITY = 0.2,
 let activeBoard: Board = null,
     activeLayer: Layer = null,
     selected: Entity[] = [],
-    handleBounds: { left: number, top: number, w: number, h: number, rad: number } = null,
-    selectBoxBounds: { left: number, top: number, right: number, bottom: number, w: number, h: number } = null,
     isPanning = false,
     lastPanTime = 0,
     vx = 0,
     vy = 0;
 
 // define handles entity
-let handles = new Entity(9999, 0, 0, 0);
+let handles = new Entity(0,0,0,0);
 handles.render = (board: Board) => {
-    if (!handleBounds) return;
+    if (!handles.enabled) return;
     let ctx = board.ctx;
 
     // draw selection box
     ctx.save();
-    ctx.translate(handleBounds.left + handleBounds.w/2, handleBounds.top + handleBounds.h/2);
-    ctx.rotate(handleBounds.rad);
+    ctx.translate(handles.rect.x, handles.rect.y);
+    ctx.rotate(handles.rect.rad);
     ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
     ctx.lineWidth = 3;
-    ctx.strokeRect(-handleBounds.w/2, -handleBounds.h/2, handleBounds.w, handleBounds.h);
+    ctx.strokeRect(-handles.rect.halfw, -handles.rect.halfh, handles.rect.w, handles.rect.h);
     ctx.restore();
 }
 
 // define selectBox entity
-let selectBox = new Entity(9999, 0, 0, 0);
+let selectBox = new Entity(0, 0, 0, 0);
 selectBox.render = (board: Board) => {
-    if (!selectBoxBounds) return;
+    if (!selectBox.enabled) return;
+    let ctx = board.ctx;
 
     // draw selection box
-    board.ctx.save();
-    board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    board.ctx.lineWidth = 3;
-    board.ctx.strokeRect(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
-    board.ctx.restore();
+    ctx.save();
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(selectBox.rect.left, selectBox.rect.top, selectBox.rect.w, selectBox.rect.h);
+    ctx.restore();
 }
 
 const enable = (board: Board, layer: Layer): void => {
@@ -70,8 +70,8 @@ const enable = (board: Board, layer: Layer): void => {
     setupKeybindings();
 
     // add UI entities
-    activeBoard.add(handles);
-    activeBoard.add(selectBox);
+    activeBoard.uiLayer.add(handles);
+    activeBoard.uiLayer.add(selectBox);
 }
 
 const disable = (): void => {
@@ -187,56 +187,56 @@ const gestureHandler = (e: CustomEvent): void => {
 }
 
 const startSelectBox = (x: number, y: number): void => {
-    selectBoxBounds = { left: x, top: y, right: x, bottom: y, w: 0, h: 0 };
+    selectBox.rect.x = x;
+    selectBox.rect.y = y;
+    selectBox.rect.w = 0;
+    selectBox.rect.h = 0;
+
+    selectBox.enabled = true;
 }
 const updateSelectBox = (x: number, y: number, dx: number, dy: number): void => {
-    if (!selectBoxBounds) return;
-
     if (dx > 0) {
         // moving right while inside the selection box
-        if (x < selectBoxBounds.right) selectBoxBounds.left += dx;
+        if (x < selectBox.rect.right) selectBox.rect.left += dx;
 
         // moving right while outside the selection box
-        else selectBoxBounds.right += dx;
+        else selectBox.rect.right += dx;
     } else {
         // moving left while inside the selection box
-        if (x > selectBoxBounds.left) selectBoxBounds.right += dx;
+        if (x > selectBox.rect.left) selectBox.rect.right += dx;
 
         // moving left while outside the selection box
-        else selectBoxBounds.left += dx;
+        else selectBox.rect.left += dx;
     }
 
     if (dy > 0) {
         // moving down while inside the selection box
-        if (y < selectBoxBounds.bottom) selectBoxBounds.top += dy;
+        if (y < selectBox.rect.bottom) selectBox.rect.top += dy;
 
         // moving down while outside the selection box
-        else selectBoxBounds.bottom += dy;
+        else selectBox.rect.bottom += dy;
     } else {
         // moving up while inside the selection box
-        if (y > selectBoxBounds.top) selectBoxBounds.bottom += dy;
+        if (y > selectBox.rect.top) selectBox.rect.bottom += dy;
 
         // moving up while outside the selection box
-        else selectBoxBounds.top += dy;
+        else selectBox.rect.top += dy;
     }
 
     // update width and height
-    selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
-    selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+    selectBox.rect.w = selectBox.rect.right - selectBox.rect.left;
+    selectBox.rect.h = selectBox.rect.bottom - selectBox.rect.top;
 
     // outline entities in the selection box
-    let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    let entities = activeLayer.rectIntersection(selectBox.rect);
     for (let entity of activeLayer.entities) {
         entity.outline = (entities.findIndex(e => e.ID === entity.ID) > -1)
     }
-
 }
 
 const endSelectBox = (): void => {
-    if (!selectBoxBounds) return;
-
     // select all entities in selection box
-    let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    let entities = activeLayer.rectIntersection(selectBox.rect);
     for (let entity of entities) {
         entity.outline = false;
         if (selected.findIndex(e => e.ID === entity.ID) > -1) continue;
@@ -244,10 +244,11 @@ const endSelectBox = (): void => {
     }
 
     // reset selection box bounds
-    selectBoxBounds = null;
+    selectBox.enabled = false;
 
     // update handles
-    handleBounds = getBounds(selected);
+    handles.rect = getBounds(selected);
+    handles.enabled = true;
 }
 
 const selectPoint = (x: number, y: number): void => {
@@ -257,7 +258,8 @@ const selectPoint = (x: number, y: number): void => {
     // select intersected entity if not already selected
     if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
         selected.push(entity);
-        handleBounds = getBounds(selected);
+        handles.rect = getBounds(selected);
+        handles.enabled = true;
     }
 
     // break target focus
@@ -270,30 +272,26 @@ const selectPoint = (x: number, y: number): void => {
 
 const clearSelection = () => {
     selected = [];
-    handleBounds = null;
+    handles.enabled = false;
 }
 
-const getBounds = (entities: Entity[]): { left: number, top: number, w: number, h: number, rad: number } => {
+const getBounds = (entities: Entity[]): Rect => {
     if (entities.length === 0) return null;
+    let bounds = new Rect (
+        entities[0].rect.x,
+        entities[0].rect.y,
+        entities[0].rect.w,
+        entities[0].rect.h,
+        entities[0].rect.rad
+    );
 
     // allow a rotated bounding box if there is only one entity
-    if (entities.length === 1) {
-        return {
-            left: entities[0].rect.x - entities[0].rect.w / 2,
-            top: entities[0].rect.y - entities[0].rect.h / 2,
-            w: entities[0].rect.w,
-            h: entities[0].rect.h,
-            rad: entities[0].rad
-        }
-    }
+    if (entities.length === 1) return bounds;
 
-    let boundingLeft = entities[0].rect.x,
-        boundingRight = entities[0].rect.x,
-        boundingTop = entities[0].rect.y,
-        boundingBottom = entities[0].rect.y;
-
+    // expand bounding box to include all entities
+    bounds.rad = 0;
     for (let entity of entities) {
-        let angle = entity.rad % (Math.PI);
+        let angle = entity.rect.rad % (Math.PI);
         if (angle > Math.PI / 2) angle = Math.PI - angle;
 
         let halfW = (Math.sin(angle) * entity.rect.h + Math.cos(angle) * entity.rect.w) / 2,
@@ -304,22 +302,13 @@ const getBounds = (entities: Entity[]): { left: number, top: number, w: number, 
             top = entity.rect.y - halfH,
             bottom = entity.rect.y + halfH;
 
-        boundingLeft = Math.min(boundingLeft, left);
-        boundingRight = Math.max(boundingRight, right);
-        boundingTop = Math.min(boundingTop, top);
-        boundingBottom = Math.max(boundingBottom, bottom);
+        bounds.left = Math.min(bounds.left, left);
+        bounds.right = Math.max(bounds.right, right);
+        bounds.top = Math.min(bounds.top, top);
+        bounds.bottom = Math.max(bounds.bottom, bottom);
     }
 
-    let width = boundingRight - boundingLeft,
-        height = boundingBottom - boundingTop;
-
-    return {
-        left: boundingTop,
-        top: boundingLeft,
-        w: width,
-        h: height,
-        rad: 0
-    }
+    return bounds;
 }
 
 const wheelToZoomFactor = (e: WheelEvent): number => {

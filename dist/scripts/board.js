@@ -8,6 +8,7 @@ export class Board {
         this.layers = [];
         this.activeLayer = null;
         this.activeTool = null;
+        this.uiLayer = new Layer();
         this.top = 0;
         this.left = 0;
         this.origin = { x: 0, y: 0 };
@@ -45,6 +46,7 @@ export class Board {
         // render layers
         for (let layer of this.layers)
             layer.render(this);
+        this.uiLayer.render(this);
         // restore canvas transforms
         this.ctx.restore();
     }

@@ -22,14 +22,16 @@ export class Note extends Entity {
     }
     render(board) {
         super.render(board);
-        let ctx = board.ctx;
+        if (!this.enabled)
+            return;
         // Add elemnent to DOM
+        let ctx = board.ctx;
         if (!this.isLoaded) {
             this.isLoaded = true;
             ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas);
         }
         // Apply transforms
         let scale = board.scale / window.devicePixelRatio, x = board.left + ((this.rect.x - board.origin.x) * scale), y = board.top + ((this.rect.y - board.origin.y) * scale);
-        this.elm.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${this.rad}rad) scale(${scale})`;
+        this.elm.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${this.rect.rad}rad) scale(${scale})`;
     }
 }

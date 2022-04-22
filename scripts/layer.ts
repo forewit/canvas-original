@@ -40,8 +40,8 @@ export class Layer {
         return null;
     }
 
-    rectIntersection(x: number, y: number, w: number, h: number): Entity[] {
-        return this.entities.filter(e => pointInRect(e.rect.x, e.rect.y, new Rect(x+w/2, y+h/2, w, h)));;
+    rectIntersection(rect: Rect): Entity[] {
+        return this.entities.filter(e => pointInRect(e.rect.x, e.rect.y, rect));;
     }
 
     duplicate(): Layer {

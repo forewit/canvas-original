@@ -15,6 +15,7 @@ export class Board {
     private activeLayer: Layer = null;
     private activeTool: Tool = null;
 
+    uiLayer = new Layer();
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     top: number = 0;
@@ -66,6 +67,7 @@ export class Board {
 
         // render layers
         for (let layer of this.layers) layer.render(this);
+        this.uiLayer.render(this);
 
         // restore canvas transforms
         this.ctx.restore();
