@@ -28,6 +28,7 @@ export class Note extends Entity {
         this.elm.remove();
     }
     render(board) {
+        super.render(board);
         let ctx = board.ctx;
         // Add elemnent to DOM
         if (!this.isLoaded) {

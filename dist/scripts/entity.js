@@ -1,4 +1,4 @@
-import { generate_ID, rotatePoint, pointInRect } from "../modules/utils.js";
+import { generate_ID, pointInRect } from "../modules/utils.js";
 export class Entity {
     constructor(x, y, w, h, rad) {
         /*
@@ -12,6 +12,7 @@ export class Entity {
         */
         this.ID = generate_ID();
         this.opacity = 1;
+        this.outline = false;
         this.x = x;
         this.y = y;
         this.w = w;
@@ -22,9 +23,6 @@ export class Entity {
     get w() { return this._w; }
     get h() { return this._h; }
     get rad() { return this._rad; }
-    get topLeft() {
-        return rotatePoint(this.x - this.w / 2, this.y - this.h / 2, this.x, this.y, this.rad);
-    }
     // setters
     set w(w) { this._w = w; }
     set h(h) { this._h = h; }
@@ -35,6 +33,17 @@ export class Entity {
     destroy() { console.error("Entity.destroy() not implemented."); }
     duplicate() { console.error("Entity.duplicate() not implemented."); return null; }
     ;
-    render(board) { console.error("Entity.render() not implemented."); }
+    render(board) {
+        // draw outline
+        if (this.outline) {
+            board.ctx.save();
+            board.ctx.translate(this.x, this.y);
+            board.ctx.rotate(this.rad);
+            board.ctx.strokeStyle = "blue";
+            board.ctx.lineWidth = 1;
+            board.ctx.strokeRect(-this.w / 2, -this.h / 2, this.w, this.h);
+            board.ctx.restore();
+        }
+    }
     ;
 }

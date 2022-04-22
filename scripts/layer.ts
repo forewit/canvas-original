@@ -5,7 +5,7 @@ import { generate_ID, pointInRect } from "../modules/utils.js";
 export class Layer {
     readonly ID: string = generate_ID();
 
-    private entities: Entity[] = [];
+    entities: Entity[] = [];
 
     add(...entities: Entity[]): void {
         for (let entity of entities) {

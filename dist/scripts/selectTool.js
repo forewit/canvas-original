@@ -14,12 +14,15 @@ let handles = new Entity(9999, 0, 0, 0);
 handles.render = (board) => {
     if (!handleBounds)
         return;
+    let ctx = board.ctx;
     // draw selection box
-    board.ctx.save();
-    board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    board.ctx.lineWidth = 3;
-    board.ctx.strokeRect(handleBounds.left, handleBounds.top, handleBounds.w, handleBounds.h);
-    board.ctx.restore();
+    ctx.save();
+    ctx.translate(handleBounds.left + handleBounds.w / 2, handleBounds.top + handleBounds.h / 2);
+    ctx.rotate(handleBounds.rad);
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(-handleBounds.w / 2, -handleBounds.h / 2, handleBounds.w, handleBounds.h);
+    ctx.restore();
 };
 // define selectBox entity
 let selectBox = new Entity(9999, 0, 0, 0);
@@ -123,6 +126,7 @@ const gestureHandler = (e) => {
         case "longclick-drag-start":
         case "left-click-drag-start":
         case "right-click-drag-start":
+        case "longpress-drag-start":
             if (!keys.down["Shift"])
                 clearSelection();
             startSelectBox(x, y);
@@ -130,11 +134,13 @@ const gestureHandler = (e) => {
         case "longpress-dragging":
         case "left-click-dragging":
         case "right-click-dragging":
+        case "longpress-dragging":
             updateSelectBox(x, y, dx, dy);
             break;
         case "longpress-drag-end":
         case "left-click-drag-end":
         case "right-click-drag-end":
+        case "longpress-drag-end":
             endSelectBox();
             break;
     }
@@ -180,6 +186,11 @@ const updateSelectBox = (x, y, dx, dy) => {
     // update width and height
     selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
     selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+    // outline entities in the selection box
+    let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    for (let entity of activeLayer.entities) {
+        entity.outline = (entities.findIndex(e => e.ID === entity.ID) > -1);
+    }
 };
 const endSelectBox = () => {
     if (!selectBoxBounds)
@@ -187,13 +198,15 @@ const endSelectBox = () => {
     // select all entities in selection box
     let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
     for (let entity of entities) {
+        entity.outline = false;
         if (selected.findIndex(e => e.ID === entity.ID) > -1)
             continue;
         selected.push(entity);
     }
-    console.log(selected);
     // reset selection box bounds
     selectBoxBounds = null;
+    // update handles
+    handleBounds = getBounds(selected);
 };
 const selectPoint = (x, y) => {
     // check active layer for intersections
@@ -210,7 +223,6 @@ const selectPoint = (x, y) => {
         // focus on note if it is selected
         entity.elm.focus();
     }
-    console.log("Selected:", selected);
 };
 const clearSelection = () => {
     selected = [];
@@ -219,6 +231,16 @@ const clearSelection = () => {
 const getBounds = (entities) => {
     if (entities.length === 0)
         return null;
+    // allow a rotated bounding box if there is only one entity
+    if (entities.length === 1) {
+        return {
+            left: entities[0].x - entities[0].w / 2,
+            top: entities[0].y - entities[0].h / 2,
+            w: entities[0].w,
+            h: entities[0].h,
+            rad: entities[0].rad
+        };
+    }
     let boundingLeft = entities[0].x, boundingRight = entities[0].x, boundingTop = entities[0].y, boundingBottom = entities[0].y;
     for (let entity of entities) {
         let angle = entity.rad % (Math.PI);
@@ -236,7 +258,8 @@ const getBounds = (entities) => {
         left: boundingTop,
         top: boundingLeft,
         w: width,
-        h: height
+        h: height,
+        rad: 0
     };
 };
 const wheelToZoomFactor = (e) => {

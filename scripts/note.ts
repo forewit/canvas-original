@@ -34,6 +34,7 @@ export class Note extends Entity {
     }
 
     render(board: Board) {
+        super.render(board);
         let ctx = board.ctx;
 
         // Add elemnent to DOM

@@ -57,6 +57,7 @@ export class Sprite extends Entity {
 
     // override
     render(board: Board): void {
+        super.render(board);
         if (!this.isLoaded || this.frames.length == 0) return;
 
         if (this.repeat != 0) {

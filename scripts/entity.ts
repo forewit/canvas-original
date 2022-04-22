@@ -15,6 +15,7 @@ export class Entity {
     readonly ID: string = generate_ID();
 
     opacity: number = 1;
+    outline: boolean = false;
     x: number;
     y: number;
 
@@ -26,9 +27,6 @@ export class Entity {
     get w(): number { return this._w; }
     get h(): number { return this._h; }
     get rad(): number { return this._rad; }
-    get topLeft(): {x: number, y: number} {
-        return rotatePoint(this.x - this.w / 2, this.y - this.h / 2, this.x, this.y, this.rad);
-    }
 
     // setters
     set w(w: number) { this._w = w; }
@@ -49,5 +47,16 @@ export class Entity {
     }
     destroy(): void { console.error("Entity.destroy() not implemented.") }
     duplicate(): Entity { console.error("Entity.duplicate() not implemented."); return null; };
-    render(board: Board): void { console.error("Entity.render() not implemented.") };
+    render(board: Board): void { 
+        // draw outline
+        if (this.outline) {
+            board.ctx.save();
+            board.ctx.translate(this.x, this.y);
+            board.ctx.rotate(this.rad);
+            board.ctx.strokeStyle = "blue";
+            board.ctx.lineWidth = 1;
+            board.ctx.strokeRect(-this.w / 2, -this.h / 2, this.w, this.h);
+            board.ctx.restore();
+        }
+    };
 }

@@ -1,13 +1,15 @@
 # RPCanvas
 ### TODO
-- [X] draw selection bounding box
 - [ ] resizing entities
-- [X] drag-n-drop select box
-- [X] fix inertia bug (keeps inertia when stopped)
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
+- [ ] move handles into it's own clase so that it can dynamically change with the selection
+- [X] add outlines while drawing selection box
+- [X] draw selection bounding box
+- [X] drag-n-drop select box
+- [X] fix inertia bug (keeps inertia when stopped)
 - [X] fix issue with zoom / transform scale() with iOS and firefox
-- [ ] add render option to entities so they can draw an outline
+- [X] add render option to entities so they can draw an outline
 
 ### [Optimizations](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
 - [ ] draw inactive layers offscreen
@@ -16,3 +18,4 @@
 - [ ] update notes only if the canvas is moved
 - [ ] skip render loop if nothing is happening
 - [ ] skip rendering an entity if it's not visible
+- [ ] when checking for intersections, limit to on screen entities. Update onscreen entities on pan?
