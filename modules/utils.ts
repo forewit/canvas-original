@@ -52,11 +52,11 @@ export function rotatePoint(
     pivotX: number, pivotY: number,
     rad: number
 ): { x: number, y: number } {
+    if (!rad) return { x: x, y: y };
     let cos = Math.cos(rad),
         sin = Math.sin(rad),
         nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX,
         ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
-
     return { x: nx, y: ny };
 }
 
@@ -69,23 +69,15 @@ A rectangle is defined by it's center, width, and height, and angle in radians
 │                 |
 └─────────────────┘
 */
-export function pointInRectangle(
-    x: number, y: number,
-    centerX: number, centerY: number,
-    w: number, h: number
-): boolean {
-    return (x >= centerX - w / 2 && x <= centerX + w / 2) &&
-        (y >= centerY - h / 2 && y <= centerY + h / 2);
-}
-
-export function pointInRotatedRectangle(
+export function pointInRect(
     x: number, y: number,
     centerX: number, centerY: number,
     w: number, h: number,
-    rad: number
+    rad?: number
 ): boolean {
     let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
-    return pointInRectangle(rotatedPoint.x, rotatedPoint.y, centerX, centerY, w, h);
+    return (rotatedPoint.x >= centerX - w / 2 && rotatedPoint.x <= centerX + w / 2) &&
+        (rotatedPoint.y >= centerY - h / 2 && rotatedPoint.y <= centerY + h / 2);
 }
 
 // Function for creating formatted logs

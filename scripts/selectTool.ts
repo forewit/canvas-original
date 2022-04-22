@@ -224,7 +224,7 @@ const getBounds = (entities: Entity[]): { left: number, top: number, w: number, 
         boundingBottom = entities[0].y;
 
     for (let entity of entities) {
-        let angle = entity.angle % (Math.PI);
+        let angle = entity.rad % (Math.PI);
         if (angle > Math.PI / 2) angle = Math.PI - angle;
 
         let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2,

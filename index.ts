@@ -49,6 +49,6 @@ snake.animate(128, 128, -1, 15,
 );
 board.add(layer, note);
 board.play(() => {
-    //note.angle += 0.01;
+    note.rad += 0.01;
 });
 board.tool("select");

@@ -36,7 +36,7 @@ export class Sprite extends Entity {
     }
     // override 
     duplicate() {
-        let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.angle);
+        let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.rad);
         if (this.frames.length > 0)
             sprite.animate(this.frameW, this.frameH, this.repeat, 1000 / this.interval, ...this.frames);
         return sprite;
@@ -68,7 +68,7 @@ export class Sprite extends Entity {
         ctx.save();
         ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle);
+        ctx.rotate(this.rad);
         ctx.drawImage(this.image, this.frameX, this.frameY, this.frameW, this.frameH, -this.w / 2, -this.h / 2, this.w, this.h);
         ctx.restore();
     }

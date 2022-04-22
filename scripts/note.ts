@@ -47,6 +47,6 @@ export class Note extends Entity {
             x = board.left + ((this.x - board.origin.x) * scale),
             y = board.top + ((this.y - board.origin.y) * scale);
         
-        this.elm.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${this.angle}rad) scale(${scale})`;
+        this.elm.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${this.rad}rad) scale(${scale})`;
     }
 }
