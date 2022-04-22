@@ -155,3 +155,86 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
         img.src = url;
     });
 }
+
+/*
+A rectangle is defined by it's center, width, and height
+        w
+┌─────────────────┐
+│                 │
+│       *(x, y)   | h
+│                 |
+└─────────────────┘
+*/
+export class Rect {
+    _x: number;
+    _y: number;
+    _w: number;
+    _h: number;
+    _left: number;
+    _right: number;
+    _top: number;
+    _bottom: number;
+
+    // getters
+    get x(): number { return this._x; }
+    get y(): number { return this._y; }
+    get w(): number { return this._w; }
+    get h(): number { return this._h; }
+    get left(): number { return this._left; }
+    get right(): number { return this._right; }
+    get top(): number { return this._top; }
+    get bottom(): number { return this._bottom; }
+
+    // setters
+    set x(x: number) {
+        this._x = x;
+        this._left = x - this._w / 2;
+        this._right = x + this._w / 2;
+    }
+    set y(y: number) {
+        this._y = y;
+        this._top = y - this._h / 2;
+        this._bottom = y + this._h / 2;
+    }
+    set w(w: number) {
+        this._w = w;
+        this._left = this._x - w / 2;
+        this._right = this._x + w / 2;
+    }
+    set h(h: number) {
+        this._h = h;
+        this._top = this._y - h / 2;
+        this._bottom = this._y + h / 2;
+    }
+    set left(left: number) {
+        this._left = left;
+        this._x = left + this._w / 2;
+        this._right = left + this._w;
+    }
+    set right(right: number) {
+        this._right = right;
+        this._x = right - this._w / 2;
+        this._left = right - this._w;
+    }
+    set top(top: number) {
+        this._top = top;
+        this._y = top + this._h / 2;
+        this._bottom = top + this._h;
+    }
+    set bottom(bottom: number) {
+        this._bottom = bottom;
+        this._y = bottom - this._h / 2;
+        this._top = bottom - this._h;
+    }
+
+    constructor(x: number, y: number, w: number, h: number) {
+        this._x = x;
+        this._y = y;
+        this._w = w;
+        this._h = h;
+        this._left = x - w / 2;
+        this._right = x + w / 2;
+        this._top = y - h / 2;
+        this._bottom = y + h / 2;
+    }
+}

@@ -124,3 +124,74 @@ export function loadImage(url) {
         img.src = url;
     });
 }
+/*
+A rectangle is defined by it's center, width, and height
+        w
+┌─────────────────┐
+│                 │
+│       *(x, y)   | h
+│                 |
+└─────────────────┘
+*/
+export class Rect {
+    constructor(x, y, w, h) {
+        this._x = x;
+        this._y = y;
+        this._w = w;
+        this._h = h;
+        this._left = x - w / 2;
+        this._right = x + w / 2;
+        this._top = y - h / 2;
+        this._bottom = y + h / 2;
+    }
+    // getters
+    get x() { return this._x; }
+    get y() { return this._y; }
+    get w() { return this._w; }
+    get h() { return this._h; }
+    get left() { return this._left; }
+    get right() { return this._right; }
+    get top() { return this._top; }
+    get bottom() { return this._bottom; }
+    // setters
+    set x(x) {
+        this._x = x;
+        this._left = x - this._w / 2;
+        this._right = x + this._w / 2;
+    }
+    set y(y) {
+        this._y = y;
+        this._top = y - this._h / 2;
+        this._bottom = y + this._h / 2;
+    }
+    set w(w) {
+        this._w = w;
+        this._left = this._x - w / 2;
+        this._right = this._x + w / 2;
+    }
+    set h(h) {
+        this._h = h;
+        this._top = this._y - h / 2;
+        this._bottom = this._y + h / 2;
+    }
+    set left(left) {
+        this._left = left;
+        this._x = left + this._w / 2;
+        this._right = left + this._w;
+    }
+    set right(right) {
+        this._right = right;
+        this._x = right - this._w / 2;
+        this._left = right - this._w;
+    }
+    set top(top) {
+        this._top = top;
+        this._y = top + this._h / 2;
+        this._bottom = top + this._h;
+    }
+    set bottom(bottom) {
+        this._bottom = bottom;
+        this._y = bottom - this._h / 2;
+        this._top = bottom - this._h;
+    }
+}
