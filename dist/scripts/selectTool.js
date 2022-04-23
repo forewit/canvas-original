@@ -119,7 +119,7 @@ const gestureHandler = (e) => {
     }
 };
 const dragSelectStart = (x, y) => {
-    selectBox.reset(x, y);
+    selectBox.resetBounds(x, y);
     selectBox.enabled = true;
 };
 const dragSelect = (x, y, dx, dy) => {

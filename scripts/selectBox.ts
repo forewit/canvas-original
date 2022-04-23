@@ -8,11 +8,12 @@ export class SelectBox extends Entity {
         this.enabled = false;
     }
     
-    reset(x: number, y: number) {
+    resetBounds(x: number, y: number) {
         this.rect.x = x;
         this.rect.y = y;
         this.rect.w = 0;
         this.rect.h = 0;
+        this.rect.rad = 0;
     }
 
     updateBounds(x: number, y: number, dx: number, dy: number) {

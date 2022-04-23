@@ -160,7 +160,7 @@ const gestureHandler = (e: CustomEvent): void => {
 }
 
 const dragSelectStart = (x: number, y: number): void => {
-    selectBox.reset(x, y);
+    selectBox.resetBounds(x, y);
     selectBox.enabled = true;
 }
 const dragSelect = (x: number, y: number, dx: number, dy: number): void => {
