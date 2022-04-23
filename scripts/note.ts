@@ -6,8 +6,8 @@ export class Note extends Entity {
     elm: HTMLElement;
     isLoaded = false;
 
-    constructor(elm: HTMLElement, x: number, y: number, w: number, h: number, angle?: number) {
-        super(x, y, w, h, angle);
+    constructor(elm: HTMLElement, x: number, y: number, w: number, h: number, rad?: number) {
+        super(x, y, w, h, rad);
 
         // The Note will be added to the canvas but transforms 
         // will be applied to it's DOM element.

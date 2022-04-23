@@ -3,6 +3,8 @@ import { Layer } from "./layer.js";
 import { Entity } from "./entity.js";
 import { Note } from "./note.js";
 import { Rect } from "../modules/utils.js";
+import { Handle } from "./handle.js";
+import { SelectBox } from "./selectBox.js";
 
 import * as keys from "../modules/keys.js";
 import * as gestures from "../modules/gestures.js";
@@ -17,41 +19,15 @@ const ZOOM_INTENSITY = 0.2,
 // state management
 let activeBoard: Board = null,
     activeLayer: Layer = null,
+    handle = new Handle(),
+    selectBox = new SelectBox(),
     selected: Entity[] = [],
     isPanning = false,
     lastPanTime = 0,
     vx = 0,
     vy = 0;
 
-// define handles entity
-let handles = new Entity(0,0,0,0);
-handles.render = (board: Board) => {
-    if (!handles.enabled) return;
-    let ctx = board.ctx;
-
-    // draw selection box
-    ctx.save();
-    ctx.translate(handles.rect.x, handles.rect.y);
-    ctx.rotate(handles.rect.rad);
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(-handles.rect.halfw, -handles.rect.halfh, handles.rect.w, handles.rect.h);
-    ctx.restore();
-}
-
-// define selectBox entity
-let selectBox = new Entity(0, 0, 0, 0);
-selectBox.render = (board: Board) => {
-    if (!selectBox.enabled) return;
-    let ctx = board.ctx;
-
-    // draw selection box
-    ctx.save();
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(selectBox.rect.left, selectBox.rect.top, selectBox.rect.w, selectBox.rect.h);
-    ctx.restore();
-}
+console.log(handle);
 
 const enable = (board: Board, layer: Layer): void => {
     // reset state
@@ -70,7 +46,7 @@ const enable = (board: Board, layer: Layer): void => {
     setupKeybindings();
 
     // add UI entities
-    activeBoard.uiLayer.add(handles);
+    activeBoard.uiLayer.add(handle);
     activeBoard.uiLayer.add(selectBox);
 }
 
@@ -84,8 +60,8 @@ const disable = (): void => {
         keys.unbind("Control+r, Control+R, Meta+r, Meta+R, Control+a, Control+A, Meta+a, Meta+A");
 
         // remove UI entities
-        activeBoard.destroy(handles);
-        activeBoard.destroy(selectBox);
+        activeBoard.uiLayer.destroy(handle);
+        activeBoard.uiLayer.destroy(selectBox);
     }
 }
 
@@ -167,65 +143,28 @@ const gestureHandler = (e: CustomEvent): void => {
         case "right-click-drag-start":
         case "longpress-drag-start":
             if (!keys.down["Shift"]) clearSelection();
-            startSelectBox(x, y);
+            selectBox.reset(x, y);
             break;
 
         case "longpress-dragging":
         case "left-click-dragging":
         case "right-click-dragging":
         case "longpress-dragging":
-            updateSelectBox(x,y,dx, dy);
+            dragSelect(x,y,dx, dy);
             break;
 
         case "longpress-drag-end":
         case "left-click-drag-end":
         case "right-click-drag-end":
         case "longpress-drag-end":
-            endSelectBox();
+            endDragSelect();
             break;
     }
 }
 
-const startSelectBox = (x: number, y: number): void => {
-    selectBox.rect.x = x;
-    selectBox.rect.y = y;
-    selectBox.rect.w = 0;
-    selectBox.rect.h = 0;
 
-    selectBox.enabled = true;
-}
-const updateSelectBox = (x: number, y: number, dx: number, dy: number): void => {
-    if (dx > 0) {
-        // moving right while inside the selection box
-        if (x < selectBox.rect.right) selectBox.rect.left += dx;
-
-        // moving right while outside the selection box
-        else selectBox.rect.right += dx;
-    } else {
-        // moving left while inside the selection box
-        if (x > selectBox.rect.left) selectBox.rect.right += dx;
-
-        // moving left while outside the selection box
-        else selectBox.rect.left += dx;
-    }
-
-    if (dy > 0) {
-        // moving down while inside the selection box
-        if (y < selectBox.rect.bottom) selectBox.rect.top += dy;
-
-        // moving down while outside the selection box
-        else selectBox.rect.bottom += dy;
-    } else {
-        // moving up while inside the selection box
-        if (y > selectBox.rect.top) selectBox.rect.bottom += dy;
-
-        // moving up while outside the selection box
-        else selectBox.rect.top += dy;
-    }
-
-    // update width and height
-    selectBox.rect.w = selectBox.rect.right - selectBox.rect.left;
-    selectBox.rect.h = selectBox.rect.bottom - selectBox.rect.top;
+const dragSelect = (x: number, y: number, dx: number, dy: number): void => {
+    selectBox.updateBounds(x, y, dx, dy);
 
     // outline entities in the selection box
     let entities = activeLayer.rectIntersection(selectBox.rect);
@@ -234,7 +173,7 @@ const updateSelectBox = (x: number, y: number, dx: number, dy: number): void => 
     }
 }
 
-const endSelectBox = (): void => {
+const endDragSelect = (): void => {
     // select all entities in selection box
     let entities = activeLayer.rectIntersection(selectBox.rect);
     for (let entity of entities) {
@@ -243,12 +182,12 @@ const endSelectBox = (): void => {
         selected.push(entity);
     }
 
-    // reset selection box bounds
+    // disable selection box
     selectBox.enabled = false;
 
-    // update handles
-    handles.rect = getBounds(selected);
-    handles.enabled = true;
+    // update and enable handles
+    handle.updateBounds(selected);
+    handle.enabled = true;
 }
 
 const selectPoint = (x: number, y: number): void => {
@@ -258,8 +197,8 @@ const selectPoint = (x: number, y: number): void => {
     // select intersected entity if not already selected
     if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
         selected.push(entity);
-        handles.rect = getBounds(selected);
-        handles.enabled = true;
+        handle.updateBounds(selected);
+        handle.enabled = true;
     }
 
     // break target focus
@@ -272,43 +211,7 @@ const selectPoint = (x: number, y: number): void => {
 
 const clearSelection = () => {
     selected = [];
-    handles.enabled = false;
-}
-
-const getBounds = (entities: Entity[]): Rect => {
-    if (entities.length === 0) return null;
-    let bounds = new Rect (
-        entities[0].rect.x,
-        entities[0].rect.y,
-        entities[0].rect.w,
-        entities[0].rect.h,
-        entities[0].rect.rad
-    );
-
-    // allow a rotated bounding box if there is only one entity
-    if (entities.length === 1) return bounds;
-
-    // expand bounding box to include all entities
-    bounds.rad = 0;
-    for (let entity of entities) {
-        let angle = entity.rect.rad % (Math.PI);
-        if (angle > Math.PI / 2) angle = Math.PI - angle;
-
-        let halfW = (Math.sin(angle) * entity.rect.h + Math.cos(angle) * entity.rect.w) / 2,
-            halfH = (Math.sin(angle) * entity.rect.w + Math.cos(angle) * entity.rect.h) / 2;
-
-        let left = entity.rect.x - halfW,
-            right = entity.rect.x + halfW,
-            top = entity.rect.y - halfH,
-            bottom = entity.rect.y + halfH;
-
-        bounds.left = Math.min(bounds.left, left);
-        bounds.right = Math.max(bounds.right, right);
-        bounds.top = Math.min(bounds.top, top);
-        bounds.bottom = Math.max(bounds.bottom, bottom);
-    }
-
-    return bounds;
+    handle.enabled = false;
 }
 
 const wheelToZoomFactor = (e: WheelEvent): number => {

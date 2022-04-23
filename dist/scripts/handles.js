@@ -1,20 +1,18 @@
+// Note's allow you to add a DOM element as an Entity.
 import { Entity } from "./entity.js";
-export class Handles extends Entity {
+export class Handle extends Entity {
     render(board) {
-        console.error("Entity.render() not implemented.");
-        let ctx = board.ctx, halfw = this.w / 2, halfh = this.h / 2, size = 10 / board.scale;
-        // save and adjust canvas transforms
+        super.render(board);
+        if (!this.enabled)
+            return;
+        // draw selection box
+        let ctx = board.ctx;
         ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle);
-        // draw handles to canvas
-        ctx.beginPath();
-        ctx.rect(-halfw, -halfh, this.w, this.h);
-        ctx.rect(-size - halfw, -size - halfh, this.w + size * 2, this.h + size * 2);
-        ctx.rect(size - halfw, size - halfh, this.w - size * 2, this.h - size * 2);
-        ctx.stroke();
-        // restore canvas transforms
+        ctx.translate(this.rect.x, this.rect.y);
+        ctx.rotate(this.rect.rad);
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(-this.rect.halfw, -this.rect.halfh, this.rect.w, this.rect.h);
         ctx.restore();
     }
-    ;
 }

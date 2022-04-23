@@ -1,8 +1,8 @@
 // Note's allow you to add a DOM element as an Entity.
 import { Entity } from "./entity.js";
 export class Note extends Entity {
-    constructor(elm, x, y, w, h, angle) {
-        super(x, y, w, h, angle);
+    constructor(elm, x, y, w, h, rad) {
+        super(x, y, w, h, rad);
         this.isLoaded = false;
         // The Note will be added to the canvas but transforms 
         // will be applied to it's DOM element.

@@ -160,25 +160,53 @@ export class Rect {
         this._top = this._y - this._halfh;
         this._bottom = this._y + this._halfh;
     }
+    // setting left will change the size of the rectangle
     set left(left) {
-        this._left = left;
-        this._x = left + this._halfw;
-        this._right = left + this._w;
+        if (left <= this._right) {
+            this._left = left;
+            this._w = this._right - this._left;
+            this._halfw = this._w / 2;
+            this._x = this._left + this._halfw;
+        }
+        else {
+            console.error('left must be less than right');
+        }
     }
+    // setting right will change the size of the rectangle
     set right(right) {
-        this._right = right;
-        this._x = right - this._halfw;
-        this._left = right - this._w;
+        if (right >= this._left) {
+            this._right = right;
+            this._w = this._right - this._left;
+            this._halfw = this._w / 2;
+            this._x = this._left + this._halfw;
+        }
+        else {
+            console.error('right must be greater than left');
+        }
     }
+    // setting top will change the size of the rectangle
     set top(top) {
-        this._top = top;
-        this._y = top + this._halfh;
-        this._bottom = top + this._h;
+        if (top <= this._bottom) {
+            this._top = top;
+            this._h = this._bottom - this._top;
+            this._halfh = this._h / 2;
+            this._y = this._top + this._halfh;
+        }
+        else {
+            console.error('top must be less than bottom');
+        }
     }
+    // setting bottom will change the size of the rectangle
     set bottom(bottom) {
-        this._bottom = bottom;
-        this._y = bottom - this._halfh;
-        this._top = bottom - this._h;
+        if (bottom >= this._top) {
+            this._bottom = bottom;
+            this._h = this._bottom - this._top;
+            this._halfh = this._h / 2;
+            this._y = this._top + this._halfh;
+        }
+        else {
+            console.error('bottom must be greater than top');
+        }
     }
 }
 export function rotatePoint(x, y, pivotX, pivotY, rad) {
@@ -190,6 +218,6 @@ export function rotatePoint(x, y, pivotX, pivotY, rad) {
 export function pointInRect(x, y, rect) {
     // rotate point around the rect's center
     let rotatedPoint = rotatePoint(x, y, rect.x, rect.y, rect.rad);
-    return (rotatedPoint.x >= rect.x - rect.w / 2 && rotatedPoint.x <= rect.x + rect.w / 2) &&
-        (rotatedPoint.y >= rect.y - rect.h / 2 && rotatedPoint.y <= rect.y + rect.h / 2);
+    return (rotatedPoint.x >= rect.x - rect.halfw && rotatedPoint.x <= rect.x + rect.halfw) &&
+        (rotatedPoint.y >= rect.y - rect.halfh && rotatedPoint.y <= rect.y + rect.halfh);
 }
