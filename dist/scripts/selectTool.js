@@ -10,7 +10,6 @@ INERTIA_TIMEOUT = 30, // ms
 EPSILON = 0.01; // replacement for 0 to prevent divide-by-zero errors
 // state management
 let activeBoard = null, activeLayer = null, handle = new Handle(), selectBox = new SelectBox(), selected = [], isPanning = false, lastPanTime = 0, vx = 0, vy = 0;
-console.log(handle);
 const enable = (board, layer) => {
     // reset state
     activeBoard = board;
@@ -72,53 +71,56 @@ const gestureHandler = (e) => {
                 clearSelection();
             selectPoint(x, y);
             break;
-        case "longclick":
-            activeBoard.canvas.style.cursor = "grabbing";
-            break;
-        case "longclick-release":
-            activeBoard.canvas.style.cursor = "";
-            break;
-        case "longclick-dragging":
+        case "right-click-dragging":
         case "touch-dragging":
         case "middle-click-dragging":
             activeBoard.canvas.style.cursor = "grabbing";
             pan(dx, dy);
             break;
+        case "right-click-drag-end":
+        case "middle-click-drag-end":
+        case "touch-drag-end":
+            activeBoard.canvas.style.cursor = "";
+            endPanning();
+            break;
         case "pinching":
             activeBoard.zoom(x, y, zoom);
             pan(dx, dy);
             break;
+        case "pinch-end":
+            endPanning();
+            break;
         case "wheel":
             activeBoard.zoom(x, y, wheelToZoomFactor(event));
             break;
-        case "longclick-drag-end":
-        case "middle-click-drag-end":
-        case "touch-drag-end":
-        case "pinch-end":
+        case "longclick":
+            activeBoard.canvas.style.cursor = "crosshair";
+            break;
+        case "longclick-release":
             activeBoard.canvas.style.cursor = "";
-            endPanning();
             break;
         case "longclick-drag-start":
         case "left-click-drag-start":
-        case "right-click-drag-start":
         case "longpress-drag-start":
             if (!keys.down["Shift"])
                 clearSelection();
-            selectBox.reset(x, y);
+            dragSelectStart(x, y);
             break;
-        case "longpress-dragging":
+        case "longclick-dragging":
         case "left-click-dragging":
-        case "right-click-dragging":
         case "longpress-dragging":
             dragSelect(x, y, dx, dy);
             break;
-        case "longpress-drag-end":
+        case "longclick-drag-end":
         case "left-click-drag-end":
-        case "right-click-drag-end":
         case "longpress-drag-end":
             endDragSelect();
             break;
     }
+};
+const dragSelectStart = (x, y) => {
+    selectBox.reset(x, y);
+    selectBox.enabled = true;
 };
 const dragSelect = (x, y, dx, dy) => {
     selectBox.updateBounds(x, y, dx, dy);

@@ -2,7 +2,6 @@ import { Board, Tool } from "./board.js";
 import { Layer } from "./layer.js";
 import { Entity } from "./entity.js";
 import { Note } from "./note.js";
-import { Rect } from "../modules/utils.js";
 import { Handle } from "./handle.js";
 import { SelectBox } from "./selectBox.js";
 
@@ -26,8 +25,6 @@ let activeBoard: Board = null,
     lastPanTime = 0,
     vx = 0,
     vy = 0;
-
-console.log(handle);
 
 const enable = (board: Board, layer: Layer): void => {
     // reset state
@@ -106,63 +103,66 @@ const gestureHandler = (e: CustomEvent): void => {
             selectPoint(x, y);
             break;
 
-        case "longclick":
-            activeBoard.canvas.style.cursor = "grabbing";
-            break;
-        
-        case "longclick-release":
-            activeBoard.canvas.style.cursor = "";
-            break;
-
-        case "longclick-dragging":
+        case "right-click-dragging":
         case "touch-dragging":
         case "middle-click-dragging":
             activeBoard.canvas.style.cursor = "grabbing";
             pan(dx, dy);
             break;
 
+        case "right-click-drag-end":
+        case "middle-click-drag-end":
+        case "touch-drag-end":
+            activeBoard.canvas.style.cursor = "";
+            endPanning();
+            break;
+
         case "pinching":
             activeBoard.zoom(x, y, zoom);
             pan(dx, dy);
+            break;
+        
+        case "pinch-end":
+            endPanning();
             break;
 
         case "wheel":
             activeBoard.zoom(x, y, wheelToZoomFactor(event));
             break;
 
-        case "longclick-drag-end":
-        case "middle-click-drag-end":
-        case "touch-drag-end":
-        case "pinch-end":
+        case "longclick":
+            activeBoard.canvas.style.cursor = "crosshair";
+            break;
+        
+        case "longclick-release":
             activeBoard.canvas.style.cursor = "";
-            endPanning();
             break;
 
         case "longclick-drag-start":
         case "left-click-drag-start":
-        case "right-click-drag-start":
         case "longpress-drag-start":
             if (!keys.down["Shift"]) clearSelection();
-            selectBox.reset(x, y);
+            dragSelectStart(x, y);
             break;
 
-        case "longpress-dragging":
+        case "longclick-dragging":
         case "left-click-dragging":
-        case "right-click-dragging":
         case "longpress-dragging":
-            dragSelect(x,y,dx, dy);
+            dragSelect(x, y, dx, dy);
             break;
 
-        case "longpress-drag-end":
+        case "longclick-drag-end":
         case "left-click-drag-end":
-        case "right-click-drag-end":
         case "longpress-drag-end":
             endDragSelect();
             break;
     }
 }
 
-
+const dragSelectStart = (x: number, y: number): void => {
+    selectBox.reset(x, y);
+    selectBox.enabled = true;
+}
 const dragSelect = (x: number, y: number, dx: number, dy: number): void => {
     selectBox.updateBounds(x, y, dx, dy);
 
@@ -203,7 +203,7 @@ const selectPoint = (x: number, y: number): void => {
 
     // break target focus
     if (selected.length == 0) (document.activeElement as HTMLElement).blur();
-    else if (entity instanceof Note) { 
+    else if (entity instanceof Note) {
         // focus on note if it is selected
         entity.elm.focus();
     }

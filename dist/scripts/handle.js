@@ -1,13 +1,16 @@
 // Note's allow you to add a DOM element as an Entity.
 import { Entity } from "./entity.js";
+import { Rect } from "../modules/utils.js";
 export class Handle extends Entity {
     constructor() {
         super(0, 0, 0, 0);
         this.enabled = false;
     }
     updateBounds(entities) {
-        if (entities.length === 0)
+        if (entities.length === 0) {
+            this.rect = new Rect(0, 0, 0, 0);
             return null;
+        }
         this.rect.x = entities[0].rect.x;
         this.rect.y = entities[0].rect.y;
         this.rect.w = entities[0].rect.w;

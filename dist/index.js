@@ -23,3 +23,4 @@ board.play(() => {
     note.rect.rad += 0.01;
 });
 board.tool("select");
+globalThis.board = board;

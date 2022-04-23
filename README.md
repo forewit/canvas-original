@@ -4,6 +4,7 @@
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
 - [ ] move handles into it's own class so that it can dynamically change with the selection
+- [ ] change inertia based on frame rate
 - [X] add rectangle class
 - [X] add outlines while drawing selection box
 - [X] draw selection bounding box

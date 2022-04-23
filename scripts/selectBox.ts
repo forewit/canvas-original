@@ -13,7 +13,6 @@ export class SelectBox extends Entity {
         this.rect.y = y;
         this.rect.w = 0;
         this.rect.h = 0;
-        this.enabled = true;
     }
 
     updateBounds(x: number, y: number, dx: number, dy: number) {
@@ -57,7 +56,7 @@ export class SelectBox extends Entity {
 
         // draw selection box
         ctx.save();
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+        ctx.strokeStyle = "rgba(100, 0, 100, 0.2)";
         ctx.lineWidth = 3;
         ctx.strokeRect(this.rect.left, this.rect.top, this.rect.w, this.rect.h);
         ctx.restore();

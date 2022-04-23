@@ -10,7 +10,11 @@ export class Handle extends Entity {
     }
 
     updateBounds(entities: Entity[]) {
-        if (entities.length === 0) return null;
+        if (entities.length === 0){
+            this.rect = new Rect(0, 0, 0, 0);
+            return null;
+        }
+
         this.rect.x = entities[0].rect.x;
         this.rect.y = entities[0].rect.y;
         this.rect.w = entities[0].rect.w;
