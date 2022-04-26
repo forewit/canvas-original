@@ -8,6 +8,7 @@ export class Note extends Entity {
         // will be applied to it's DOM element.
         this.elm = elm;
         this.elm.style.transformOrigin = "center";
+        this.elm.style.pointerEvents = "none";
         // Set width and height again now that the element is set
         this.resize();
     }
@@ -25,13 +26,12 @@ export class Note extends Entity {
         if (!this.enabled)
             return;
         // Add elemnent to DOM
-        let ctx = board.ctx;
         if (!this.isLoaded) {
             this.isLoaded = true;
-            ctx.canvas.parentNode.insertBefore(this.elm, ctx.canvas);
+            board.div.appendChild(this.elm);
         }
         // Apply transforms
-        let scale = board.scale / window.devicePixelRatio, x = board.left + ((this.rect.x - board.origin.x) * scale), y = board.top + ((this.rect.y - board.origin.y) * scale);
+        let scale = board.scale / window.devicePixelRatio, x = (this.rect.x - board.origin.x) * scale, y = (this.rect.y - board.origin.y) * scale;
         this.elm.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${this.rect.rad}rad) scale(${scale})`;
     }
 }

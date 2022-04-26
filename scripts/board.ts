@@ -8,6 +8,27 @@ export interface Tool {
     disable(): void;
 }
 
+// ******* FPS COUNTER *********
+let start = performance.now(),
+    previous = start,
+    ticks = 0,
+    FPS = 0;
+
+const updateFPS = () => {
+    let now = performance.now(),
+        delta = now - previous;
+
+    if (delta >= 1000) {
+        previous = now;
+        FPS = ticks;
+        ticks = 0;
+    }
+    ticks++;
+
+    if (delta >= 200) document.getElementById("fps").innerHTML = FPS.toString();
+}
+// *****************************
+
 export class Board {
     private resizeObserver = new ResizeObserver(() => { this.resize(); });
     private isPlaying = false;
@@ -16,6 +37,7 @@ export class Board {
     private activeTool: Tool = null;
 
     uiLayer = new Layer();
+    div: HTMLDivElement;
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     top: number = 0;
@@ -23,9 +45,11 @@ export class Board {
     origin = { x: 0, y: 0 };
     scale = window.devicePixelRatio;
 
-    constructor(canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext("2d");
+    constructor(div: HTMLDivElement) {
+        this.div = div;
+        this.canvas = document.createElement("canvas");
+        this.div.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext("2d");
 
         // add resize listener
         this.resizeObserver.observe(this.canvas);
@@ -33,7 +57,7 @@ export class Board {
 
     private resize(): void {
         // update the board size
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.div.getBoundingClientRect();
         this.top = rect.top;
         this.left = rect.left;
 
@@ -53,9 +77,10 @@ export class Board {
         this.ctx.translate(-this.origin.x, -this.origin.y);
 
         // clear canvas
+        let buffer = 10 / this.scale;
         this.ctx.clearRect(
-            this.origin.x, this.origin.y,
-            this.canvas.width / this.scale, this.canvas.height / this.scale
+            this.origin.x + buffer, this.origin.y + buffer,
+            (this.canvas.width / this.scale) - buffer*2, (this.canvas.height / this.scale) - buffer*2
         );
 
         // ------TEMPORARY----------
@@ -193,25 +218,3 @@ export class Board {
         this.tool();
     }
 }
-
-
-// ******* FPS COUNTER *********
-let start = performance.now(),
-    previous = start,
-    ticks = 0,
-    FPS = 0;
-
-const updateFPS = () => {
-    let now = performance.now(),
-        delta = now - previous;
-
-    if (delta >= 1000) {
-        previous = now;
-        FPS = ticks;
-        ticks = 0;
-    }
-    ticks++;
-
-    if (delta >= 200) document.getElementById("fps").innerHTML = FPS.toString();
-}
-// *****************************

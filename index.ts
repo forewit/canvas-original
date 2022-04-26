@@ -14,7 +14,7 @@ utils.setNotchCssProperties();
 let fireball = new Sprite("images/fireball.png", 100, 100, 128, 128);
 let snake = new Sprite("images/snake_right.png", 150, 150, 128, 128);
 let layer = new Layer();
-let board = new Board(<HTMLCanvasElement>document.getElementById("board"));
+let board = new Board(<HTMLDivElement>document.getElementById("board"));
 
 let noteElm = document.createElement("textarea");
 noteElm.classList.add("entity");

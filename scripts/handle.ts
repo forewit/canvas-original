@@ -67,6 +67,13 @@ export class Handle extends Entity {
     render(board: Board) {
         super.render(board);
 
+        // add rotate and resize divs to the DOM
+        if (!this.isLoaded) {
+            this.isLoaded = true;
+            board.div.appendChild(this.resizeDiv);
+            board.div.appendChild(this.rotateDiv);
+        }
+
         // check if the handle is enabled
         if (!this.enabled) {
             this.resizeDiv.classList.add('hidden');
@@ -77,15 +84,8 @@ export class Handle extends Entity {
             this.rotateDiv.classList.remove('hidden');
         }
 
-        // add rotate and resize divs to the DOM
-        let ctx = board.ctx;
-        if (!this.isLoaded) {
-            this.isLoaded = true;
-            ctx.canvas.parentNode.insertBefore(this.resizeDiv, ctx.canvas);
-            ctx.canvas.parentNode.insertBefore(this.rotateDiv, ctx.canvas);
-        }
-
         // draw selection box
+        let ctx = board.ctx;
         ctx.save();
         ctx.translate(this.rect.x, this.rect.y);
         ctx.rotate(this.rect.rad);
@@ -93,9 +93,5 @@ export class Handle extends Entity {
         ctx.lineWidth = 3;
         ctx.strokeRect(-this.rect.halfw, -this.rect.halfh, this.rect.w, this.rect.h);
         ctx.restore();
-
-
-        // enable resize and rotate divs
-        // TODO
     }
 }

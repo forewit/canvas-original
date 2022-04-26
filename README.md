@@ -1,12 +1,13 @@
 # RPCanvas
-### TODO
+### TODO 
+- [ ] add canvas elements to each layer to allow them to stack
 - [ ] resizing entities
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
 - [ ] change inertia based on frame rate
-- [ ] change board back to a DIV so that it can contain other elements
 
 ### DONE
+- [X] change board back to a DIV so that it can contain other elements
 - [X] move handles into it's own class so that it can dynamically change with the selection
 - [X] add rectangle class
 - [X] add outlines while drawing selection box

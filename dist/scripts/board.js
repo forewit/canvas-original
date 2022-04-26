@@ -1,8 +1,22 @@
 import { Entity } from "./entity.js";
 import { Layer } from "./layer.js";
 import { selectTool } from "./selectTool.js";
+// ******* FPS COUNTER *********
+let start = performance.now(), previous = start, ticks = 0, FPS = 0;
+const updateFPS = () => {
+    let now = performance.now(), delta = now - previous;
+    if (delta >= 1000) {
+        previous = now;
+        FPS = ticks;
+        ticks = 0;
+    }
+    ticks++;
+    if (delta >= 200)
+        document.getElementById("fps").innerHTML = FPS.toString();
+};
+// *****************************
 export class Board {
-    constructor(canvas) {
+    constructor(div) {
         this.resizeObserver = new ResizeObserver(() => { this.resize(); });
         this.isPlaying = false;
         this.layers = [];
@@ -13,14 +27,16 @@ export class Board {
         this.left = 0;
         this.origin = { x: 0, y: 0 };
         this.scale = window.devicePixelRatio;
-        this.canvas = canvas;
-        this.ctx = canvas.getContext("2d");
+        this.div = div;
+        this.canvas = document.createElement("canvas");
+        this.div.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext("2d");
         // add resize listener
         this.resizeObserver.observe(this.canvas);
     }
     resize() {
         // update the board size
-        let rect = this.canvas.getBoundingClientRect();
+        let rect = this.div.getBoundingClientRect();
         this.top = rect.top;
         this.left = rect.left;
         // set canvas properties and transform
@@ -36,7 +52,8 @@ export class Board {
         this.ctx.scale(this.scale, this.scale);
         this.ctx.translate(-this.origin.x, -this.origin.y);
         // clear canvas
-        this.ctx.clearRect(this.origin.x, this.origin.y, this.canvas.width / this.scale, this.canvas.height / this.scale);
+        let buffer = 10 / this.scale;
+        this.ctx.clearRect(this.origin.x + buffer, this.origin.y + buffer, (this.canvas.width / this.scale) - buffer * 2, (this.canvas.height / this.scale) - buffer * 2);
         // ------TEMPORARY----------
         this.ctx.beginPath();
         this.ctx.ellipse(0, 0, 10, 10, 0, 0, 6.28); // draw corner
@@ -160,17 +177,3 @@ export class Board {
         this.tool();
     }
 }
-// ******* FPS COUNTER *********
-let start = performance.now(), previous = start, ticks = 0, FPS = 0;
-const updateFPS = () => {
-    let now = performance.now(), delta = now - previous;
-    if (delta >= 1000) {
-        previous = now;
-        FPS = ticks;
-        ticks = 0;
-    }
-    ticks++;
-    if (delta >= 200)
-        document.getElementById("fps").innerHTML = FPS.toString();
-};
-// *****************************
