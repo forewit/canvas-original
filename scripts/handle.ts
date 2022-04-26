@@ -4,6 +4,9 @@ import { Board } from "./board.js";
 import { Rect } from "../modules/utils.js";
 
 export class Handle extends Entity {
+    resizeDiv = document.createElement('div');
+    rotateDiv = document.createElement('div');
+
     constructor() {
         super(0, 0, 0, 0);
         this.enabled = false;
@@ -69,5 +72,9 @@ export class Handle extends Entity {
         ctx.lineWidth = 3;
         ctx.strokeRect(-this.rect.halfw, -this.rect.halfh, this.rect.w, this.rect.h);
         ctx.restore();
+
+
+        // enable resize and rotate divs
+        // TODO
     }
 }

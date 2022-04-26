@@ -114,4 +114,12 @@ Set in Utils.ts and have a value of 0 or 1:
   background: lightgrey; /* lightcoral */
   resize: none;
 }
+
+.handle-resize {
+  cursor: nw-resize;
+}
+
+.handle-rotate {
+  cursor: url('./images/rotate_cursor.svg') 10 10, grabbing;
+}
 /* ------------------ */
