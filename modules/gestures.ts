@@ -29,6 +29,7 @@
  * tap
  * doubletap
  * longpress
+ * longpress-release
  * 
  * touch-drag-start
  * touch-dragging
@@ -464,6 +465,7 @@ const touchendHandler = (e: TouchEvent) => {
         }, DOUBLE_TAP_DELAY);
     }
 
+    dispatchGesture(touch.activeElement, { name: "longpress-release", x: touch.x, y: touch.y });
     touch.isLongpressed = false;
 }
 

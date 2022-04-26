@@ -40,27 +40,6 @@ export const throttle = (fn, wait, options) => {
 export function generate_ID() {
     return '_' + Math.random().toString(36).substring(2, 9);
 }
-//Rotates a point (x, y) around a pivot in radians
-export function rotatePoint(x, y, pivotX, pivotY, rad) {
-    if (!rad)
-        return { x: x, y: y };
-    let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
-    return { x: nx, y: ny };
-}
-/*
-A rectangle is defined by it's center, width, and height, and angle in radians
-        w
-┌─────────────────┐
-│                 │
-│       *(x, y)   | h
-│                 |
-└─────────────────┘
-*/
-export function pointInRect(x, y, centerX, centerY, w, h, rad) {
-    let rotatedPoint = rotatePoint(x, y, centerX, centerY, rad);
-    return (rotatedPoint.x >= centerX - w / 2 && rotatedPoint.x <= centerX + w / 2) &&
-        (rotatedPoint.y >= centerY - h / 2 && rotatedPoint.y <= centerY + h / 2);
-}
 export function log(...args) {
     let msg = [], css = '', last = args[args.length - 1] || {}, options = {};
     // check if options have been provided
@@ -134,21 +113,26 @@ A rectangle is defined by it's center, width, and height
 └─────────────────┘
 */
 export class Rect {
-    constructor(x, y, w, h) {
-        this._x = x;
-        this._y = y;
+    constructor(x, y, w, h, rad) {
+        this.rad = rad || 0;
         this._w = w;
         this._h = h;
-        this._left = x - w / 2;
-        this._right = x + w / 2;
-        this._top = y - h / 2;
-        this._bottom = y + h / 2;
+        this._halfw = w / 2;
+        this._halfh = h / 2;
+        this._x = x;
+        this._y = y;
+        this._left = x - this._halfw;
+        this._right = x + this.halfw;
+        this._top = y - this._halfh;
+        this._bottom = y + this._halfh;
     }
     // getters
-    get x() { return this._x; }
-    get y() { return this._y; }
     get w() { return this._w; }
     get h() { return this._h; }
+    get halfw() { return this._halfw; }
+    get halfh() { return this._halfh; }
+    get x() { return this._x; }
+    get y() { return this._y; }
     get left() { return this._left; }
     get right() { return this._right; }
     get top() { return this._top; }
@@ -156,42 +140,84 @@ export class Rect {
     // setters
     set x(x) {
         this._x = x;
-        this._left = x - this._w / 2;
-        this._right = x + this._w / 2;
+        this._left = x - this._halfw;
+        this._right = x + this._halfw;
     }
     set y(y) {
         this._y = y;
-        this._top = y - this._h / 2;
-        this._bottom = y + this._h / 2;
+        this._top = y - this._halfh;
+        this._bottom = y + this._halfh;
     }
     set w(w) {
         this._w = w;
-        this._left = this._x - w / 2;
-        this._right = this._x + w / 2;
+        this._halfw = w / 2;
+        this._left = this._x - this._halfw;
+        this._right = this._x + this._halfw;
     }
     set h(h) {
         this._h = h;
-        this._top = this._y - h / 2;
-        this._bottom = this._y + h / 2;
+        this._halfh = h / 2;
+        this._top = this._y - this._halfh;
+        this._bottom = this._y + this._halfh;
     }
+    // setting left will change the size of the rectangle
     set left(left) {
-        this._left = left;
-        this._x = left + this._w / 2;
-        this._right = left + this._w;
+        if (left <= this._right) {
+            this._left = left;
+            this._w = this._right - this._left;
+            this._halfw = this._w / 2;
+            this._x = this._left + this._halfw;
+        }
+        else {
+            console.error('left must be less than right');
+        }
     }
+    // setting right will change the size of the rectangle
     set right(right) {
-        this._right = right;
-        this._x = right - this._w / 2;
-        this._left = right - this._w;
+        if (right >= this._left) {
+            this._right = right;
+            this._w = this._right - this._left;
+            this._halfw = this._w / 2;
+            this._x = this._left + this._halfw;
+        }
+        else {
+            console.error('right must be greater than left');
+        }
     }
+    // setting top will change the size of the rectangle
     set top(top) {
-        this._top = top;
-        this._y = top + this._h / 2;
-        this._bottom = top + this._h;
+        if (top <= this._bottom) {
+            this._top = top;
+            this._h = this._bottom - this._top;
+            this._halfh = this._h / 2;
+            this._y = this._top + this._halfh;
+        }
+        else {
+            console.error('top must be less than bottom');
+        }
     }
+    // setting bottom will change the size of the rectangle
     set bottom(bottom) {
-        this._bottom = bottom;
-        this._y = bottom - this._h / 2;
-        this._top = bottom - this._h;
+        if (bottom >= this._top) {
+            this._bottom = bottom;
+            this._h = this._bottom - this._top;
+            this._halfh = this._h / 2;
+            this._y = this._top + this._halfh;
+        }
+        else {
+            console.error('bottom must be greater than top');
+        }
     }
+}
+export function rotatePoint(x, y, pivotX, pivotY, rad) {
+    if (!rad)
+        return { x: x, y: y };
+    let cos = Math.cos(rad), sin = Math.sin(rad), nx = (cos * (x - pivotX)) + (sin * (y - pivotY)) + pivotX, ny = (cos * (y - pivotY)) - (sin * (x - pivotX)) + pivotY;
+    return { x: nx, y: ny };
+}
+export function pointInRect(x, y, rect) {
+    // rotate point around the rect's center
+    let rotatedPoint = rotatePoint(x, y, rect.x, rect.y, rect.rad);
+    return (rotatedPoint.x >= rect.x - rect.halfw && rotatedPoint.x <= rect.x + rect.halfw) &&
+        (rotatedPoint.y >= rect.y - rect.halfh && rotatedPoint.y <= rect.y + rect.halfh);
 }

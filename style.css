@@ -55,7 +55,7 @@ Set in Utils.ts and have a value of 0 or 1:
 #toolbar {
   background: whitesmoke;
   grid-area: toolbar;
-  box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 
   display: grid;
@@ -81,10 +81,10 @@ Set in Utils.ts and have a value of 0 or 1:
 }
 .toolbar-item:hover,
 .toolbar-item.selected {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 .toolbar-item:active {
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 .toolbar-item > img {
   pointer-events: none;
@@ -113,5 +113,21 @@ Set in Utils.ts and have a value of 0 or 1:
 .entity {
   background: lightgrey; /* lightcoral */
   resize: none;
+}
+
+.handle-resize {
+  cursor: nw-resize;
+  width: 10px;
+  height: 10px;
+  background: red;
+  position: absolute;
+}
+
+.handle-rotate {
+  cursor: url("/images/rotate_cursor.svg"), grabbing;
+  width: 10px;
+  height: 10px;
+  background: blue;
+  position: absolute;
 }
 /* ------------------ */

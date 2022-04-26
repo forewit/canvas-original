@@ -36,8 +36,8 @@ export class Layer {
         }
         return null;
     }
-    rectIntersection(x, y, w, h) {
-        return this.entities.filter(e => pointInRect(e.x, e.y, x + w / 2, y + h / 2, w, h));
+    rectIntersection(rect) {
+        return this.entities.filter(e => pointInRect(e.rect.x, e.rect.y, rect));
         ;
     }
     duplicate() {

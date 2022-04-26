@@ -43,7 +43,7 @@ export class Sprite extends Entity {
 
     // override 
     duplicate(): Entity {
-        let sprite = new Sprite(this.image.src, this.x, this.y, this.w, this.h, this.rad);
+        let sprite = new Sprite(this.image.src, this.rect.x, this.rect.y, this.rect.w, this.rect.h, this.rect.rad);
         if (this.frames.length > 0) 
             sprite.animate(this.frameW, this.frameH, this.repeat, 1000/this.interval, ...this.frames);
         return sprite;
@@ -58,7 +58,8 @@ export class Sprite extends Entity {
     // override
     render(board: Board): void {
         super.render(board);
-        if (!this.isLoaded || this.frames.length == 0) return;
+
+        if (!this.isLoaded || this.frames.length == 0 || !this.enabled) return;
 
         if (this.repeat != 0) {
             let now = performance.now();
@@ -78,10 +79,10 @@ export class Sprite extends Entity {
         // draw current frame
         let ctx = board.ctx;
         ctx.save();
+        ctx.translate(this.rect.x, this.rect.y);
+        ctx.rotate(this.rect.rad);
         ctx.globalAlpha = this.opacity;
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rad);
-        ctx.drawImage(this.image, this.frameX, this.frameY, this.frameW, this.frameH, -this.w / 2, -this.h / 2, this.w, this.h);
+        ctx.drawImage(this.image, this.frameX, this.frameY, this.frameW, this.frameH, -this.rect.halfw, -this.rect.halfh, this.rect.w, this.rect.h);
         ctx.restore();
     }
 }

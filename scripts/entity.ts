@@ -1,62 +1,37 @@
 import { Board } from "./board.js";
 import { Layer } from "./layer.js";
-import { generate_ID, rotatePoint, pointInRect } from "../modules/utils.js";
+import { generate_ID, Rect, pointInRect } from "../modules/utils.js";
 
 export class Entity {
-    /*
-    A rectangle is defined by it's center, width, and height, and angle in radians
-             w
-    ┌─────────────────┐
-    │                 │
-    │       *(x, y)   | h
-    │                 |
-    └─────────────────┘
-    */
     readonly ID: string = generate_ID();
 
-    opacity: number = 1;
+    enabled: boolean = true;
     outline: boolean = false;
-    x: number;
-    y: number;
-
-    protected _w: number;
-    protected _h: number;
-    protected _rad: number; // radians
-
-    // getters
-    get w(): number { return this._w; }
-    get h(): number { return this._h; }
-    get rad(): number { return this._rad; }
-
-    // setters
-    set w(w: number) { this._w = w; }
-    set h(h: number) { this._h = h; }
-    set rad(rad: number) { this._rad = rad % (2 * Math.PI) }
-
+    opacity: number = 1;
+    rect: Rect;
 
     constructor(x: number, y: number, w: number, h: number, rad?: number) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.rad = rad || 0;
+        this.rect = new Rect(x, y, w, h, rad);
     }
 
     isIntersectingPoint(x: number, y: number): boolean {
-        return pointInRect(x, y, this.x, this.y, this.w, this.h, this.rad);
+        return pointInRect(x, y, this.rect);
     }
     destroy(): void { console.error("Entity.destroy() not implemented.") }
     duplicate(): Entity { console.error("Entity.duplicate() not implemented."); return null; };
     render(board: Board): void { 
+        if (!this.enabled) return;
+
         // draw outline
         if (this.outline) {
-            board.ctx.save();
-            board.ctx.translate(this.x, this.y);
-            board.ctx.rotate(this.rad);
-            board.ctx.strokeStyle = "blue";
-            board.ctx.lineWidth = 1;
-            board.ctx.strokeRect(-this.w / 2, -this.h / 2, this.w, this.h);
-            board.ctx.restore();
+            let ctx = board.ctx;
+            ctx.save();
+            ctx.translate(this.rect.x, this.rect.y);
+            ctx.rotate(this.rect.rad);
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(-this.rect.halfw, -this.rect.halfh, this.rect.w, this.rect.h);
+            ctx.restore();
         }
     };
 }

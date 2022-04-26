@@ -1,5 +1,6 @@
-import { Entity } from "./entity.js";
 import { Note } from "./note.js";
+import { Handle } from "./handle.js";
+import { SelectBox } from "./selectBox.js";
 import * as keys from "../modules/keys.js";
 import * as gestures from "../modules/gestures.js";
 // constants
@@ -8,34 +9,7 @@ INERTIAL_MEMORY = 0.2, // 0 = infinite memory, 1 = no memory
 INERTIA_TIMEOUT = 30, // ms
 EPSILON = 0.01; // replacement for 0 to prevent divide-by-zero errors
 // state management
-let activeBoard = null, activeLayer = null, selected = [], handleBounds = null, selectBoxBounds = null, isPanning = false, lastPanTime = 0, vx = 0, vy = 0;
-// define handles entity
-let handles = new Entity(9999, 0, 0, 0);
-handles.render = (board) => {
-    if (!handleBounds)
-        return;
-    let ctx = board.ctx;
-    // draw selection box
-    ctx.save();
-    ctx.translate(handleBounds.left + handleBounds.w / 2, handleBounds.top + handleBounds.h / 2);
-    ctx.rotate(handleBounds.rad);
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(-handleBounds.w / 2, -handleBounds.h / 2, handleBounds.w, handleBounds.h);
-    ctx.restore();
-};
-// define selectBox entity
-let selectBox = new Entity(9999, 0, 0, 0);
-selectBox.render = (board) => {
-    if (!selectBoxBounds)
-        return;
-    // draw selection box
-    board.ctx.save();
-    board.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    board.ctx.lineWidth = 3;
-    board.ctx.strokeRect(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
-    board.ctx.restore();
-};
+let activeBoard = null, activeLayer = null, handle = new Handle(), selectBox = new SelectBox(), selected = [], isPanning = false, lastPanTime = 0, vx = 0, vy = 0;
 const enable = (board, layer) => {
     // reset state
     activeBoard = board;
@@ -50,8 +24,8 @@ const enable = (board, layer) => {
     // setup keybindings
     setupKeybindings();
     // add UI entities
-    activeBoard.add(handles);
-    activeBoard.add(selectBox);
+    activeBoard.uiLayer.add(handle);
+    activeBoard.uiLayer.add(selectBox);
 };
 const disable = () => {
     if (activeBoard) {
@@ -61,8 +35,8 @@ const disable = () => {
         // remove keybindings
         keys.unbind("Control+r, Control+R, Meta+r, Meta+R, Control+a, Control+A, Meta+a, Meta+A");
         // remove UI entities
-        activeBoard.destroy(handles);
-        activeBoard.destroy(selectBox);
+        activeBoard.uiLayer.destroy(handle);
+        activeBoard.uiLayer.destroy(selectBox);
     }
 };
 export const selectTool = {
@@ -97,116 +71,79 @@ const gestureHandler = (e) => {
                 clearSelection();
             selectPoint(x, y);
             break;
-        case "longclick":
-            activeBoard.canvas.style.cursor = "grabbing";
-            break;
-        case "longclick-release":
-            activeBoard.canvas.style.cursor = "";
-            break;
-        case "longclick-dragging":
+        case "right-click-dragging":
         case "touch-dragging":
         case "middle-click-dragging":
             activeBoard.canvas.style.cursor = "grabbing";
             pan(dx, dy);
             break;
+        case "right-click-drag-end":
+        case "middle-click-drag-end":
+        case "touch-drag-end":
+            activeBoard.canvas.style.cursor = "";
+            endPanning();
+            break;
         case "pinching":
             activeBoard.zoom(x, y, zoom);
             pan(dx, dy);
             break;
+        case "pinch-end":
+            endPanning();
+            break;
         case "wheel":
             activeBoard.zoom(x, y, wheelToZoomFactor(event));
             break;
-        case "longclick-drag-end":
-        case "middle-click-drag-end":
-        case "touch-drag-end":
-        case "pinch-end":
+        case "longclick":
+            activeBoard.canvas.style.cursor = "crosshair";
+            break;
+        case "longclick-release":
             activeBoard.canvas.style.cursor = "";
-            endPanning();
             break;
         case "longclick-drag-start":
         case "left-click-drag-start":
-        case "right-click-drag-start":
         case "longpress-drag-start":
             if (!keys.down["Shift"])
                 clearSelection();
-            startSelectBox(x, y);
+            dragSelectStart(x, y);
             break;
-        case "longpress-dragging":
+        case "longclick-dragging":
         case "left-click-dragging":
-        case "right-click-dragging":
         case "longpress-dragging":
-            updateSelectBox(x, y, dx, dy);
+            dragSelect(x, y, dx, dy);
             break;
-        case "longpress-drag-end":
+        case "longclick-drag-end":
         case "left-click-drag-end":
-        case "right-click-drag-end":
         case "longpress-drag-end":
-            endSelectBox();
+            endDragSelect();
             break;
     }
 };
-const startSelectBox = (x, y) => {
-    selectBoxBounds = { left: x, top: y, right: x, bottom: y, w: 0, h: 0 };
+const dragSelectStart = (x, y) => {
+    selectBox.resetBounds(x, y);
+    selectBox.enabled = true;
 };
-const updateSelectBox = (x, y, dx, dy) => {
-    if (!selectBoxBounds)
-        return;
-    if (dx > 0) {
-        // moving right while inside the selection box
-        if (x < selectBoxBounds.right)
-            selectBoxBounds.left += dx;
-        // moving right while outside the selection box
-        else
-            selectBoxBounds.right += dx;
-    }
-    else {
-        // moving left while inside the selection box
-        if (x > selectBoxBounds.left)
-            selectBoxBounds.right += dx;
-        // moving left while outside the selection box
-        else
-            selectBoxBounds.left += dx;
-    }
-    if (dy > 0) {
-        // moving down while inside the selection box
-        if (y < selectBoxBounds.bottom)
-            selectBoxBounds.top += dy;
-        // moving down while outside the selection box
-        else
-            selectBoxBounds.bottom += dy;
-    }
-    else {
-        // moving up while inside the selection box
-        if (y > selectBoxBounds.top)
-            selectBoxBounds.bottom += dy;
-        // moving up while outside the selection box
-        else
-            selectBoxBounds.top += dy;
-    }
-    // update width and height
-    selectBoxBounds.w = selectBoxBounds.right - selectBoxBounds.left;
-    selectBoxBounds.h = selectBoxBounds.bottom - selectBoxBounds.top;
+const dragSelect = (x, y, dx, dy) => {
+    selectBox.updateBounds(x, y, dx, dy);
     // outline entities in the selection box
-    let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    let entities = activeLayer.rectIntersection(selectBox.rect);
     for (let entity of activeLayer.entities) {
         entity.outline = (entities.findIndex(e => e.ID === entity.ID) > -1);
     }
 };
-const endSelectBox = () => {
-    if (!selectBoxBounds)
-        return;
+const endDragSelect = () => {
     // select all entities in selection box
-    let entities = activeLayer.rectIntersection(selectBoxBounds.left, selectBoxBounds.top, selectBoxBounds.w, selectBoxBounds.h);
+    let entities = activeLayer.rectIntersection(selectBox.rect);
     for (let entity of entities) {
         entity.outline = false;
         if (selected.findIndex(e => e.ID === entity.ID) > -1)
             continue;
         selected.push(entity);
     }
-    // reset selection box bounds
-    selectBoxBounds = null;
-    // update handles
-    handleBounds = getBounds(selected);
+    // disable selection box
+    selectBox.enabled = false;
+    // update and enable handles
+    handle.updateBounds(selected);
+    handle.enabled = true;
 };
 const selectPoint = (x, y) => {
     // check active layer for intersections
@@ -214,7 +151,8 @@ const selectPoint = (x, y) => {
     // select intersected entity if not already selected
     if (entity && selected.findIndex((e) => e.ID === entity.ID) === -1) {
         selected.push(entity);
-        handleBounds = getBounds(selected);
+        handle.updateBounds(selected);
+        handle.enabled = true;
     }
     // break target focus
     if (selected.length == 0)
@@ -226,41 +164,7 @@ const selectPoint = (x, y) => {
 };
 const clearSelection = () => {
     selected = [];
-    handleBounds = null;
-};
-const getBounds = (entities) => {
-    if (entities.length === 0)
-        return null;
-    // allow a rotated bounding box if there is only one entity
-    if (entities.length === 1) {
-        return {
-            left: entities[0].x - entities[0].w / 2,
-            top: entities[0].y - entities[0].h / 2,
-            w: entities[0].w,
-            h: entities[0].h,
-            rad: entities[0].rad
-        };
-    }
-    let boundingLeft = entities[0].x, boundingRight = entities[0].x, boundingTop = entities[0].y, boundingBottom = entities[0].y;
-    for (let entity of entities) {
-        let angle = entity.rad % (Math.PI);
-        if (angle > Math.PI / 2)
-            angle = Math.PI - angle;
-        let halfW = (Math.sin(angle) * entity.h + Math.cos(angle) * entity.w) / 2, halfH = (Math.sin(angle) * entity.w + Math.cos(angle) * entity.h) / 2;
-        let left = entity.x - halfW, right = entity.x + halfW, top = entity.y - halfH, bottom = entity.y + halfH;
-        boundingLeft = Math.min(boundingLeft, left);
-        boundingRight = Math.max(boundingRight, right);
-        boundingTop = Math.min(boundingTop, top);
-        boundingBottom = Math.max(boundingBottom, bottom);
-    }
-    let width = boundingRight - boundingLeft, height = boundingBottom - boundingTop;
-    return {
-        left: boundingTop,
-        top: boundingLeft,
-        w: width,
-        h: height,
-        rad: 0
-    };
+    handle.enabled = false;
 };
 const wheelToZoomFactor = (e) => {
     // normalize wheel direction

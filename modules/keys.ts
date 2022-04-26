@@ -12,7 +12,7 @@ keybindings = [{
     ]
  }]
 */
-const SHORTCUT_SEPARATOR = ", ";
+const SHORTCUT_SEPARATOR = ", "; 
 const SPLIT_KEY = "+";
 
 interface Keybinding {
