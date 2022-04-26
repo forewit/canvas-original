@@ -6,14 +6,19 @@ import { Rect } from "../modules/utils.js";
 export class Handle extends Entity {
     resizeDiv = document.createElement('div');
     rotateDiv = document.createElement('div');
+    isLoaded = false;
 
     constructor() {
         super(0, 0, 0, 0);
         this.enabled = false;
+
+        // css
+        this.resizeDiv.className = "handle-resize";
+        this.rotateDiv.className = "handle-rotate";
     }
 
     updateBounds(entities: Entity[]) {
-        if (entities.length === 0){
+        if (entities.length === 0) {
             this.rect = new Rect(0, 0, 0, 0);
             return null;
         }
@@ -61,10 +66,26 @@ export class Handle extends Entity {
 
     render(board: Board) {
         super.render(board);
-        if (!this.enabled) return;
+
+        // check if the handle is enabled
+        if (!this.enabled) {
+            this.resizeDiv.classList.add('hidden');
+            this.rotateDiv.classList.add('hidden');
+            return;
+        } else if (this.resizeDiv.classList.contains('hidden')) {
+            this.resizeDiv.classList.remove('hidden');
+            this.rotateDiv.classList.remove('hidden');
+        }
+
+        // add rotate and resize divs to the DOM
+        let ctx = board.ctx;
+        if (!this.isLoaded) {
+            this.isLoaded = true;
+            ctx.canvas.parentNode.insertBefore(this.resizeDiv, ctx.canvas);
+            ctx.canvas.parentNode.insertBefore(this.rotateDiv, ctx.canvas);
+        }
 
         // draw selection box
-        let ctx = board.ctx;
         ctx.save();
         ctx.translate(this.rect.x, this.rect.y);
         ctx.rotate(this.rect.rad);

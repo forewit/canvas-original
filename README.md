@@ -4,6 +4,7 @@
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
 - [ ] change inertia based on frame rate
+- [ ] change board back to a DIV so that it can contain other elements
 
 ### DONE
 - [X] move handles into it's own class so that it can dynamically change with the selection
