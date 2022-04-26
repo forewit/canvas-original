@@ -1,7 +1,7 @@
 # RPCanvas
 ### TODO 
-- [ ] add canvas elements to each layer to allow them to stack
-- [ ] resizing entities
+- [ ] add canvas elements to each layer to allow them to stack?
+- [ ] resizing entities -- (1) draw resize anchor, (2) make it draggable?
 - [ ] create **Pen** entity
 - [ ] button -> to switch tools
 - [ ] change inertia based on frame rate
