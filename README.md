@@ -1,4 +1,11 @@
 # RPCanvas
+
+## Setup
+setup local web server `npm install -g local-web-server`
+setup typescript `npm install -g typescript`
+start local web server `ws`
+start typescript in watch mode `tsc -w`
+
 ### TODO 
 - [ ] add canvas elements to each layer to allow them to stack?
 - [ ] resizing entities -- (1) draw resize anchor, (2) make it draggable?
