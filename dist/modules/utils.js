@@ -113,19 +113,6 @@ A rectangle is defined by it's center, width, and height
 └─────────────────┘
 */
 export class Rect {
-    constructor(x, y, w, h, rad) {
-        this.rad = rad || 0;
-        this._w = w;
-        this._h = h;
-        this._halfw = w / 2;
-        this._halfh = h / 2;
-        this._x = x;
-        this._y = y;
-        this._left = x - this._halfw;
-        this._right = x + this.halfw;
-        this._top = y - this._halfh;
-        this._bottom = y + this._halfh;
-    }
     // getters
     get w() { return this._w; }
     get h() { return this._h; }
@@ -207,6 +194,19 @@ export class Rect {
         else {
             console.error('bottom must be greater than top');
         }
+    }
+    constructor(x, y, w, h, rad) {
+        this.rad = rad || 0;
+        this._w = w;
+        this._h = h;
+        this._halfw = w / 2;
+        this._halfh = h / 2;
+        this._x = x;
+        this._y = y;
+        this._left = x - this._halfw;
+        this._right = x + this.halfw;
+        this._top = y - this._halfh;
+        this._bottom = y + this._halfh;
     }
 }
 export function rotatePoint(x, y, pivotX, pivotY, rad) {
